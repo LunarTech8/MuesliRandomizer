@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <variable name="sizeWeight" type="Float" />
+        <variable name="sugarWeight" type="Float" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/comment_padding"
+        tools:context=".InputPanel"
+        >
+
+        <LinearLayout
+            android:id="@+id/settingsBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/item_horizontal_margin"
+            android:layout_marginEnd="@dimen/item_horizontal_margin"
+            android:layout_marginBottom="@dimen/item_horizontal_margin"
+            android:orientation="vertical"
+            android:background="@drawable/border_medium"
+            android:padding="@dimen/comment_padding"
+            >
+
+            <LinearLayout
+                android:id="@+id/sizeRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_row_height">
+
+                <TextView
+                    android:id="@+id/sizeLabel"
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    android:gravity="center_vertical"
+                    android:text="@string/t_sizeLabel" />
+
+                <SeekBar
+                    android:id="@+id/sizeSlider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    android:max="4"
+                    android:progress="1"
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    />
+
+                <TextView
+                    android:id="@+id/sizeValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@{@string/t_weightText(sizeWeight)}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sugarRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_row_height"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/sugarLabel"
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    android:gravity="center_vertical"
+                    android:text="@string/t_sugarLabel"
+                    />
+
+                <SeekBar
+                    android:id="@+id/sugarSlider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    android:max="4"
+                    android:progress="2"
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    />
+
+                <TextView
+                    android:id="@+id/sugarValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@{@string/t_weightText(sugarWeight)}"
+                    />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/randomizeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/t_randomizeButton"
+                android:textAllCaps="false"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ingredientsBox"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/item_horizontal_margin"
+            android:layout_marginEnd="@dimen/item_horizontal_margin"
+            android:orientation="vertical"
+            android:background="@drawable/border_medium"
+            >
+
+            <TextView
+                android:id="@+id/ingredientsLabel"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ingredient_row_height"
+                android:layout_marginStart="@dimen/item_horizontal_margin"
+                android:layout_marginEnd="@dimen/item_horizontal_margin"
+                android:gravity="center_vertical"
+                android:text="@string/t_ingredientsLabel"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ingredients"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="LinearLayoutManager"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
