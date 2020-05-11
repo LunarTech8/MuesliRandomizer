@@ -8,6 +8,7 @@
     <data>
         <variable name="sizeWeight" type="Float" />
         <variable name="sugarWeight" type="Float" />
+        <variable name="isChosenMuesliUsed" type="boolean" />
     </data>
 
     <LinearLayout
@@ -30,7 +31,7 @@
             android:padding="@dimen/comment_padding"
             >
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/sizeRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_row_height">
@@ -38,16 +39,21 @@
                 <TextView
                     android:id="@+id/sizeLabel"
                     android:layout_width="@dimen/label_width"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
-                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:text="@string/t_sizeLabel" />
 
                 <SeekBar
                     android:id="@+id/sizeSlider"
-                    android:layout_width="@dimen/slider_width"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                     android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    app:layout_constraintStart_toEndOf="@+id/sizeLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/sizeValue"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:max="4"
                     android:progress="1"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -55,14 +61,16 @@
 
                 <TextView
                     android:id="@+id/sizeValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
+                    android:layout_width="@dimen/value_width"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:text="@{@string/t_weightText(sizeWeight)}" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/sugarRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_row_height"
@@ -72,17 +80,23 @@
                 <TextView
                     android:id="@+id/sugarLabel"
                     android:layout_width="@dimen/label_width"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:gravity="center_vertical"
                     android:text="@string/t_sugarLabel"
                     />
 
                 <SeekBar
                     android:id="@+id/sugarSlider"
-                    android:layout_width="@dimen/slider_width"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                     android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    app:layout_constraintStart_toEndOf="@+id/sugarLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/sugarValue"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:max="4"
                     android:progress="2"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -90,13 +104,15 @@
 
                 <TextView
                     android:id="@+id/sugarValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
+                    android:layout_width="@dimen/value_width"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:text="@{@string/t_weightText(sugarWeight)}"
                     />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Button
                 android:id="@+id/randomizeButton"
@@ -108,7 +124,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ingredientsBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -122,6 +138,8 @@
                 android:id="@+id/ingredientsLabel"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/ingredient_row_height"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginStart="@dimen/item_horizontal_margin"
                 android:layout_marginEnd="@dimen/item_horizontal_margin"
                 android:gravity="center_vertical"
@@ -131,11 +149,25 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/ingredients"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ingredientsLabel"
+                app:layout_constraintBottom_toTopOf="@+id/useButton"
                 app:layoutManager="LinearLayoutManager"
                 />
 
-        </LinearLayout>
+            <Button
+                android:id="@+id/useButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="@string/t_useButton"
+                android:textAllCaps="false"
+                app:visibleGone="@{!isChosenMuesliUsed}"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 

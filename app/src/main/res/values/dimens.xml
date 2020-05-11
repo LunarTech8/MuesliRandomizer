@@ -3,7 +3,7 @@
     <dimen name="settings_row_height">40dp</dimen>
     <dimen name="ingredient_row_height">40dp</dimen>
     <dimen name="label_width">40dp</dimen>
-    <dimen name="slider_width">240dp</dimen>
+    <dimen name="value_width">40dp</dimen>
     <dimen name="comment_horizontal_margin_large">12dp</dimen>
     <dimen name="comment_horizontal_margin_small">4dp</dimen>
     <dimen name="item_corner_radius">4dp</dimen>

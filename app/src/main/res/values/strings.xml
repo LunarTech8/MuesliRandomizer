@@ -8,4 +8,5 @@
     <string name="t_ingredientsLabel">Ingredients:</string>
 
     <string name="t_randomizeButton">Create randomized muesli</string>
+    <string name="t_useButton">Use displayed muesli</string>
 </resources>
