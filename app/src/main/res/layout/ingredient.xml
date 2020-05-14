@@ -27,7 +27,7 @@
             >
 
             <TextView
-                android:id="@+id/nameValue"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/comment_horizontal_margin_large"
@@ -36,7 +36,7 @@
                 />
 
             <TextView
-                android:id="@+id/spoonsValue"
+                android:id="@+id/spoons"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/comment_horizontal_margin_large"
@@ -45,7 +45,7 @@
                 />
 
             <TextView
-                android:id="@+id/weightValue"
+                android:id="@+id/weight"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/comment_horizontal_margin_large"

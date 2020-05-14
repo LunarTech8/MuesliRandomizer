@@ -7,7 +7,7 @@
 
     <data>
         <variable name="sizeWeight" type="Float" />
-        <variable name="sugarWeight" type="Float" />
+        <variable name="sugarPercentage" type="Float" />
         <variable name="isChosenMuesliUsed" type="boolean" />
     </data>
 
@@ -52,15 +52,15 @@
                     android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                     android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
                     app:layout_constraintStart_toEndOf="@+id/sizeLabel"
-                    app:layout_constraintEnd_toStartOf="@+id/sizeValue"
+                    app:layout_constraintEnd_toStartOf="@+id/sizeWeight"
                     app:layout_constraintTop_toTopOf="parent"
                     android:max="4"
-                    android:progress="1"
+                    android:progress="3"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
                 <TextView
-                    android:id="@+id/sizeValue"
+                    android:id="@+id/sizeWeight"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -95,7 +95,7 @@
                     android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                     android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
                     app:layout_constraintStart_toEndOf="@+id/sugarLabel"
-                    app:layout_constraintEnd_toStartOf="@+id/sugarValue"
+                    app:layout_constraintEnd_toStartOf="@+id/sugarPercentage"
                     app:layout_constraintTop_toTopOf="parent"
                     android:max="4"
                     android:progress="2"
@@ -103,13 +103,13 @@
                     />
 
                 <TextView
-                    android:id="@+id/sugarValue"
+                    android:id="@+id/sugarPercentage"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="@{@string/t_weightText(sugarWeight)}"
+                    android:text="@{@string/t_percentageText(sugarPercentage)}"
                     />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
