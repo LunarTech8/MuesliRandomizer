@@ -150,22 +150,29 @@ public class MainActivity extends AppCompatActivity
             List<IngredientEntity> ingredients = new ArrayList<>(REGULAR_INGREDIENTS_AMOUNT + 1);
             MuesliEntity muesli;
             int spoonCount;
-            // Add regular muesli based on target sugar percentage:
+            final float targetWeight = sizeValue2SizeWeight(sizeValue);
+            final float targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
             float totalWeight = 0F;
-            for (int i = 0; i < REGULAR_INGREDIENTS_AMOUNT; i++)
+            // Add first regular muesli based on number of ingredients:
+            for (int i = 0; i < REGULAR_INGREDIENTS_AMOUNT - 1; i++)
             {
                 muesli = chosenMuesliList.get(i);
-                // TODO: calculate and use correct spoonCounts
-                spoonCount = 3;
+                spoonCount = Math.round(targetWeight / (muesli.getSpoonWeight() * (REGULAR_INGREDIENTS_AMOUNT + 1)));
                 totalWeight += muesli.getSpoonWeight() * spoonCount;
                 ingredients.add(new IngredientEntity(muesli, spoonCount));
             }
-            // Add filler muesli to reach target size weight:
-            muesli = fillerMuesliList.get(random.nextInt(fillerMuesliList.size()));
-            spoonCount = Math.round((sizeValue2SizeWeight(sizeValue) - totalWeight) / muesli.getSpoonWeight());
-            totalWeight += muesli.getSpoonWeight() * spoonCount;  // DEBUG:
-            Log.d("onCreate", "totalWeight: " + totalWeight);  // DEBUG:
+            // Calculate and add spoons for last regular muesli based on sugar percentage:
+            muesli = chosenMuesliList.get(REGULAR_INGREDIENTS_AMOUNT - 1);
+            //spoonCount = Math.round(...);
+            spoonCount = 3;  // TODO: implement
+            totalWeight += muesli.getSpoonWeight() * spoonCount;
             ingredients.add(new IngredientEntity(muesli, spoonCount));
+            // Calculate and add spoons for filler muesli based on size:
+            muesli = fillerMuesliList.get(random.nextInt(fillerMuesliList.size()));
+            spoonCount = Math.round((targetWeight - totalWeight) / muesli.getSpoonWeight());  // TODO: maybe use formula instead of totalWeight
+            totalWeight += muesli.getSpoonWeight() * spoonCount;  // DEBUG:
+            ingredients.add(new IngredientEntity(muesli, spoonCount));
+            Log.d("onCreate", "totalWeight: " + totalWeight);  // DEBUG:
             adapter.setIngredients(ingredients);
 
             // Adjust use button:
