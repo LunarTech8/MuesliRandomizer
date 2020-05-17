@@ -6,8 +6,8 @@
     >
 
     <data>
-        <variable name="sizeWeight" type="Float" />
-        <variable name="sugarPercentage" type="Float" />
+        <variable name="sizeWeight" type="String" />
+        <variable name="sugarPercentage" type="String" />
         <variable name="itemsCount" type="Integer" />
         <variable name="isChosenMuesliUsed" type="boolean" />
     </data>

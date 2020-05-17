@@ -33,7 +33,7 @@ public class IngredientEntity implements Ingredient
     @Override
     public float getSugarPercentage()
     {
-        return item.getSugarPercentage();
+        return 100 * item.getSugarPercentage();
     }
 
     @Override

@@ -8,6 +8,7 @@ public class ItemEntity implements Item
     // --------------------
 
     private String name;
+    private String brand;
     private int type;
     private float spoonWeight;
     private float sugarPercentage;
@@ -16,6 +17,12 @@ public class ItemEntity implements Item
     public String getName()
     {
         return name;
+    }
+
+    @Override
+    public String getBrand()
+    {
+        return brand;
     }
 
     @Override
@@ -43,6 +50,12 @@ public class ItemEntity implements Item
     }
 
     @Override
+    public void setBrand(String brand)
+    {
+        this.brand = brand;
+    }
+
+    @Override
     public void setType(int type)
     {
         this.type = type;
@@ -60,9 +73,10 @@ public class ItemEntity implements Item
         this.sugarPercentage = sugarPercentage;
     }
 
-    ItemEntity(String name, int type, float spoonWeight, float sugarPercentage)
+    ItemEntity(String name, String brand, int type, float spoonWeight, float sugarPercentage)
     {
         this.name = name;
+        this.brand = brand;
         this.type = type;
         this.spoonWeight = spoonWeight;
         this.sugarPercentage = sugarPercentage;

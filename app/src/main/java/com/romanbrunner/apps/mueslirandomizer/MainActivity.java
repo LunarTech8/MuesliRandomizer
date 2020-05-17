@@ -14,6 +14,7 @@ import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -29,33 +30,41 @@ public class MainActivity extends AppCompatActivity
 
     private static void addDefaultFillerItemsToList(List<ItemEntity> muesliList)
     {
-        // Very low sugar filler muesli:
-        muesliList.add(new ItemEntity("FillerMuesliNameA", 0, 5F, 0F));
-        muesliList.add(new ItemEntity("FillerMuesliNameB", 1, 6F, 0.05F));
+        // Very low sugar muesli:
+        muesliList.add(new ItemEntity("Echte Kölln Kernige", "Kölln", 0, 8F, 0.012F));
     }
 
     private static void addDefaultRegularItemsToList(List<ItemEntity> muesliList)
     {
         // Low sugar muesli:
-        muesliList.add(new ItemEntity("MuesliNameC", 0, 5F, 0.12F));
-        muesliList.add(new ItemEntity("MuesliNameD", 1, 6F, 0.08F));
+        muesliList.add(new ItemEntity("Nuss & Krokant", "Kölln", 1, 9.5F, 0.077F));
         // Medium sugar muesli:
-        muesliList.add(new ItemEntity("MuesliNameB", 1, 4F, 0.13F));
-        muesliList.add(new ItemEntity("MuesliNameE", 2, 5.5F, 0.18F));
-        muesliList.add(new ItemEntity("MuesliNameG", 2, 5.5F, 0.16F));
+        muesliList.add(new ItemEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", 1, 10.5F, 0.14F));
+        muesliList.add(new ItemEntity("Schokomüsli Feinherb", "Vitalis", 1, 9.5F, 0.15F));
+        muesliList.add(new ItemEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", 1, 9F, 0.13F));
+        muesliList.add(new ItemEntity("Schoko 30% weniger Zucker", "Kölln", 1, 10F, 0.13F));
         // High sugar muesli:
-        muesliList.add(new ItemEntity("MuesliNameA", 2, 3F, 0.2F));
-        muesliList.add(new ItemEntity("MuesliNameF", 1, 3F, 0.22F));
+        muesliList.add(new ItemEntity("Nesquik Knusper-Müsli", "Nestle", 1, 8F, 0.21F));
+        muesliList.add(new ItemEntity("Crunchy Müsli Red Berries", "Kellogg", 1, 9.5F, 0.22F));
+        muesliList.add(new ItemEntity("Knuspermüsli Nuss-Nougat", "Vitalis", 1, 11.5F, 0.25F));
+        muesliList.add(new ItemEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", 1, 13.5F, 0.2F));
+        muesliList.add(new ItemEntity("Knusper Beere & Schoko", "Kölln", 1, 11.5F, 0.24F));
+        muesliList.add(new ItemEntity("Knusper Schoko-Krokant", "Kölln", 1, 11.5F, 0.22F));
+        muesliList.add(new ItemEntity("Knusper Schoko & Kaffee", "Kölln", 1, 12F, 0.22F));
+        muesliList.add(new ItemEntity("Knusper Schoko & Keks", "Kölln", 1, 11.5F, 0.21F));
+        muesliList.add(new ItemEntity("Knusper Joghurt-Honig", "Kölln", 1, 11F, 0.2F));
+        muesliList.add(new ItemEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", 1, 12F, 0.2F));
+        muesliList.add(new ItemEntity("Porridge Dreierlei Beere", "3 Bears", 1, 12.5F, 0.22F));
     }
 
     private static float sizeValue2SizeWeight(int sizeValue)
     {
-        return 10F * 2 * (sizeValue + 1);
+        return 35F + 15F * sizeValue;
     }
 
     private static float sugarValue2SugarPercentage(int sugarValue)
     {
-        return 0.05F * (sugarValue + 1);
+        return 0.1F + 0.025F * sugarValue;
     }
 
     private static int itemsValue2ItemsCount(int itemsValue)
@@ -108,8 +117,8 @@ public class MainActivity extends AppCompatActivity
         sizeValue = binding.sizeSlider.getProgress();
         sugarValue = binding.sugarSlider.getProgress();
         itemsValue = binding.itemsSlider.getProgress();
-        binding.setSizeWeight(sizeValue2SizeWeight(sizeValue));
-        binding.setSugarPercentage(sugarValue2SugarPercentage(sugarValue));
+        binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
+        binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setItemsCount(itemsValue2ItemsCount(itemsValue));
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
 
@@ -125,7 +134,7 @@ public class MainActivity extends AppCompatActivity
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
                 sizeValue = progress;
-                binding.setSizeWeight(sizeValue2SizeWeight(sizeValue));
+                binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
             }
         });
@@ -141,7 +150,7 @@ public class MainActivity extends AppCompatActivity
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
                 sugarValue = progress;
-                binding.setSugarPercentage(sugarValue2SugarPercentage(sugarValue));
+                binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
             }
         });
