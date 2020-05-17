@@ -1,7 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
 
-public class MuesliEntity implements Muesli
+public class ItemEntity implements Item
 {
     // --------------------
     // Functional code
@@ -60,7 +60,7 @@ public class MuesliEntity implements Muesli
         this.sugarPercentage = sugarPercentage;
     }
 
-    public MuesliEntity(String name, int type, float spoonWeight, float sugarPercentage)
+    ItemEntity(String name, int type, float spoonWeight, float sugarPercentage)
     {
         this.name = name;
         this.type = type;

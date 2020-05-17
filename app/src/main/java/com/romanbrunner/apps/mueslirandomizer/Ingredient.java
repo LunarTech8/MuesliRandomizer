@@ -6,7 +6,8 @@ public interface Ingredient
     String getName();
     int getSpoonCount();
     float getWeight();
+    float getSugarPercentage();
 
-    void setMuesli(Muesli muesli);
+    void setItem(Item item);
     void setSpoonCount(int spoonCount);
 }

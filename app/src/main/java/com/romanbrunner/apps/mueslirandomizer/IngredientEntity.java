@@ -9,13 +9,13 @@ public class IngredientEntity implements Ingredient
     // Functional code
     // --------------------
 
-    private Muesli muesli;
+    private Item item;
     private int spoonCount;
 
     @Override
     public String getName()
     {
-        return muesli.getName();
+        return item.getName();
     }
 
     @Override
@@ -27,13 +27,19 @@ public class IngredientEntity implements Ingredient
     @Override
     public float getWeight()
     {
-        return spoonCount * muesli.getSpoonWeight();
+        return spoonCount * item.getSpoonWeight();
     }
 
     @Override
-    public void setMuesli(Muesli muesli)
+    public float getSugarPercentage()
     {
-        this.muesli = muesli;
+        return item.getSugarPercentage();
+    }
+
+    @Override
+    public void setItem(Item item)
+    {
+        this.item = item;
     }
 
     @Override
@@ -42,9 +48,9 @@ public class IngredientEntity implements Ingredient
         this.spoonCount = spoonCount;
     }
 
-    public IngredientEntity(Muesli muesli, int spoonCount)
+    IngredientEntity(Item item, int spoonCount)
     {
-        this.muesli = muesli;
+        this.item = item;
         this.spoonCount = spoonCount;
     }
 

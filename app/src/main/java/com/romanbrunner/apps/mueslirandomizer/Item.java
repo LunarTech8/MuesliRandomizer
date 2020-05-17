@@ -1,7 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
 
-public interface Muesli
+public interface Item
 {
     String getName();
     int getType();

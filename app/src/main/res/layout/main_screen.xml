@@ -8,6 +8,7 @@
     <data>
         <variable name="sizeWeight" type="Float" />
         <variable name="sugarPercentage" type="Float" />
+        <variable name="itemsCount" type="Integer" />
         <variable name="isChosenMuesliUsed" type="boolean" />
     </data>
 
@@ -84,7 +85,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:gravity="center_vertical"
                     android:text="@string/t_sugarLabel"
                     />
 
@@ -110,6 +110,49 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:text="@{@string/t_percentageText(sugarPercentage)}"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/itemsRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_row_height"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/itemsLabel"
+                    android:layout_width="@dimen/label_width"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="@string/t_itemsLabel"
+                    />
+
+                <SeekBar
+                    android:id="@+id/itemsSlider"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/comment_horizontal_margin_small"
+                    android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    app:layout_constraintStart_toEndOf="@+id/itemsLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/itemsCount"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:max="4"
+                    android:progress="1"
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    />
+
+                <TextView
+                    android:id="@+id/itemsCount"
+                    android:layout_width="@dimen/value_width"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="@{@string/t_countText(itemsCount)}"
                     />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

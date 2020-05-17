@@ -3,10 +3,13 @@
 
     <string name="t_sizeLabel">Size:</string>
     <string name="t_sugarLabel">Sugar:</string>
+    <string name="t_itemsLabel">Items:</string>
     <string name="t_spoonsText">%s Spoons</string>
     <string name="t_weightText">%s g</string>
     <string name="t_percentageText">%s \%%</string>
-    <string name="t_ingredientsLabel">Ingredients:</string>
+    <string name="t_sugarAnnotationText">(%s \%% sugar)</string>
+    <string name="t_countText">%s</string>
+    <string name="t_ingredientsLabel">Muesli ingredients:</string>
 
     <string name="t_randomizeButton">Create randomized muesli</string>
     <string name="t_useButton">Use displayed muesli</string>
