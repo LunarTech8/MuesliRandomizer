@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity
         adapter = new RecyclerViewAdapter();
         binding.ingredients.setAdapter(adapter);
         binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
+        binding.setIsAvailabilityBoxMinimized(true);
         binding.setIsChosenMuesliUsed(true);
 
         List<ItemEntity> fillerItems = new LinkedList<>();

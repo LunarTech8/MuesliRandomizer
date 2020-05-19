@@ -6,6 +6,7 @@
     >
 
     <data>
+        <variable name="isAvailabilityBoxMinimized" type="boolean" />
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
         <variable name="itemsCount" type="Integer" />
@@ -21,11 +22,40 @@
         >
 
         <LinearLayout
+            android:id="@+id/availabilityBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/item_horizontal_margin"
+            android:orientation="vertical"
+            android:background="@drawable/border_medium"
+            android:padding="@dimen/comment_padding"
+            >
+
+            <Button
+                android:id="@+id/availabilityButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/t_availabilityButton"
+                android:textAllCaps="false"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/availableItems"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/availability_recycler_height"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ingredientsLabel"
+                app:layout_constraintBottom_toTopOf="@+id/useButton"
+                app:layoutManager="LinearLayoutManager"
+                app:visibleGone="@{!isAvailabilityBoxMinimized}"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/settingsBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/item_horizontal_margin"
-            android:layout_marginEnd="@dimen/item_horizontal_margin"
             android:layout_marginBottom="@dimen/item_horizontal_margin"
             android:orientation="vertical"
             android:background="@drawable/border_medium"
@@ -171,8 +201,6 @@
             android:id="@+id/ingredientsBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/item_horizontal_margin"
-            android:layout_marginEnd="@dimen/item_horizontal_margin"
             android:orientation="vertical"
             android:background="@drawable/border_medium"
             >
@@ -180,7 +208,7 @@
             <TextView
                 android:id="@+id/ingredientsLabel"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/ingredient_row_height"
+                android:layout_height="@dimen/ingredients_label_height"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginStart="@dimen/item_horizontal_margin"

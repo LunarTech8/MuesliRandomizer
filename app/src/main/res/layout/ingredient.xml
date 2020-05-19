@@ -11,7 +11,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/ingredient_row_height"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/item_horizontal_margin"
         android:layout_marginEnd="@dimen/item_horizontal_margin"
         card_view:cardBackgroundColor="#00000000"
@@ -22,44 +22,26 @@
         <LinearLayout
             android:id="@+id/dataRow"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/item_horizontal_margin"
+            android:layout_marginBottom="@dimen/item_horizontal_margin"
+            android:orientation="vertical"
             >
 
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/comment_horizontal_margin_large"
                 android:text="@{ingredient.name}"
-                android:gravity="center_vertical"
                 />
 
             <TextView
-                android:id="@+id/spoons"
+                android:id="@+id/data"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/comment_horizontal_margin_large"
-                android:text="@{@string/t_spoonsText(ingredient.spoonCount)}"
-                android:gravity="center_vertical"
-                />
-
-            <TextView
-                android:id="@+id/weight"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/comment_horizontal_margin_large"
-                android:text="@{@string/t_weightText(ingredient.weight)}"
-                android:gravity="center_vertical"
-                />
-
-            <TextView
-                android:id="@+id/sugar"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/comment_horizontal_margin_large"
-                android:text="@{@string/t_sugarAnnotationText(ingredient.sugarPercentage)}"
-                android:gravity="center_vertical"
+                android:text="@{@string/t_muesliDataText(ingredient.spoonCount, ingredient.weight, ingredient.sugarPercentage)}"
                 />
 
         </LinearLayout>
