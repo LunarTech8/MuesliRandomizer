@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity
     // --------------------
 
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;
-    private final static int MAX_RANDOMIZE_TRIES = 1000;
+    private final static int MAX_RANDOMIZE_TRIES = 1024;
 
     private static void addDefaultFillerItemsToList(List<ItemEntity> muesliList)
     {
@@ -106,11 +106,14 @@ public class MainActivity extends AppCompatActivity
         binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
         binding.setIsAvailabilityBoxMinimized(true);
         binding.setIsChosenMuesliUsed(true);
+        binding.setIsInvalidSettings(false);
+        binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
 
         List<ItemEntity> fillerItems = new LinkedList<>();
         List<ItemEntity> selectableItems = new LinkedList<>();
         List<ItemEntity> chosenItems = new ArrayList<>(binding.itemsSlider.getMax() + 1);
         List<ItemEntity> usedItems = new LinkedList<>();
+        List<ItemEntity> priorityChoosing = new ArrayList<>(binding.itemsSlider.getMax() + 1);
         addDefaultFillerItemsToList(fillerItems);
         addDefaultRegularItemsToList(selectableItems);
         if (getLowestValue(selectableItems, ItemEntity::getSugarPercentage) <= getLowestValue(fillerItems, ItemEntity::getSugarPercentage)) throw new AssertionError("sugar percentage of all filler items has to be lower than that of regular items");
@@ -180,6 +183,8 @@ public class MainActivity extends AppCompatActivity
             // Return used items back to the selectable pool if necessary:
             if (selectableItems.size() + chosenItems.size() < regularItemsCount)
             {
+                priorityChoosing.addAll(selectableItems);
+                priorityChoosing.addAll(chosenItems);
                 selectableItems.addAll(usedItems);
                 usedItems.clear();
             }
@@ -194,9 +199,11 @@ public class MainActivity extends AppCompatActivity
             int fullResetTryCounter = 0;
             while (fullResetTryCounter <= 1)
             {
+                Log.d("onCreate", "------------------------");  // DEBUG:
                 Log.d("onCreate", "selectableItems count: " + selectableItems.size());  // DEBUG:
                 Log.d("onCreate", "chosenItems count: " + chosenItems.size());  // DEBUG:
                 Log.d("onCreate", "usedItems count: " + usedItems.size());  // DEBUG:
+                Log.d("onCreate", "priorityChoosing count: " + priorityChoosing.size());  // DEBUG:
                 for (int tryCounter = 0; tryCounter < MAX_RANDOMIZE_TRIES; tryCounter++)
                 {
                     // Return chosen items back to the selectable pool if necessary:
@@ -206,10 +213,11 @@ public class MainActivity extends AppCompatActivity
                         chosenItems.clear();
                     }
 
-                    // Chose items for muesli at random:
-                    for (int i = 0; i < regularItemsCount; i++)
+                    // Chose items for muesli:
+                    chosenItems.addAll(priorityChoosing);
+                    selectableItems.removeAll(priorityChoosing);
+                    for (int i = 0; i < regularItemsCount - priorityChoosing.size(); i++)
                     {
-                        // FIXME: with many items and low size selectableItems.size() gets negative or zero, should not happen
                         chosenItems.add(selectableItems.remove(random.nextInt(selectableItems.size())));
                     }
                     ItemEntity fillerItem = fillerItems.get(random.nextInt(fillerItems.size()));
@@ -225,6 +233,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         item = chosenItems.get(i);
                         spoonCount = Math.round(targetWeight / (item.getSpoonWeight() * (regularItemsCount + FILLER_INGREDIENT_RATIO)));
+                        spoonCount = Math.max(spoonCount, 1);
                         totalWeight += spoonCount * item.getSpoonWeight();
                         totalSugar += spoonCount * item.getSpoonWeight() * (item.getSugarPercentage() - fillerItem.getSugarPercentage());
                         ingredients.add(new IngredientEntity(item, spoonCount));
@@ -248,18 +257,21 @@ public class MainActivity extends AppCompatActivity
                     Log.d("onCreate", "tryCounter: " + tryCounter);  // DEBUG:
                     adapter.setIngredients(ingredients);
                     binding.setIsChosenMuesliUsed(false);
+                    binding.setIsInvalidSettings(false);
                     binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                     return;
                 }
-                // Return used and chosen items back to the selectable pool:
+                // Return used and chosen items back to the selectable pool and reset priority choosing:
                 selectableItems.addAll(usedItems);
-                chosenItems.addAll(usedItems);
                 usedItems.clear();
+                selectableItems.addAll(chosenItems);
                 chosenItems.clear();
+                priorityChoosing.clear();
                 Log.i("onCreate", "cannot find valid mix with selectable items, retrying with full reset");
                 fullResetTryCounter += 1;
             }
-            Log.e("onCreate", "cannot find valid mix with all items for given settings");
+            binding.setIsInvalidSettings(true);
+            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
         binding.useButton.setOnClickListener((View view) ->
         {
@@ -268,9 +280,10 @@ public class MainActivity extends AppCompatActivity
                 Log.e("onCreate", "chosenItems is empty");
             }
 
-            // Move chosen items to used pool:
+            // Move chosen items to used pool and reset priority choosing:
             usedItems.addAll(chosenItems);
             chosenItems.clear();
+            priorityChoosing.clear();
 
             // Adjust use button:
             binding.setIsChosenMuesliUsed(true);

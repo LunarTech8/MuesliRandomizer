@@ -4,11 +4,12 @@
     <string name="t_sizeLabel">Size:</string>
     <string name="t_sugarLabel">Sugar:</string>
     <string name="t_itemsLabel">Items:</string>
-    <string name="t_ingredientsLabel">Muesli ingredients:</string>
+    <string name="t_ingredientsLabel"><u>Muesli ingredients:</u></string>
+    <string name="t_invalidSettingsLabel">Cannot find valid muesli mix for given settings.\nChange settings and retry.</string>
 
     <string name="t_weightText">%s g</string>
     <string name="t_percentageText">%s \%%</string>
-    <string name="t_countText">%s</string>
+    <string name="t_countText">%s (+1)</string>
     <string name="t_muesliDataText">%s Spoon(s) / %s g (%s \%% sugar)</string>
 
     <string name="t_availabilityButton">Adjust muesli availability</string>
