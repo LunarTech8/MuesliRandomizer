@@ -1,6 +1,13 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 public class ItemEntity implements Item
 {
     // --------------------
@@ -80,5 +87,51 @@ public class ItemEntity implements Item
         this.type = type;
         this.spoonWeight = spoonWeight;
         this.sugarPercentage = sugarPercentage;
+    }
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    ItemEntity(byte[] dataBytes) throws IOException
+    {
+        byte[] bytes;
+        ByteArrayInputStream dataInputStream = new ByteArrayInputStream(dataBytes);
+
+        bytes = new byte[dataInputStream.read()];
+        dataInputStream.read(bytes);
+        name = new String(bytes, StandardCharsets.UTF_8);
+
+        bytes = new byte[dataInputStream.read()];
+        dataInputStream.read(bytes);
+        brand = new String(bytes, StandardCharsets.UTF_8);
+
+        type = dataInputStream.read();
+
+        bytes = new byte[4];
+        dataInputStream.read(bytes);
+        spoonWeight = ByteBuffer.wrap(bytes).getFloat();
+
+        bytes = new byte[4];
+        dataInputStream.read(bytes);
+        sugarPercentage = ByteBuffer.wrap(bytes).getFloat();
+    }
+
+    byte[] toByteArray() throws IOException
+    {
+        byte[] bytes;
+        ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
+
+        bytes = name.getBytes(StandardCharsets.UTF_8);
+        dataOutputStream.write(bytes.length);
+        dataOutputStream.write(bytes);
+
+        bytes = brand.getBytes(StandardCharsets.UTF_8);
+        dataOutputStream.write(bytes.length);
+        dataOutputStream.write(bytes);
+
+        dataOutputStream.write(type);
+
+        dataOutputStream.write(ByteBuffer.allocate(4).putFloat(spoonWeight).array());
+
+        dataOutputStream.write(ByteBuffer.allocate(4).putFloat(sugarPercentage).array());
+
+        return dataOutputStream.toByteArray();
     }
 }

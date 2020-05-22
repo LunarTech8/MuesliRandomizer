@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +12,12 @@ import android.widget.SeekBar;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -27,34 +33,37 @@ public class MainActivity extends AppCompatActivity
 
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
+    private final static String ITEMS_FILENAME = "AllItems";
+    private final static int ITEM_TYPE_FILLER = 0;
+    private final static int ITEM_TYPE_SELECTABLE_REGULAR = 1;
+    private final static int ITEM_TYPE_USED_REGULAR = 2;
 
-    private static void addDefaultFillerItemsToList(List<ItemEntity> muesliList)
+    private static void addDefaultItemsToList(List<ItemEntity> itemList)
     {
-        // Very low sugar muesli:
-        muesliList.add(new ItemEntity("Echte Kölln Kernige", "Kölln", 0, 8F, 0.012F));
-    }
+        // Very low sugar filler muesli:
+        itemList.add(new ItemEntity("Echte Kölln Kernige", "Kölln", ITEM_TYPE_FILLER, 8F, 0.012F));
 
-    private static void addDefaultRegularItemsToList(List<ItemEntity> muesliList)
-    {
-        // Low sugar muesli:
-        muesliList.add(new ItemEntity("Nuss & Krokant", "Kölln", 1, 9.5F, 0.077F));
-        // Medium sugar muesli:
-        muesliList.add(new ItemEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", 1, 10.5F, 0.14F));
-        muesliList.add(new ItemEntity("Schokomüsli Feinherb", "Vitalis", 1, 9.5F, 0.15F));
-        muesliList.add(new ItemEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", 1, 9F, 0.13F));
-        muesliList.add(new ItemEntity("Schoko 30% weniger Zucker", "Kölln", 1, 10F, 0.13F));
-        // High sugar muesli:
-        muesliList.add(new ItemEntity("Nesquik Knusper-Müsli", "Nestle", 1, 8F, 0.21F));
-        muesliList.add(new ItemEntity("Crunchy Müsli Red Berries", "Kellogg", 1, 9.5F, 0.22F));
-        muesliList.add(new ItemEntity("Knuspermüsli Nuss-Nougat", "Vitalis", 1, 11.5F, 0.25F));
-        muesliList.add(new ItemEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", 1, 13.5F, 0.2F));
-        muesliList.add(new ItemEntity("Knusper Beere & Schoko", "Kölln", 1, 11.5F, 0.24F));
-        muesliList.add(new ItemEntity("Knusper Schoko-Krokant", "Kölln", 1, 11.5F, 0.22F));
-        muesliList.add(new ItemEntity("Knusper Schoko & Kaffee", "Kölln", 1, 12F, 0.22F));
-        muesliList.add(new ItemEntity("Knusper Schoko & Keks", "Kölln", 1, 11.5F, 0.21F));
-        muesliList.add(new ItemEntity("Knusper Joghurt-Honig", "Kölln", 1, 11F, 0.2F));
-        muesliList.add(new ItemEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", 1, 12F, 0.2F));
-        muesliList.add(new ItemEntity("Porridge Dreierlei Beere", "3 Bears", 1, 12.5F, 0.22F));
+        // Low sugar regular muesli:
+        itemList.add(new ItemEntity("Nuss & Krokant", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 9.5F, 0.077F));
+        // Medium sugar regular muesli:
+        itemList.add(new ItemEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", ITEM_TYPE_SELECTABLE_REGULAR, 10.5F, 0.14F));
+        itemList.add(new ItemEntity("Schokomüsli Feinherb", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 9.5F, 0.15F));
+        itemList.add(new ItemEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 9F, 0.13F));
+        itemList.add(new ItemEntity("Schoko 30% weniger Zucker", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 10F, 0.13F));
+        // High sugar regular muesli:
+        itemList.add(new ItemEntity("Nesquik Knusper-Müsli", "Nestle", ITEM_TYPE_SELECTABLE_REGULAR, 8F, 0.21F));
+        itemList.add(new ItemEntity("Crunchy Müsli Red Berries", "Kellogg", ITEM_TYPE_SELECTABLE_REGULAR, 9.5F, 0.22F));
+        itemList.add(new ItemEntity("Knuspermüsli Nuss-Nougat", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.25F));
+        itemList.add(new ItemEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 13.5F, 0.2F));
+        itemList.add(new ItemEntity("Knusper Beere & Schoko", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.24F));
+        itemList.add(new ItemEntity("Knusper Schoko-Krokant", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.22F));
+        itemList.add(new ItemEntity("Knusper Schoko & Kaffee", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 12F, 0.22F));
+        itemList.add(new ItemEntity("Knusper Schoko & Keks", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.21F));
+        itemList.add(new ItemEntity("Knusper Joghurt-Honig", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
+        itemList.add(new ItemEntity("Knusprige Haferkissen Zimt", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 4.5F, 0.2F));
+        itemList.add(new ItemEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 12F, 0.2F));
+        itemList.add(new ItemEntity("Porridge Dreierlei Beere", "3 Bears", ITEM_TYPE_SELECTABLE_REGULAR, 12.5F, 0.22F));
+        itemList.add(new ItemEntity("Porridge Zimtiger Apfel", "3 Bears", ITEM_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
     }
 
     private static float sizeValue2SizeWeight(int sizeValue)
@@ -79,6 +88,7 @@ public class MainActivity extends AppCompatActivity
 
     private RecyclerViewAdapter adapter;
     private MainScreenBinding binding;
+    private List<ItemEntity> allItems = new LinkedList<>();
     private int sizeValue;
     private int sugarValue;
     private int itemsValue;
@@ -93,39 +103,82 @@ public class MainActivity extends AppCompatActivity
         return lowestValue;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
         Random random = new Random();
-
-        // Setup recycle view adapter:
-        adapter = new RecyclerViewAdapter();
-        binding.ingredients.setAdapter(adapter);
-        binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
-        binding.setIsAvailabilityBoxMinimized(true);
-        binding.setIsChosenMuesliUsed(true);
-        binding.setIsInvalidSettings(false);
-        binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
-
         List<ItemEntity> fillerItems = new LinkedList<>();
         List<ItemEntity> selectableItems = new LinkedList<>();
         List<ItemEntity> chosenItems = new ArrayList<>(binding.itemsSlider.getMax() + 1);
         List<ItemEntity> usedItems = new LinkedList<>();
         List<ItemEntity> priorityChoosing = new ArrayList<>(binding.itemsSlider.getMax() + 1);
-        addDefaultFillerItemsToList(fillerItems);
-        addDefaultRegularItemsToList(selectableItems);
+
+        // Setup recycle view adapter:
+        adapter = new RecyclerViewAdapter();
+        binding.ingredients.setAdapter(adapter);
+        binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
+
+        // Load/create items and add them to the appropriate lists:
+        try
+        {
+            Context context = getApplicationContext();
+            List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
+            if (fileNames.contains(ITEMS_FILENAME))
+            {
+                byte[] bytes;
+                FileInputStream fileInputStream = context.openFileInput(ITEMS_FILENAME);
+                int length;
+                while ((length = fileInputStream.read()) != -1)
+                {
+                    bytes = new byte[length];
+                    fileInputStream.read(bytes);
+                    allItems.add(new ItemEntity(bytes));
+                }
+            }
+            else
+            {
+                addDefaultItemsToList(allItems);
+            }
+            for (ItemEntity item: allItems)
+            {
+                switch (item.getType())
+                {
+                    case ITEM_TYPE_FILLER:
+                        fillerItems.add(item);
+                        break;
+                    case ITEM_TYPE_SELECTABLE_REGULAR:
+                        selectableItems.add(item);
+                        break;
+                    case ITEM_TYPE_USED_REGULAR:
+                        usedItems.add(item);
+                        break;
+                    default:
+                        Log.e("onDestroy", "unrecognized item type");
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         if (getLowestValue(selectableItems, ItemEntity::getSugarPercentage) <= getLowestValue(fillerItems, ItemEntity::getSugarPercentage)) throw new AssertionError("sugar percentage of all filler items has to be lower than that of regular items");
 
+        // Init layout variables:
         sizeValue = binding.sizeSlider.getProgress();
         sugarValue = binding.sugarSlider.getProgress();
         itemsValue = binding.itemsSlider.getProgress();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setItemsCount(itemsValue2ItemsCount(itemsValue));
+        binding.setIsAvailabilityBoxMinimized(true);
+        binding.setIsChosenMuesliUsed(true);
+        binding.setIsInvalidSettings(false);
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
 
+        // Create slider and button listeners:
         binding.sizeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
             @Override
@@ -185,6 +238,7 @@ public class MainActivity extends AppCompatActivity
             {
                 priorityChoosing.addAll(selectableItems);
                 priorityChoosing.addAll(chosenItems);
+                usedItems.forEach((ItemEntity item) -> item.setType(ITEM_TYPE_SELECTABLE_REGULAR));
                 selectableItems.addAll(usedItems);
                 usedItems.clear();
             }
@@ -262,6 +316,7 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
                 // Return used and chosen items back to the selectable pool and reset priority choosing:
+                usedItems.forEach((ItemEntity item) -> item.setType(ITEM_TYPE_SELECTABLE_REGULAR));
                 selectableItems.addAll(usedItems);
                 usedItems.clear();
                 selectableItems.addAll(chosenItems);
@@ -281,6 +336,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Move chosen items to used pool and reset priority choosing:
+            chosenItems.forEach((ItemEntity item) -> item.setType(ITEM_TYPE_USED_REGULAR));
             usedItems.addAll(chosenItems);
             chosenItems.clear();
             priorityChoosing.clear();
@@ -289,5 +345,34 @@ public class MainActivity extends AppCompatActivity
             binding.setIsChosenMuesliUsed(true);
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        // Store items:
+        try
+        {
+            byte[] bytes;
+            ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
+            for (ItemEntity item: allItems)
+            {
+                bytes = item.toByteArray();
+                dataOutputStream.write(bytes.length);
+                dataOutputStream.write(bytes);
+
+                if (bytes.length > 255)
+                {
+                    Log.e("onDestroy", "data size of an Item is too big, consider limiting allowed string sizes or use two bytes for data size");
+                }
+            }
+            FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ITEMS_FILENAME, Context.MODE_PRIVATE);
+            fileOutputStream.write(dataOutputStream.toByteArray());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

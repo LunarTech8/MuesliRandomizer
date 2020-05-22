@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/comment_horizontal_margin_large"
-                android:text="@{ingredient.name}"
+                android:text="@{@string/t_muesliNameText(ingredient.brand, ingredient.name)}"
                 />
 
             <TextView

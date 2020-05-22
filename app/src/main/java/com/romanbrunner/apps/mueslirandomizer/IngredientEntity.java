@@ -19,6 +19,12 @@ public class IngredientEntity implements Ingredient
     }
 
     @Override
+    public String getBrand()
+    {
+        return item.getBrand();
+    }
+
+    @Override
     public int getSpoonCount()
     {
         return spoonCount;
