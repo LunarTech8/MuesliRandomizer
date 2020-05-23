@@ -1,7 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
-
 import java.util.Objects;
+
 
 public class IngredientEntity implements Ingredient
 {
@@ -9,19 +9,19 @@ public class IngredientEntity implements Ingredient
     // Functional code
     // --------------------
 
-    private Item item;
+    private Article article;
     private int spoonCount;
 
     @Override
     public String getName()
     {
-        return item.getName();
+        return article.getName();
     }
 
     @Override
     public String getBrand()
     {
-        return item.getBrand();
+        return article.getBrand();
     }
 
     @Override
@@ -33,19 +33,19 @@ public class IngredientEntity implements Ingredient
     @Override
     public float getWeight()
     {
-        return spoonCount * item.getSpoonWeight();
+        return spoonCount * article.getSpoonWeight();
     }
 
     @Override
     public float getSugarPercentage()
     {
-        return 100 * item.getSugarPercentage();
+        return 100 * article.getSugarPercentage();
     }
 
     @Override
-    public void setItem(Item item)
+    public void setArticle(Article article)
     {
-        this.item = item;
+        this.article = article;
     }
 
     @Override
@@ -54,15 +54,15 @@ public class IngredientEntity implements Ingredient
         this.spoonCount = spoonCount;
     }
 
-    IngredientEntity(Item item, int spoonCount)
+    IngredientEntity(Article article, int spoonCount)
     {
-        this.item = item;
+        this.article = article;
         this.spoonCount = spoonCount;
     }
 
     static boolean isContentTheSame(Ingredient ingredientA, Ingredient ingredientB)
     {
         return Objects.equals(ingredientA.getName(), ingredientB.getName())
-                && ingredientA.getSpoonCount() == ingredientB.getSpoonCount();
+            && ingredientA.getSpoonCount() == ingredientB.getSpoonCount();
     }
 }

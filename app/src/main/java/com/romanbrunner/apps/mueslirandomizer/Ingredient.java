@@ -9,6 +9,6 @@ public interface Ingredient
     float getWeight();
     float getSugarPercentage();
 
-    void setItem(Item item);
+    void setArticle(Article article);
     void setSpoonCount(int spoonCount);
 }

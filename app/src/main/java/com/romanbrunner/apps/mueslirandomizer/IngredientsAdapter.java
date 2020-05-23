@@ -13,7 +13,7 @@ import com.romanbrunner.apps.mueslirandomizer.databinding.IngredientBinding;
 import java.util.List;
 
 
-class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.EntryViewHolder>
+class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryViewHolder>
 {
     // --------------------
     // Functional code
@@ -32,9 +32,51 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.Entry
         }
     }
 
-    RecyclerViewAdapter()
+    IngredientsAdapter()
     {
         ingredients = null;
+    }
+
+    void setIngredients(@NonNull final List<? extends Ingredient> ingredients)
+    {
+        if (this.ingredients == null)
+        {
+            // Add all entries:
+            this.ingredients = ingredients;
+            notifyItemRangeInserted(0, ingredients.size());
+        }
+        else
+        {
+            // Update changed entries:
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback()
+            {
+                @Override
+                public int getOldListSize()
+                {
+                    return IngredientsAdapter.this.ingredients.size();
+                }
+
+                @Override
+                public int getNewListSize()
+                {
+                    return ingredients.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition)
+                {
+                    return IngredientsAdapter.this.ingredients.get(oldItemPosition).getName().equals(ingredients.get(newItemPosition).getName());
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition)
+                {
+                    return IngredientEntity.isContentTheSame(ingredients.get(newItemPosition), IngredientsAdapter.this.ingredients.get(oldItemPosition));
+                }
+            });
+            this.ingredients = ingredients;
+            result.dispatchUpdatesTo(this);
+        }
     }
 
     @Override
@@ -70,47 +112,5 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.Entry
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView)
     {
         super.onAttachedToRecyclerView(recyclerView);
-    }
-
-    public void setIngredients(@NonNull final List<? extends Ingredient> ingredients)
-    {
-        if (this.ingredients == null)
-        {
-            // Add all entries:
-            this.ingredients = ingredients;
-            notifyItemRangeInserted(0, ingredients.size());
-        }
-        else
-        {
-            // Update changed entries:
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback()
-            {
-                @Override
-                public int getOldListSize()
-                {
-                    return RecyclerViewAdapter.this.ingredients.size();
-                }
-
-                @Override
-                public int getNewListSize()
-                {
-                    return ingredients.size();
-                }
-
-                @Override
-                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition)
-                {
-                    return RecyclerViewAdapter.this.ingredients.get(oldItemPosition).getName().equals(ingredients.get(newItemPosition).getName());
-                }
-
-                @Override
-                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition)
-                {
-                    return IngredientEntity.isContentTheSame(ingredients.get(newItemPosition), RecyclerViewAdapter.this.ingredients.get(oldItemPosition));
-                }
-            });
-            this.ingredients = ingredients;
-            result.dispatchUpdatesTo(this);
-        }
     }
 }

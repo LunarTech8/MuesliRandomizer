@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -33,37 +34,37 @@ public class MainActivity extends AppCompatActivity
 
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
-    private final static String ITEMS_FILENAME = "AllItems";
-    private final static int ITEM_TYPE_FILLER = 0;
-    private final static int ITEM_TYPE_SELECTABLE_REGULAR = 1;
-    private final static int ITEM_TYPE_USED_REGULAR = 2;
+    private final static String ARTICLES_FILENAME = "AllArticles";
+    private final static int ARTICLE_TYPE_FILLER = 0;
+    private final static int ARTICLE_TYPE_SELECTABLE_REGULAR = 1;
+    private final static int ARTICLE_TYPE_USED_REGULAR = 2;
 
-    private static void addDefaultItemsToList(List<ItemEntity> itemList)
+    private static void addDefaultArticlesToList(List<ArticleEntity> articleList)
     {
         // Very low sugar filler muesli:
-        itemList.add(new ItemEntity("Echte Kölln Kernige", "Kölln", ITEM_TYPE_FILLER, 8F, 0.012F));
+        articleList.add(new ArticleEntity("Echte Kölln Kernige", "Kölln", ARTICLE_TYPE_FILLER, 8F, 0.012F));
 
         // Low sugar regular muesli:
-        itemList.add(new ItemEntity("Nuss & Krokant", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 9.5F, 0.077F));
+        articleList.add(new ArticleEntity("Nuss & Krokant", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 9.5F, 0.077F));
         // Medium sugar regular muesli:
-        itemList.add(new ItemEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", ITEM_TYPE_SELECTABLE_REGULAR, 10.5F, 0.14F));
-        itemList.add(new ItemEntity("Schokomüsli Feinherb", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 9.5F, 0.15F));
-        itemList.add(new ItemEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 9F, 0.13F));
-        itemList.add(new ItemEntity("Schoko 30% weniger Zucker", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 10F, 0.13F));
+        articleList.add(new ArticleEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", ARTICLE_TYPE_SELECTABLE_REGULAR, 10.5F, 0.14F));
+        articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 9.5F, 0.15F));
+        articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 9F, 0.13F));
+        articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 10F, 0.13F));
         // High sugar regular muesli:
-        itemList.add(new ItemEntity("Nesquik Knusper-Müsli", "Nestle", ITEM_TYPE_SELECTABLE_REGULAR, 8F, 0.21F));
-        itemList.add(new ItemEntity("Crunchy Müsli Red Berries", "Kellogg", ITEM_TYPE_SELECTABLE_REGULAR, 9.5F, 0.22F));
-        itemList.add(new ItemEntity("Knuspermüsli Nuss-Nougat", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.25F));
-        itemList.add(new ItemEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", ITEM_TYPE_SELECTABLE_REGULAR, 13.5F, 0.2F));
-        itemList.add(new ItemEntity("Knusper Beere & Schoko", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.24F));
-        itemList.add(new ItemEntity("Knusper Schoko-Krokant", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.22F));
-        itemList.add(new ItemEntity("Knusper Schoko & Kaffee", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 12F, 0.22F));
-        itemList.add(new ItemEntity("Knusper Schoko & Keks", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11.5F, 0.21F));
-        itemList.add(new ItemEntity("Knusper Joghurt-Honig", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
-        itemList.add(new ItemEntity("Knusprige Haferkissen Zimt", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 4.5F, 0.2F));
-        itemList.add(new ItemEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", ITEM_TYPE_SELECTABLE_REGULAR, 12F, 0.2F));
-        itemList.add(new ItemEntity("Porridge Dreierlei Beere", "3 Bears", ITEM_TYPE_SELECTABLE_REGULAR, 12.5F, 0.22F));
-        itemList.add(new ItemEntity("Porridge Zimtiger Apfel", "3 Bears", ITEM_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
+        articleList.add(new ArticleEntity("Nesquik Knusper-Müsli", "Nestle", ARTICLE_TYPE_SELECTABLE_REGULAR, 8F, 0.21F));
+        articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", ARTICLE_TYPE_SELECTABLE_REGULAR, 9.5F, 0.22F));
+        articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.25F));
+        articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 13.5F, 0.2F));
+        articleList.add(new ArticleEntity("Knusper Beere & Schoko", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.24F));
+        articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.22F));
+        articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 12F, 0.22F));
+        articleList.add(new ArticleEntity("Knusper Schoko & Keks", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.21F));
+        articleList.add(new ArticleEntity("Knusper Joghurt-Honig", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
+        articleList.add(new ArticleEntity("Knusprige Haferkissen Zimt", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 4.5F, 0.2F));
+        articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 12F, 0.2F));
+        articleList.add(new ArticleEntity("Porridge Dreierlei Beere", "3 Bears", ARTICLE_TYPE_SELECTABLE_REGULAR, 12.5F, 0.22F));
+        articleList.add(new ArticleEntity("Porridge Zimtiger Apfel", "3 Bears", ARTICLE_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
     }
 
     private static float sizeValue2SizeWeight(int sizeValue)
@@ -76,9 +77,9 @@ public class MainActivity extends AppCompatActivity
         return 0.1F + 0.025F * sugarValue;
     }
 
-    private static int itemsValue2ItemsCount(int itemsValue)
+    private static int articlesValue2ArticlesCount(int articlesValue)
     {
-        return itemsValue + 1;
+        return articlesValue + 1;
     }
 
 
@@ -86,14 +87,18 @@ public class MainActivity extends AppCompatActivity
     // Functional code
     // --------------------
 
-    private RecyclerViewAdapter adapter;
+    private IngredientsAdapter ingredientsAdapter;
+    private ArticlesAdapter availableArticlesAdapter;
     private MainScreenBinding binding;
-    private List<ItemEntity> allItems = new LinkedList<>();
+    private List<ArticleEntity> allArticles = new LinkedList<>();
+    private List<ArticleEntity> fillerArticles = new LinkedList<>();
+    private List<ArticleEntity> selectableArticles = new LinkedList<>();
+    private List<ArticleEntity> usedArticles = new LinkedList<>();
     private int sizeValue;
     private int sugarValue;
-    private int itemsValue;
+    private int articlesValue;
 
-    private <T> float getLowestValue(List<T> list, Function<T, Float> getter)
+    private static <T> float getLowestValue(List<T> list, Function<T, Float> getter)
     {
         float lowestValue = getter.apply(list.get(0));
         for (int i = 1; i < list.size(); i++)
@@ -103,76 +108,108 @@ public class MainActivity extends AppCompatActivity
         return lowestValue;
     }
 
+    private static  <T> void removeNonIntersectingElements(List<T> targetList, List<T> checkList)
+    {
+        Iterator<T> iterator = targetList.iterator();
+        while (iterator.hasNext())
+        {
+            if (!checkList.contains(iterator.next()))
+            {
+                iterator.remove();
+            }
+        }
+    }
+
+    private List<ArticleEntity> getAvailableArticles()
+    {
+        List<ArticleEntity> availableArticles = new LinkedList<>();
+        for (ArticleEntity article: allArticles)
+        {
+            if (article.isAvailable())
+            {
+                availableArticles.add(article);
+            }
+        }
+        return availableArticles;
+    }
+
+    private void addToArticleListsBasedOnType(List<ArticleEntity> articles)
+    {
+        for (ArticleEntity article: articles)
+        {
+            switch (article.getType())
+            {
+                case ARTICLE_TYPE_FILLER:
+                    fillerArticles.add(article);
+                    break;
+                case ARTICLE_TYPE_SELECTABLE_REGULAR:
+                    selectableArticles.add(article);
+                    break;
+                case ARTICLE_TYPE_USED_REGULAR:
+                    usedArticles.add(article);
+                    break;
+                default:
+                    Log.e("onDestroy", "unrecognized article type");
+            }
+        }
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Context context = getApplicationContext();
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
         Random random = new Random();
-        List<ItemEntity> fillerItems = new LinkedList<>();
-        List<ItemEntity> selectableItems = new LinkedList<>();
-        List<ItemEntity> chosenItems = new ArrayList<>(binding.itemsSlider.getMax() + 1);
-        List<ItemEntity> usedItems = new LinkedList<>();
-        List<ItemEntity> priorityChoosing = new ArrayList<>(binding.itemsSlider.getMax() + 1);
+        final int maxRegularArticlesCount = context.getResources().getInteger(R.integer.articleSliderMax) + 1;
+        List<ArticleEntity> chosenArticles = new ArrayList<>(maxRegularArticlesCount);
+        List<ArticleEntity> priorityChoosing = new ArrayList<>(maxRegularArticlesCount);
 
-        // Setup recycle view adapter:
-        adapter = new RecyclerViewAdapter();
-        binding.ingredients.setAdapter(adapter);
+        // Setup recycle view adapters:
+        ingredientsAdapter = new IngredientsAdapter();
+        binding.ingredients.setAdapter(ingredientsAdapter);
         binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
+        availableArticlesAdapter = new ArticlesAdapter();
+        binding.availableArticles.setAdapter(availableArticlesAdapter);
+        binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
 
-        // Load/create items and add them to the appropriate lists:
+        // Load/create articles and add them to the appropriate lists:
         try
         {
-            Context context = getApplicationContext();
             List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
-            if (fileNames.contains(ITEMS_FILENAME))
+            if (fileNames.contains(ARTICLES_FILENAME))
             {
                 byte[] bytes;
-                FileInputStream fileInputStream = context.openFileInput(ITEMS_FILENAME);
+                FileInputStream fileInputStream = context.openFileInput(ARTICLES_FILENAME);
                 int length;
                 while ((length = fileInputStream.read()) != -1)
                 {
                     bytes = new byte[length];
                     fileInputStream.read(bytes);
-                    allItems.add(new ItemEntity(bytes));
+                    allArticles.add(new ArticleEntity(bytes));
                 }
             }
             else
             {
-                addDefaultItemsToList(allItems);
+                addDefaultArticlesToList(allArticles);
             }
-            for (ItemEntity item: allItems)
-            {
-                switch (item.getType())
-                {
-                    case ITEM_TYPE_FILLER:
-                        fillerItems.add(item);
-                        break;
-                    case ITEM_TYPE_SELECTABLE_REGULAR:
-                        selectableItems.add(item);
-                        break;
-                    case ITEM_TYPE_USED_REGULAR:
-                        usedItems.add(item);
-                        break;
-                    default:
-                        Log.e("onDestroy", "unrecognized item type");
-                }
-            }
+            availableArticlesAdapter.setArticles(allArticles);
+            addToArticleListsBasedOnType(allArticles);
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
-        if (getLowestValue(selectableItems, ItemEntity::getSugarPercentage) <= getLowestValue(fillerItems, ItemEntity::getSugarPercentage)) throw new AssertionError("sugar percentage of all filler items has to be lower than that of regular items");
+        if (getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("sugar percentage of all filler articles has to be lower than that of regular articles");
 
         // Init layout variables:
         sizeValue = binding.sizeSlider.getProgress();
         sugarValue = binding.sugarSlider.getProgress();
-        itemsValue = binding.itemsSlider.getProgress();
+        articlesValue = binding.articlesSlider.getProgress();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
-        binding.setItemsCount(itemsValue2ItemsCount(itemsValue));
+        binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
         binding.setIsAvailabilityBoxMinimized(true);
         binding.setIsChosenMuesliUsed(true);
         binding.setIsInvalidSettings(false);
@@ -211,7 +248,7 @@ public class MainActivity extends AppCompatActivity
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
             }
         });
-        binding.itemsSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        binding.articlesSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
@@ -222,107 +259,124 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
-                itemsValue = progress;
-                binding.setItemsCount(itemsValue2ItemsCount(itemsValue));
+                articlesValue = progress;
+                binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
             }
         });
         binding.randomizeButton.setOnClickListener((View view) ->
         {
-            final int regularItemsCount = itemsValue2ItemsCount(itemsValue);
+            final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
             final float targetWeight = sizeValue2SizeWeight(sizeValue);
             final float targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
 
-            // Return used items back to the selectable pool if necessary:
-            if (selectableItems.size() + chosenItems.size() < regularItemsCount)
+            // Update article lists based on availability:
+            List<ArticleEntity> availableArticles = getAvailableArticles();
+            removeNonIntersectingElements(fillerArticles, availableArticles);
+            removeNonIntersectingElements(selectableArticles, availableArticles);
+            removeNonIntersectingElements(chosenArticles, availableArticles);
+            removeNonIntersectingElements(usedArticles, availableArticles);
+            removeNonIntersectingElements(priorityChoosing, availableArticles);
+            // Add available articles that aren't in a list:
+            availableArticles.removeAll(fillerArticles);
+            availableArticles.removeAll(selectableArticles);
+            availableArticles.removeAll(chosenArticles);
+            availableArticles.removeAll(usedArticles);
+            addToArticleListsBasedOnType(availableArticles);
+
+            // Return used articles back to the selectable pool if necessary:
+            if (selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
             {
-                priorityChoosing.addAll(selectableItems);
-                priorityChoosing.addAll(chosenItems);
-                usedItems.forEach((ItemEntity item) -> item.setType(ITEM_TYPE_SELECTABLE_REGULAR));
-                selectableItems.addAll(usedItems);
-                usedItems.clear();
+                priorityChoosing.addAll(selectableArticles);
+                priorityChoosing.addAll(chosenArticles);
+                usedArticles.forEach((ArticleEntity article) -> article.setType(ARTICLE_TYPE_SELECTABLE_REGULAR));
+                selectableArticles.addAll(usedArticles);
+                usedArticles.clear();
             }
 
-            if (selectableItems.size() + chosenItems.size() < regularItemsCount)
+            if (fillerArticles.size() <= 0 || selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
             {
-                Log.e("onCreate", "regularItemsCount cannot be smaller than count of all regular items");
+                Log.i("onCreate", "not enough available articles for a valid mix");
+                binding.setIsInvalidSettings(true);
+                binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+                return;
             }
 
             // Retry with randomized ingredients until a valid mix is found:
-            final List<IngredientEntity> ingredients = new ArrayList<>(regularItemsCount + 1);
+            final List<IngredientEntity> ingredients = new ArrayList<>(regularArticlesCount + 1);
             int fullResetTryCounter = 0;
             while (fullResetTryCounter <= 1)
             {
                 Log.d("onCreate", "------------------------");  // DEBUG:
-                Log.d("onCreate", "selectableItems count: " + selectableItems.size());  // DEBUG:
-                Log.d("onCreate", "chosenItems count: " + chosenItems.size());  // DEBUG:
-                Log.d("onCreate", "usedItems count: " + usedItems.size());  // DEBUG:
+                Log.d("onCreate", "selectableArticles count: " + selectableArticles.size());  // DEBUG:
+                Log.d("onCreate", "chosenArticles count: " + chosenArticles.size());  // DEBUG:
+                Log.d("onCreate", "usedArticles count: " + usedArticles.size());  // DEBUG:
                 Log.d("onCreate", "priorityChoosing count: " + priorityChoosing.size());  // DEBUG:
                 for (int tryCounter = 0; tryCounter < MAX_RANDOMIZE_TRIES; tryCounter++)
                 {
-                    // Return chosen items back to the selectable pool if necessary:
-                    if (!chosenItems.isEmpty())
+                    // Return chosen articles back to the selectable pool if necessary:
+                    if (!chosenArticles.isEmpty())
                     {
-                        selectableItems.addAll(chosenItems);
-                        chosenItems.clear();
+                        selectableArticles.addAll(chosenArticles);
+                        chosenArticles.clear();
                     }
 
-                    // Chose items for muesli:
-                    chosenItems.addAll(priorityChoosing);
-                    selectableItems.removeAll(priorityChoosing);
-                    for (int i = 0; i < regularItemsCount - priorityChoosing.size(); i++)
+                    // Chose articles for muesli:
+                    chosenArticles.addAll(priorityChoosing);
+                    selectableArticles.removeAll(priorityChoosing);
+                    for (int i = 0; i < regularArticlesCount - priorityChoosing.size(); i++)
                     {
-                        chosenItems.add(selectableItems.remove(random.nextInt(selectableItems.size())));
+                        chosenArticles.add(selectableArticles.remove(random.nextInt(selectableArticles.size())));
                     }
-                    ItemEntity fillerItem = fillerItems.get(random.nextInt(fillerItems.size()));
+                    ArticleEntity fillerArticle = fillerArticles.get(random.nextInt(fillerArticles.size()));
 
                     // Determine ingredients:
                     float totalWeight = 0F;
                     float totalSugar = 0F;
                     ingredients.clear();
-                    ItemEntity item;
+                    ArticleEntity article;
                     int spoonCount;
-                    // Calculate and add spoons for first regular items based on number of ingredients:
-                    for (int i = 0; i < regularItemsCount - 1; i++)
+                    // Calculate and add spoons for first regular articles based on number of ingredients:
+                    for (int i = 0; i < regularArticlesCount - 1; i++)
                     {
-                        item = chosenItems.get(i);
-                        spoonCount = Math.round(targetWeight / (item.getSpoonWeight() * (regularItemsCount + FILLER_INGREDIENT_RATIO)));
+                        article = chosenArticles.get(i);
+                        spoonCount = Math.round(targetWeight / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
                         spoonCount = Math.max(spoonCount, 1);
-                        totalWeight += spoonCount * item.getSpoonWeight();
-                        totalSugar += spoonCount * item.getSpoonWeight() * (item.getSugarPercentage() - fillerItem.getSugarPercentage());
-                        ingredients.add(new IngredientEntity(item, spoonCount));
+                        totalWeight += spoonCount * article.getSpoonWeight();
+                        totalSugar += spoonCount * article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage());
+                        ingredients.add(new IngredientEntity(article, spoonCount));
                     }
-                    // Calculate and add spoons for last regular item based on sugar percentage:
-                    item = chosenItems.get(regularItemsCount - 1);
-                    spoonCount = Math.round((targetSugar - totalSugar) / (item.getSpoonWeight() * (item.getSugarPercentage() - fillerItem.getSugarPercentage())));
+                    // Calculate and add spoons for last regular article based on sugar percentage:
+                    article = chosenArticles.get(regularArticlesCount - 1);
+                    spoonCount = Math.round((targetSugar - totalSugar) / (article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage())));
                     if (spoonCount <= 0) continue;
-                    totalWeight += item.getSpoonWeight() * spoonCount;
-                    ingredients.add(new IngredientEntity(item, spoonCount));
-                    // Calculate and add spoons for filler item based on total size:
-                    spoonCount = Math.round((targetWeight - totalWeight) / fillerItem.getSpoonWeight());
+                    totalWeight += article.getSpoonWeight() * spoonCount;
+                    ingredients.add(new IngredientEntity(article, spoonCount));
+                    // Calculate and add spoons for filler article based on total size:
+                    spoonCount = Math.round((targetWeight - totalWeight) / fillerArticle.getSpoonWeight());
                     if (spoonCount < 0) continue;
                     if (spoonCount > 0)
                     {
-                        ingredients.add(new IngredientEntity(fillerItem, spoonCount));
+                        ingredients.add(new IngredientEntity(fillerArticle, spoonCount));
                     }
 
                     // Display ingredients and adjust use button:
-                    Log.d("onCreate", "totalWeight: " + (totalWeight + fillerItem.getSpoonWeight() * spoonCount));  // DEBUG:
+                    Log.d("onCreate", "totalWeight: " + (totalWeight + fillerArticle.getSpoonWeight() * spoonCount));  // DEBUG:
                     Log.d("onCreate", "tryCounter: " + tryCounter);  // DEBUG:
-                    adapter.setIngredients(ingredients);
+                    ingredientsAdapter.setIngredients(ingredients);
                     binding.setIsChosenMuesliUsed(false);
                     binding.setIsInvalidSettings(false);
                     binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                     return;
                 }
-                // Return used and chosen items back to the selectable pool and reset priority choosing:
-                usedItems.forEach((ItemEntity item) -> item.setType(ITEM_TYPE_SELECTABLE_REGULAR));
-                selectableItems.addAll(usedItems);
-                usedItems.clear();
-                selectableItems.addAll(chosenItems);
-                chosenItems.clear();
+                // Return used and chosen articles back to the selectable pool and reset priority choosing:
+                usedArticles.forEach((ArticleEntity article) -> article.setType(ARTICLE_TYPE_SELECTABLE_REGULAR));
+                selectableArticles.addAll(usedArticles);
+                usedArticles.clear();
+                selectableArticles.addAll(chosenArticles);
+                chosenArticles.clear();
                 priorityChoosing.clear();
-                Log.i("onCreate", "cannot find valid mix with selectable items, retrying with full reset");
+                Log.i("onCreate", "cannot find valid mix with selectable articles, retrying with full reset");
                 fullResetTryCounter += 1;
             }
             binding.setIsInvalidSettings(true);
@@ -330,44 +384,50 @@ public class MainActivity extends AppCompatActivity
         });
         binding.useButton.setOnClickListener((View view) ->
         {
-            if (chosenItems.isEmpty())
+            if (chosenArticles.isEmpty())
             {
-                Log.e("onCreate", "chosenItems is empty");
+                Log.e("onCreate", "chosenArticles is empty");
             }
 
-            // Move chosen items to used pool and reset priority choosing:
-            chosenItems.forEach((ItemEntity item) -> item.setType(ITEM_TYPE_USED_REGULAR));
-            usedItems.addAll(chosenItems);
-            chosenItems.clear();
+            // Move chosen articles to used pool and reset priority choosing:
+            chosenArticles.forEach((ArticleEntity article) -> article.setType(ARTICLE_TYPE_USED_REGULAR));
+            usedArticles.addAll(chosenArticles);
+            chosenArticles.clear();
             priorityChoosing.clear();
 
             // Adjust use button:
             binding.setIsChosenMuesliUsed(true);
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
+        binding.availabilityButton.setOnClickListener((View view) ->
+        {
+            // Flip availability box minimization:
+            binding.setIsAvailabilityBoxMinimized(!binding.getIsAvailabilityBoxMinimized());
+            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+        });
     }
 
     @Override
-    protected void onDestroy()
+    protected void onDestroy()  // FIXME: does not seem to be called reliably on a real phone
     {
         super.onDestroy();
-        // Store items:
+        // Store articles:
         try
         {
             byte[] bytes;
             ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
-            for (ItemEntity item: allItems)
+            for (ArticleEntity article: allArticles)
             {
-                bytes = item.toByteArray();
+                bytes = article.toByteArray();
                 dataOutputStream.write(bytes.length);
                 dataOutputStream.write(bytes);
 
                 if (bytes.length > 255)
                 {
-                    Log.e("onDestroy", "data size of an Item is too big, consider limiting allowed string sizes or use two bytes for data size");
+                    Log.e("onDestroy", "data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
                 }
             }
-            FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ITEMS_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ARTICLES_FILENAME, Context.MODE_PRIVATE);
             fileOutputStream.write(dataOutputStream.toByteArray());
         }
         catch (IOException e)

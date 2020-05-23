@@ -1,14 +1,14 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.Objects;
 
-public class ItemEntity implements Item
+
+public class ArticleEntity implements Article
 {
     // --------------------
     // Functional code
@@ -19,6 +19,7 @@ public class ItemEntity implements Item
     private int type;
     private float spoonWeight;
     private float sugarPercentage;
+    private boolean available;
 
     @Override
     public String getName()
@@ -51,6 +52,12 @@ public class ItemEntity implements Item
     }
 
     @Override
+    public boolean isAvailable()
+    {
+        return available;
+    }
+
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -80,16 +87,23 @@ public class ItemEntity implements Item
         this.sugarPercentage = sugarPercentage;
     }
 
-    ItemEntity(String name, String brand, int type, float spoonWeight, float sugarPercentage)
+    @Override
+    public void setAvailable(boolean available)
+    {
+        this.available = available;
+    }
+
+    ArticleEntity(String name, String brand, int type, float spoonWeight, float sugarPercentage)
     {
         this.name = name;
         this.brand = brand;
         this.type = type;
         this.spoonWeight = spoonWeight;
         this.sugarPercentage = sugarPercentage;
+        this.available = true;  // DEBUG: make default true as long as storing doesn't work on phone
     }
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    ItemEntity(byte[] dataBytes) throws IOException
+    ArticleEntity(byte[] dataBytes) throws IOException
     {
         byte[] bytes;
         ByteArrayInputStream dataInputStream = new ByteArrayInputStream(dataBytes);
@@ -111,6 +125,18 @@ public class ItemEntity implements Item
         bytes = new byte[4];
         dataInputStream.read(bytes);
         sugarPercentage = ByteBuffer.wrap(bytes).getFloat();
+
+        available = (dataInputStream.read() != 0);
+    }
+
+    static boolean isContentTheSame(Article articleA, Article articleB)
+    {
+        return Objects.equals(articleA.getName(), articleB.getName())
+            && Objects.equals(articleA.getBrand(), articleB.getBrand())
+            && articleA.getType() == articleB.getType()
+            && Float.compare(articleA.getSpoonWeight(), articleB.getSpoonWeight()) == 0
+            && Float.compare(articleA.getSugarPercentage(), articleB.getSugarPercentage()) == 0
+            && articleA.isAvailable() == articleB.isAvailable();
     }
 
     byte[] toByteArray() throws IOException
@@ -131,6 +157,8 @@ public class ItemEntity implements Item
         dataOutputStream.write(ByteBuffer.allocate(4).putFloat(spoonWeight).array());
 
         dataOutputStream.write(ByteBuffer.allocate(4).putFloat(sugarPercentage).array());
+
+        dataOutputStream.write(available ? 1 : 0);
 
         return dataOutputStream.toByteArray();
     }

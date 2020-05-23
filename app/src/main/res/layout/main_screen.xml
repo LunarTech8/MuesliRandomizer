@@ -9,7 +9,7 @@
         <variable name="isAvailabilityBoxMinimized" type="boolean" />
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
-        <variable name="itemsCount" type="Integer" />
+        <variable name="articlesCount" type="Integer" />
         <variable name="isChosenMuesliUsed" type="boolean" />
         <variable name="isInvalidSettings" type="boolean" />
     </data>
@@ -41,12 +41,11 @@
                 />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/availableItems"
+                android:id="@+id/availableArticles"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/availability_recycler_height"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ingredientsLabel"
-                app:layout_constraintBottom_toTopOf="@+id/useButton"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/item_horizontal_margin_small"
+                android:layout_marginEnd="@dimen/item_horizontal_margin_small"
                 app:layoutManager="LinearLayoutManager"
                 app:visibleGone="@{!isAvailabilityBoxMinimized}"
                 />
@@ -61,6 +60,7 @@
             android:orientation="vertical"
             android:background="@drawable/border_medium"
             android:padding="@dimen/comment_padding"
+            app:visibleGone="@{isAvailabilityBoxMinimized}"
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -72,10 +72,11 @@
                     android:id="@+id/sizeLabel"
                     android:layout_width="@dimen/label_width"
                     android:layout_height="wrap_content"
+                    android:text="@string/t_sizeLabel"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="@string/t_sizeLabel" />
+                    />
 
                 <SeekBar
                     android:id="@+id/sizeSlider"
@@ -83,11 +84,11 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                     android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    android:max="@integer/sizeSliderMax"
+                    android:progress="3"
                     app:layout_constraintStart_toEndOf="@+id/sizeLabel"
                     app:layout_constraintEnd_toStartOf="@+id/sizeWeight"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:max="4"
-                    android:progress="3"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
@@ -95,10 +96,11 @@
                     android:id="@+id/sizeWeight"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
+                    android:text="@{@string/t_weightText(sizeWeight)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="@{@string/t_weightText(sizeWeight)}" />
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -113,10 +115,10 @@
                     android:id="@+id/sugarLabel"
                     android:layout_width="@dimen/label_width"
                     android:layout_height="wrap_content"
+                    android:text="@string/t_sugarLabel"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="@string/t_sugarLabel"
                     />
 
                 <SeekBar
@@ -125,11 +127,11 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                     android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                    android:max="@integer/sugarSliderMax"
+                    android:progress="2"
                     app:layout_constraintStart_toEndOf="@+id/sugarLabel"
                     app:layout_constraintEnd_toStartOf="@+id/sugarPercentage"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:max="4"
-                    android:progress="2"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
@@ -137,53 +139,53 @@
                     android:id="@+id/sugarPercentage"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
+                    android:text="@{@string/t_percentageText(sugarPercentage)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="@{@string/t_percentageText(sugarPercentage)}"
                     />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/itemsRow"
+                android:id="@+id/articlesRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_row_height"
                 android:orientation="horizontal"
                 >
 
                 <TextView
-                    android:id="@+id/itemsLabel"
+                    android:id="@+id/articlesLabel"
                     android:layout_width="@dimen/label_width"
                     android:layout_height="wrap_content"
+                    android:text="@string/t_articlesLabel"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="@string/t_itemsLabel"
                     />
 
                 <SeekBar
-                    android:id="@+id/itemsSlider"
+                    android:id="@+id/articlesSlider"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                     android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
-                    app:layout_constraintStart_toEndOf="@+id/itemsLabel"
-                    app:layout_constraintEnd_toStartOf="@+id/itemsCount"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:max="4"
+                    android:max="@integer/articleSliderMax"
                     android:progress="1"
+                    app:layout_constraintStart_toEndOf="@+id/articlesLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/articlesCount"
+                    app:layout_constraintTop_toTopOf="parent"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
                 <TextView
-                    android:id="@+id/itemsCount"
+                    android:id="@+id/articlesCount"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
+                    android:text="@{@string/t_countText(articlesCount)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="@{@string/t_countText(itemsCount)}"
                     />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -204,29 +206,30 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@drawable/border_medium"
+            app:visibleGone="@{isAvailabilityBoxMinimized}"
             >
 
             <TextView
                 android:id="@+id/ingredientsLabel"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/ingredients_label_height"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginStart="@dimen/item_horizontal_margin"
-                android:layout_marginEnd="@dimen/item_horizontal_margin"
+                android:layout_marginStart="@dimen/comment_horizontal_margin_medium"
+                android:layout_marginEnd="@dimen/comment_horizontal_margin_medium"
                 android:gravity="center_vertical"
                 android:text="@string/t_ingredientsLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 />
 
             <TextView
                 android:id="@+id/invalidSettingsLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/comment_horizontal_margin_medium"
+                android:layout_marginEnd="@dimen/comment_horizontal_margin_medium"
+                android:text="@string/t_invalidSettingsLabel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ingredientsLabel"
-                android:layout_marginStart="@dimen/item_horizontal_margin"
-                android:layout_marginEnd="@dimen/item_horizontal_margin"
-                android:text="@string/t_invalidSettingsLabel"
                 app:visibleGone="@{isInvalidSettings}"
                 />
 
@@ -234,6 +237,8 @@
                 android:id="@+id/ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginStart="@dimen/item_horizontal_margin_small"
+                android:layout_marginEnd="@dimen/item_horizontal_margin_small"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ingredientsLabel"
                 app:layout_constraintBottom_toTopOf="@+id/useButton"
@@ -245,10 +250,10 @@
                 android:id="@+id/useButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:text="@string/t_useButton"
                 android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:visibleGone="@{!isChosenMuesliUsed}"
                 />
 
