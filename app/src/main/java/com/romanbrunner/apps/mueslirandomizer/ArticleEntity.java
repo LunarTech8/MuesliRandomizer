@@ -1,5 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
+import android.util.Log;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,15 +13,54 @@ import java.util.Objects;
 public class ArticleEntity implements Article
 {
     // --------------------
+    // Data code
+    // --------------------
+
+    public enum Type
+    {
+        FILLER, REGULAR;
+
+        private static final Type[] values = Type.values();
+
+        public static Type fromInt(int intValue)
+        {
+            if (intValue < 0 || intValue >= values.length)
+            {
+                Log.e("Type", "Invalid intValue (" + intValue + " has to be at least 0 and smaller than " + values.length + ")");
+            }
+
+            return values[intValue];
+        }
+    }
+
+    public enum State
+    {
+        UNAVAILABLE, SELECTABLE, USED;
+
+        private static final State[] values = State.values();
+
+        public static State fromInt(int intValue)
+        {
+            if (intValue < 0 || intValue >= values.length)
+            {
+                Log.e("State", "Invalid intValue (" + intValue + " has to be at least 0 and smaller than " + values.length + ")");
+            }
+
+            return values[intValue];
+        }
+    }
+
+
+    // --------------------
     // Functional code
     // --------------------
 
     private String name;
     private String brand;
-    private int type;
+    private Type type;
     private float spoonWeight;
     private float sugarPercentage;
-    private boolean available;
+    private State state;
 
     @Override
     public String getName()
@@ -34,7 +75,7 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public int getType()
+    public Type getType()
     {
         return type;
     }
@@ -52,9 +93,15 @@ public class ArticleEntity implements Article
     }
 
     @Override
+    public State getState()
+    {
+        return state;
+    }
+
+    @Override
     public boolean isAvailable()
     {
-        return available;
+        return (state != State.UNAVAILABLE);
     }
 
     @Override
@@ -70,7 +117,7 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public void setType(int type)
+    public void setType(Type type)
     {
         this.type = type;
     }
@@ -88,19 +135,32 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public void setAvailable(boolean available)
+    public void setState(State state)
     {
-        this.available = available;
+        this.state = state;
     }
 
-    ArticleEntity(String name, String brand, int type, float spoonWeight, float sugarPercentage)
+    @Override
+    public void setAvailable(boolean available)
+    {
+        if (available && this.state == State.UNAVAILABLE)
+        {
+            this.state = State.SELECTABLE;
+        }
+        else
+        {
+            this.state = State.UNAVAILABLE;
+        }
+    }
+
+    ArticleEntity(String name, String brand, Type type, float spoonWeight, float sugarPercentage)
     {
         this.name = name;
         this.brand = brand;
         this.type = type;
         this.spoonWeight = spoonWeight;
         this.sugarPercentage = sugarPercentage;
-        this.available = true;  // DEBUG: make default true as long as storing doesn't work on phone
+        this.state = State.UNAVAILABLE;
     }
     @SuppressWarnings("ResultOfMethodCallIgnored")
     ArticleEntity(byte[] dataBytes) throws IOException
@@ -116,7 +176,7 @@ public class ArticleEntity implements Article
         dataInputStream.read(bytes);
         brand = new String(bytes, StandardCharsets.UTF_8);
 
-        type = dataInputStream.read();
+        type = Type.fromInt(dataInputStream.read());
 
         bytes = new byte[4];
         dataInputStream.read(bytes);
@@ -126,7 +186,7 @@ public class ArticleEntity implements Article
         dataInputStream.read(bytes);
         sugarPercentage = ByteBuffer.wrap(bytes).getFloat();
 
-        available = (dataInputStream.read() != 0);
+        state = State.fromInt(dataInputStream.read());
     }
 
     static boolean isContentTheSame(Article articleA, Article articleB)
@@ -136,7 +196,7 @@ public class ArticleEntity implements Article
             && articleA.getType() == articleB.getType()
             && Float.compare(articleA.getSpoonWeight(), articleB.getSpoonWeight()) == 0
             && Float.compare(articleA.getSugarPercentage(), articleB.getSugarPercentage()) == 0
-            && articleA.isAvailable() == articleB.isAvailable();
+            && articleA.getState() == articleB.getState();
     }
 
     byte[] toByteArray() throws IOException
@@ -152,13 +212,13 @@ public class ArticleEntity implements Article
         dataOutputStream.write(bytes.length);
         dataOutputStream.write(bytes);
 
-        dataOutputStream.write(type);
+        dataOutputStream.write(type.ordinal());
 
         dataOutputStream.write(ByteBuffer.allocate(4).putFloat(spoonWeight).array());
 
         dataOutputStream.write(ByteBuffer.allocate(4).putFloat(sugarPercentage).array());
 
-        dataOutputStream.write(available ? 1 : 0);
+        dataOutputStream.write(state.ordinal());
 
         return dataOutputStream.toByteArray();
     }

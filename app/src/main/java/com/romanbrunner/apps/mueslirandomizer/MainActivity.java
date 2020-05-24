@@ -25,6 +25,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.function.Function;
 
+import static com.romanbrunner.apps.mueslirandomizer.ArticleEntity.*;
+
 
 public class MainActivity extends AppCompatActivity
 {
@@ -35,36 +37,33 @@ public class MainActivity extends AppCompatActivity
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
     private final static String ARTICLES_FILENAME = "AllArticles";
-    private final static int ARTICLE_TYPE_FILLER = 0;
-    private final static int ARTICLE_TYPE_SELECTABLE_REGULAR = 1;
-    private final static int ARTICLE_TYPE_USED_REGULAR = 2;
 
     private static void addDefaultArticlesToList(List<ArticleEntity> articleList)
     {
         // Very low sugar filler muesli:
-        articleList.add(new ArticleEntity("Echte Kölln Kernige", "Kölln", ARTICLE_TYPE_FILLER, 8F, 0.012F));
+        articleList.add(new ArticleEntity("Echte Kölln Kernige", "Kölln", Type.FILLER, 8F, 0.012F));
 
         // Low sugar regular muesli:
-        articleList.add(new ArticleEntity("Nuss & Krokant", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 9.5F, 0.077F));
+        articleList.add(new ArticleEntity("Nuss & Krokant", "Kölln", Type.REGULAR, 9.5F, 0.077F));
         // Medium sugar regular muesli:
-        articleList.add(new ArticleEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", ARTICLE_TYPE_SELECTABLE_REGULAR, 10.5F, 0.14F));
-        articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 9.5F, 0.15F));
-        articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 9F, 0.13F));
-        articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 10F, 0.13F));
+        articleList.add(new ArticleEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", Type.REGULAR, 10.5F, 0.14F));
+        articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", Type.REGULAR, 9.5F, 0.15F));
+        articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", Type.REGULAR, 9F, 0.13F));
+        articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", Type.REGULAR, 10F, 0.13F));
         // High sugar regular muesli:
-        articleList.add(new ArticleEntity("Nesquik Knusper-Müsli", "Nestle", ARTICLE_TYPE_SELECTABLE_REGULAR, 8F, 0.21F));
-        articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", ARTICLE_TYPE_SELECTABLE_REGULAR, 9.5F, 0.22F));
-        articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.25F));
-        articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", ARTICLE_TYPE_SELECTABLE_REGULAR, 13.5F, 0.2F));
-        articleList.add(new ArticleEntity("Knusper Beere & Schoko", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.24F));
-        articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.22F));
-        articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 12F, 0.22F));
-        articleList.add(new ArticleEntity("Knusper Schoko & Keks", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11.5F, 0.21F));
-        articleList.add(new ArticleEntity("Knusper Joghurt-Honig", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
-        articleList.add(new ArticleEntity("Knusprige Haferkissen Zimt", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 4.5F, 0.2F));
-        articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", ARTICLE_TYPE_SELECTABLE_REGULAR, 12F, 0.2F));
-        articleList.add(new ArticleEntity("Porridge Dreierlei Beere", "3 Bears", ARTICLE_TYPE_SELECTABLE_REGULAR, 12.5F, 0.22F));
-        articleList.add(new ArticleEntity("Porridge Zimtiger Apfel", "3 Bears", ARTICLE_TYPE_SELECTABLE_REGULAR, 11F, 0.2F));
+        articleList.add(new ArticleEntity("Nesquik Knusper-Müsli", "Nestle", Type.REGULAR, 8F, 0.21F));
+        articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", Type.REGULAR, 9.5F, 0.22F));
+        articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", Type.REGULAR, 11.5F, 0.25F));
+        articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", Type.REGULAR, 13.5F, 0.2F));
+        articleList.add(new ArticleEntity("Knusper Beere & Schoko", "Kölln", Type.REGULAR, 11.5F, 0.24F));
+        articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", Type.REGULAR, 11.5F, 0.22F));
+        articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", Type.REGULAR, 12F, 0.22F));
+        articleList.add(new ArticleEntity("Knusper Schoko & Keks", "Kölln", Type.REGULAR, 11.5F, 0.21F));
+        articleList.add(new ArticleEntity("Knusper Joghurt-Honig", "Kölln", Type.REGULAR, 11F, 0.2F));
+        articleList.add(new ArticleEntity("Knusprige Haferkissen Zimt", "Kölln", Type.REGULAR, 4.5F, 0.2F));
+        articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", Type.REGULAR, 12F, 0.2F));
+        articleList.add(new ArticleEntity("Porridge Dreierlei Beere", "3 Bears", Type.REGULAR, 12.5F, 0.22F));
+        articleList.add(new ArticleEntity("Porridge Zimtiger Apfel", "3 Bears", Type.REGULAR, 11F, 0.2F));
     }
 
     private static float sizeValue2SizeWeight(int sizeValue)
@@ -100,6 +99,11 @@ public class MainActivity extends AppCompatActivity
 
     private static <T> float getLowestValue(List<T> list, Function<T, Float> getter)
     {
+        if (list.isEmpty())
+        {
+            Log.e("getLowestValue", "Cannot get value for an empty list");
+        }
+
         float lowestValue = getter.apply(list.get(0));
         for (int i = 1; i < list.size(); i++)
         {
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity
         List<ArticleEntity> availableArticles = new LinkedList<>();
         for (ArticleEntity article: allArticles)
         {
-            if (article.isAvailable())
+            if (article.getState() != State.UNAVAILABLE)
             {
                 availableArticles.add(article);
             }
@@ -133,23 +137,47 @@ public class MainActivity extends AppCompatActivity
         return availableArticles;
     }
 
-    private void addToArticleListsBasedOnType(List<ArticleEntity> articles)
+    private void moveArticlesToStateList(List<ArticleEntity> sourceStateList, List<ArticleEntity> targetStateList)
+    {
+        if (targetStateList == selectableArticles)
+        {
+            sourceStateList.forEach((ArticleEntity article) -> article.setState(State.SELECTABLE));
+        }
+        else if (targetStateList == usedArticles)
+        {
+            sourceStateList.forEach((ArticleEntity article) -> article.setState(State.USED));
+        }
+        targetStateList.addAll(sourceStateList);
+        sourceStateList.clear();
+    }
+
+    private void addArticlesToFittingStateList(List<ArticleEntity> articles)
     {
         for (ArticleEntity article: articles)
         {
             switch (article.getType())
             {
-                case ARTICLE_TYPE_FILLER:
-                    fillerArticles.add(article);
+                case FILLER:
+                    if (article.getState() != State.UNAVAILABLE)
+                    {
+                        fillerArticles.add(article);
+                    }
                     break;
-                case ARTICLE_TYPE_SELECTABLE_REGULAR:
-                    selectableArticles.add(article);
+                case REGULAR:
+                    switch (article.getState())
+                    {
+                        case UNAVAILABLE:
+                            break;
+                        case SELECTABLE:
+                            selectableArticles.add(article);
+                            break;
+                        case USED:
+                            usedArticles.add(article);
+                            break;
+                        default:
+                            Log.e("addArticlesToFittingStateList", "Unrecognized article type");
+                    }
                     break;
-                case ARTICLE_TYPE_USED_REGULAR:
-                    usedArticles.add(article);
-                    break;
-                default:
-                    Log.e("onDestroy", "unrecognized article type");
             }
         }
     }
@@ -174,7 +202,7 @@ public class MainActivity extends AppCompatActivity
         binding.availableArticles.setAdapter(availableArticlesAdapter);
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
 
-        // Load/create articles and add them to the appropriate lists:
+        // Load or create all articles and add them to the fitting state lists:
         try
         {
             List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
@@ -195,14 +223,13 @@ public class MainActivity extends AppCompatActivity
                 addDefaultArticlesToList(allArticles);
             }
             availableArticlesAdapter.setArticles(allArticles);
-            addToArticleListsBasedOnType(allArticles);
+            addArticlesToFittingStateList(allArticles);
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
-        if (getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("sugar percentage of all filler articles has to be lower than that of regular articles");
-
+        if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
         // Init layout variables:
         sizeValue = binding.sizeSlider.getProgress();
         sugarValue = binding.sugarSlider.getProgress();
@@ -270,33 +297,31 @@ public class MainActivity extends AppCompatActivity
             final float targetWeight = sizeValue2SizeWeight(sizeValue);
             final float targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
 
-            // Update article lists based on availability:
+            // Remove unavailable articles from state lists:
             List<ArticleEntity> availableArticles = getAvailableArticles();
             removeNonIntersectingElements(fillerArticles, availableArticles);
             removeNonIntersectingElements(selectableArticles, availableArticles);
             removeNonIntersectingElements(chosenArticles, availableArticles);
             removeNonIntersectingElements(usedArticles, availableArticles);
             removeNonIntersectingElements(priorityChoosing, availableArticles);
-            // Add available articles that aren't in a list:
+            // Add available articles to fitting state lists that aren't in one:
             availableArticles.removeAll(fillerArticles);
             availableArticles.removeAll(selectableArticles);
             availableArticles.removeAll(chosenArticles);
             availableArticles.removeAll(usedArticles);
-            addToArticleListsBasedOnType(availableArticles);
+            addArticlesToFittingStateList(availableArticles);
 
             // Return used articles back to the selectable pool if necessary:
             if (selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
             {
                 priorityChoosing.addAll(selectableArticles);
                 priorityChoosing.addAll(chosenArticles);
-                usedArticles.forEach((ArticleEntity article) -> article.setType(ARTICLE_TYPE_SELECTABLE_REGULAR));
-                selectableArticles.addAll(usedArticles);
-                usedArticles.clear();
+                moveArticlesToStateList(usedArticles, selectableArticles);
             }
 
             if (fillerArticles.size() <= 0 || selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
             {
-                Log.i("onCreate", "not enough available articles for a valid mix");
+                Log.i("onCreate", "Not enough available articles for a valid mix");
                 binding.setIsInvalidSettings(true);
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 return;
@@ -317,8 +342,7 @@ public class MainActivity extends AppCompatActivity
                     // Return chosen articles back to the selectable pool if necessary:
                     if (!chosenArticles.isEmpty())
                     {
-                        selectableArticles.addAll(chosenArticles);
-                        chosenArticles.clear();
+                        moveArticlesToStateList(chosenArticles, selectableArticles);
                     }
 
                     // Chose articles for muesli:
@@ -370,13 +394,10 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
                 // Return used and chosen articles back to the selectable pool and reset priority choosing:
-                usedArticles.forEach((ArticleEntity article) -> article.setType(ARTICLE_TYPE_SELECTABLE_REGULAR));
-                selectableArticles.addAll(usedArticles);
-                usedArticles.clear();
-                selectableArticles.addAll(chosenArticles);
-                chosenArticles.clear();
+                moveArticlesToStateList(usedArticles, selectableArticles);
+                moveArticlesToStateList(chosenArticles, selectableArticles);
                 priorityChoosing.clear();
-                Log.i("onCreate", "cannot find valid mix with selectable articles, retrying with full reset");
+                Log.i("onCreate", "Cannot find valid mix with selectable articles, retrying with full reset");
                 fullResetTryCounter += 1;
             }
             binding.setIsInvalidSettings(true);
@@ -386,13 +407,11 @@ public class MainActivity extends AppCompatActivity
         {
             if (chosenArticles.isEmpty())
             {
-                Log.e("onCreate", "chosenArticles is empty");
+                Log.e("onCreate", "ChosenArticles is empty");
             }
 
             // Move chosen articles to used pool and reset priority choosing:
-            chosenArticles.forEach((ArticleEntity article) -> article.setType(ARTICLE_TYPE_USED_REGULAR));
-            usedArticles.addAll(chosenArticles);
-            chosenArticles.clear();
+            moveArticlesToStateList(chosenArticles, usedArticles);
             priorityChoosing.clear();
 
             // Adjust use button:
@@ -408,10 +427,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy()  // FIXME: does not seem to be called reliably on a real phone
+    protected void onPause()
     {
-        super.onDestroy();
-        // Store articles:
+        super.onPause();
+        // Store current articles:
         try
         {
             byte[] bytes;
@@ -424,7 +443,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (bytes.length > 255)
                 {
-                    Log.e("onDestroy", "data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
+                    Log.e("onPause", "Data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
                 }
             }
             FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ARTICLES_FILENAME, Context.MODE_PRIVATE);
