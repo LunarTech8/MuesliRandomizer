@@ -38,10 +38,13 @@ public class MainActivity extends AppCompatActivity
     private final static int MAX_RANDOMIZE_TRIES = 1024;
     private final static String ARTICLES_FILENAME = "AllArticles";
 
-    private static void addDefaultArticlesToList(List<ArticleEntity> articleList)
+    private static List<ArticleEntity> getDefaultArticles()
     {
+        List<ArticleEntity> articleList = new LinkedList<>();
+
         // Very low sugar filler muesli:
         articleList.add(new ArticleEntity("Echte Kölln Kernige", "Kölln", Type.FILLER, 8F, 0.012F));
+        articleList.add(new ArticleEntity("Blütenzarte Kölln Flocken", "Kölln", Type.FILLER, 9F, 0.012F));
 
         // Low sugar regular muesli:
         articleList.add(new ArticleEntity("Nuss & Krokant", "Kölln", Type.REGULAR, 9.5F, 0.077F));
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity
         articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", Type.REGULAR, 9.5F, 0.22F));
         articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", Type.REGULAR, 11.5F, 0.25F));
         articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", Type.REGULAR, 13.5F, 0.2F));
+        articleList.add(new ArticleEntity("Knuspermüsli Honeys", "Vitalis", Type.REGULAR, 8.5F, 0.28F));
         articleList.add(new ArticleEntity("Knusper Beere & Schoko", "Kölln", Type.REGULAR, 11.5F, 0.24F));
         articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", Type.REGULAR, 11.5F, 0.22F));
         articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", Type.REGULAR, 12F, 0.22F));
@@ -64,6 +68,8 @@ public class MainActivity extends AppCompatActivity
         articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", Type.REGULAR, 12F, 0.2F));
         articleList.add(new ArticleEntity("Porridge Dreierlei Beere", "3 Bears", Type.REGULAR, 12.5F, 0.22F));
         articleList.add(new ArticleEntity("Porridge Zimtiger Apfel", "3 Bears", Type.REGULAR, 11F, 0.2F));
+
+        return articleList;
     }
 
     private static float sizeValue2SizeWeight(int sizeValue)
@@ -205,6 +211,7 @@ public class MainActivity extends AppCompatActivity
         // Load or create all articles and add them to the fitting state lists:
         try
         {
+            List<ArticleEntity> defaultArticles = getDefaultArticles();
             List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
             if (fileNames.contains(ARTICLES_FILENAME))
             {
@@ -217,10 +224,23 @@ public class MainActivity extends AppCompatActivity
                     fileInputStream.read(bytes);
                     allArticles.add(new ArticleEntity(bytes));
                 }
+                // Add missing default articles:
+                defaultLoop: for (ArticleEntity articleA : defaultArticles)
+                {
+                    for (ArticleEntity articleB : allArticles)
+                    {
+                        if (isNameTheSame(articleA, articleB))
+                        {
+                            continue defaultLoop;
+                        }
+                    }
+                    Log.d("onCreate", "adding missing default article: " + articleA.getName());  // DEBUG:
+                    allArticles.add(articleA);
+                }
             }
             else
             {
-                addDefaultArticlesToList(allArticles);
+                allArticles = defaultArticles;
             }
             availableArticlesAdapter.setArticles(allArticles);
             addArticlesToFittingStateList(allArticles);

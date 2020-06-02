@@ -189,6 +189,12 @@ public class ArticleEntity implements Article
         state = State.fromInt(dataInputStream.read());
     }
 
+    static boolean isNameTheSame(Article articleA, Article articleB)
+    {
+        return Objects.equals(articleA.getName(), articleB.getName())
+            && Objects.equals(articleA.getBrand(), articleB.getBrand());
+    }
+
     static boolean isContentTheSame(Article articleA, Article articleB)
     {
         return Objects.equals(articleA.getName(), articleB.getName())
