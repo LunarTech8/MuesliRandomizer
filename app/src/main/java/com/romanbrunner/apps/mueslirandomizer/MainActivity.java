@@ -5,6 +5,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
     private final static String ARTICLES_FILENAME = "AllArticles";
+    private final static String PREFS_NAME = "GlobalPreferences";
 
     private static List<ArticleEntity> getDefaultArticles()
     {
@@ -188,7 +190,60 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void storeArticles(final List<ArticleEntity> articles, final String fileName)
+    {
+        try
+        {
+            byte[] bytes;
+            ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
+            for (ArticleEntity article: articles)
+            {
+                bytes = article.toByteArray();
+                dataOutputStream.write(bytes.length);
+                dataOutputStream.write(bytes);
+
+                if (bytes.length > 255)
+                {
+                    Log.e("onPause", "Data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
+                }
+            }
+            FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+            fileOutputStream.write(dataOutputStream.toByteArray());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
+    private boolean loadArticles(final List<ArticleEntity> articles, final String fileName)
+    {
+        try
+        {
+            final Context context = getApplicationContext();
+            final List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
+            if (fileNames.contains(fileName))
+            {
+                byte[] bytes;
+                FileInputStream fileInputStream = context.openFileInput(fileName);
+                int length;
+                while ((length = fileInputStream.read()) != -1)
+                {
+                    bytes = new byte[length];
+                    fileInputStream.read(bytes);
+                    articles.add(new ArticleEntity(bytes));
+                }
+                return true;
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -209,51 +264,41 @@ public class MainActivity extends AppCompatActivity
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
 
         // Load or create all articles and add them to the fitting state lists:
-        try
+        final List<ArticleEntity> defaultArticles = getDefaultArticles();
+        if (loadArticles(allArticles, ARTICLES_FILENAME))
         {
-            List<ArticleEntity> defaultArticles = getDefaultArticles();
-            List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
-            if (fileNames.contains(ARTICLES_FILENAME))
+            // Add missing default articles:
+            defaultLoop: for (ArticleEntity articleA : defaultArticles)
             {
-                byte[] bytes;
-                FileInputStream fileInputStream = context.openFileInput(ARTICLES_FILENAME);
-                int length;
-                while ((length = fileInputStream.read()) != -1)
+                for (ArticleEntity articleB : allArticles)
                 {
-                    bytes = new byte[length];
-                    fileInputStream.read(bytes);
-                    allArticles.add(new ArticleEntity(bytes));
-                }
-                // Add missing default articles:
-                defaultLoop: for (ArticleEntity articleA : defaultArticles)
-                {
-                    for (ArticleEntity articleB : allArticles)
+                    if (isNameTheSame(articleA, articleB))
                     {
-                        if (isNameTheSame(articleA, articleB))
-                        {
-                            continue defaultLoop;
-                        }
+                        continue defaultLoop;
                     }
-                    Log.d("onCreate", "adding missing default article: " + articleA.getName());  // DEBUG:
-                    allArticles.add(articleA);
                 }
+                Log.d("onCreate", "adding missing default article: " + articleA.getName());  // DEBUG:
+                allArticles.add(articleA);
             }
-            else
-            {
-                allArticles = defaultArticles;
-            }
-            availableArticlesAdapter.setArticles(allArticles);
-            addArticlesToFittingStateList(allArticles);
         }
-        catch (IOException e)
+        else
         {
-            e.printStackTrace();
+            allArticles = defaultArticles;
         }
+        availableArticlesAdapter.setArticles(allArticles);
+        addArticlesToFittingStateList(allArticles);
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
+
+        // Load preferences:
+        SharedPreferences sharedPrefs = context.getSharedPreferences(PREFS_NAME, 0);
+        sizeValue = sharedPrefs.getInt("sizeValue", binding.sizeSlider.getProgress());
+        sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
+        articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());
+        binding.sizeSlider.setProgress(sizeValue);
+        binding.sugarSlider.setProgress(sugarValue);
+        binding.articlesSlider.setProgress(articlesValue);
+
         // Init layout variables:
-        sizeValue = binding.sizeSlider.getProgress();
-        sugarValue = binding.sugarSlider.getProgress();
-        articlesValue = binding.articlesSlider.getProgress();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
@@ -436,7 +481,9 @@ public class MainActivity extends AppCompatActivity
 
             // Adjust use button:
             binding.setIsChosenMuesliUsed(true);
-            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
+
+            storeArticles(allArticles, ARTICLES_FILENAME);
         });
         binding.availabilityButton.setOnClickListener((View view) ->
         {
@@ -450,28 +497,13 @@ public class MainActivity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
-        // Store current articles:
-        try
-        {
-            byte[] bytes;
-            ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
-            for (ArticleEntity article: allArticles)
-            {
-                bytes = article.toByteArray();
-                dataOutputStream.write(bytes.length);
-                dataOutputStream.write(bytes);
-
-                if (bytes.length > 255)
-                {
-                    Log.e("onPause", "Data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
-                }
-            }
-            FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ARTICLES_FILENAME, Context.MODE_PRIVATE);
-            fileOutputStream.write(dataOutputStream.toByteArray());
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        storeArticles(allArticles, ARTICLES_FILENAME);
+        // Store preferences:
+        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putInt("sizeValue", sizeValue);
+        editor.putInt("sugarValue", sugarValue);
+        editor.putInt("articlesValue", articlesValue);
+        editor.apply();
     }
 }
