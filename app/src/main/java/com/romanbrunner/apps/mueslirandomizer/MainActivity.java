@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity
     private List<ArticleEntity> fillerArticles = new LinkedList<>();
     private List<ArticleEntity> selectableArticles = new LinkedList<>();
     private List<ArticleEntity> usedArticles = new LinkedList<>();
+    private List<ArticleEntity> chosenArticles = new LinkedList<>();
+    private List<ArticleEntity> priorityChoosing = new LinkedList<>();
     private int sizeValue;
     private int sugarValue;
     private int articlesValue;
@@ -190,6 +192,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void adjustStateListsBasedOnAvailability()
+    {
+        // Remove unavailable articles from state lists:
+        List<ArticleEntity> availableArticles = getAvailableArticles();
+        removeNonIntersectingElements(fillerArticles, availableArticles);
+        removeNonIntersectingElements(selectableArticles, availableArticles);
+        removeNonIntersectingElements(chosenArticles, availableArticles);
+        removeNonIntersectingElements(usedArticles, availableArticles);
+        removeNonIntersectingElements(priorityChoosing, availableArticles);
+        // Add available articles to fitting state lists that aren't in one:
+        availableArticles.removeAll(fillerArticles);
+        availableArticles.removeAll(selectableArticles);
+        availableArticles.removeAll(chosenArticles);
+        availableArticles.removeAll(usedArticles);
+        addArticlesToFittingStateList(availableArticles);
+    }
+
     private void storeArticles(final List<ArticleEntity> articles, final String fileName)
     {
         try
@@ -244,16 +263,34 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
+    private void storePreferences()
+    {
+        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putInt("sizeValue", sizeValue);
+        editor.putInt("sugarValue", sugarValue);
+        editor.putInt("articlesValue", articlesValue);
+        editor.apply();
+    }
+
+    private void loadPreferences()
+    {
+        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+        sizeValue = sharedPrefs.getInt("sizeValue", binding.sizeSlider.getProgress());
+        sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
+        articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());
+        binding.sizeSlider.setProgress(sizeValue);
+        binding.sugarSlider.setProgress(sugarValue);
+        binding.articlesSlider.setProgress(articlesValue);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Context context = getApplicationContext();
+        final Random random = new Random();
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
-        Random random = new Random();
-        final int maxRegularArticlesCount = context.getResources().getInteger(R.integer.articleSliderMax) + 1;
-        List<ArticleEntity> chosenArticles = new ArrayList<>(maxRegularArticlesCount);
-        List<ArticleEntity> priorityChoosing = new ArrayList<>(maxRegularArticlesCount);
+        loadPreferences();
 
         // Setup recycle view adapters:
         ingredientsAdapter = new IngredientsAdapter();
@@ -277,7 +314,6 @@ public class MainActivity extends AppCompatActivity
                         continue defaultLoop;
                     }
                 }
-                Log.d("onCreate", "adding missing default article: " + articleA.getName());  // DEBUG:
                 allArticles.add(articleA);
             }
         }
@@ -288,15 +324,6 @@ public class MainActivity extends AppCompatActivity
         availableArticlesAdapter.setArticles(allArticles);
         addArticlesToFittingStateList(allArticles);
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
-
-        // Load preferences:
-        SharedPreferences sharedPrefs = context.getSharedPreferences(PREFS_NAME, 0);
-        sizeValue = sharedPrefs.getInt("sizeValue", binding.sizeSlider.getProgress());
-        sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
-        articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());
-        binding.sizeSlider.setProgress(sizeValue);
-        binding.sugarSlider.setProgress(sugarValue);
-        binding.articlesSlider.setProgress(articlesValue);
 
         // Init layout variables:
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
@@ -322,6 +349,7 @@ public class MainActivity extends AppCompatActivity
                 sizeValue = progress;
                 binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+                storePreferences();
             }
         });
         binding.sugarSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
@@ -338,6 +366,7 @@ public class MainActivity extends AppCompatActivity
                 sugarValue = progress;
                 binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+                storePreferences();
             }
         });
         binding.articlesSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
@@ -354,6 +383,7 @@ public class MainActivity extends AppCompatActivity
                 articlesValue = progress;
                 binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+                storePreferences();
             }
         });
         binding.randomizeButton.setOnClickListener((View view) ->
@@ -361,20 +391,6 @@ public class MainActivity extends AppCompatActivity
             final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
             final float targetWeight = sizeValue2SizeWeight(sizeValue);
             final float targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
-
-            // Remove unavailable articles from state lists:
-            List<ArticleEntity> availableArticles = getAvailableArticles();
-            removeNonIntersectingElements(fillerArticles, availableArticles);
-            removeNonIntersectingElements(selectableArticles, availableArticles);
-            removeNonIntersectingElements(chosenArticles, availableArticles);
-            removeNonIntersectingElements(usedArticles, availableArticles);
-            removeNonIntersectingElements(priorityChoosing, availableArticles);
-            // Add available articles to fitting state lists that aren't in one:
-            availableArticles.removeAll(fillerArticles);
-            availableArticles.removeAll(selectableArticles);
-            availableArticles.removeAll(chosenArticles);
-            availableArticles.removeAll(usedArticles);
-            addArticlesToFittingStateList(availableArticles);
 
             // Return used articles back to the selectable pool if necessary:
             if (selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
@@ -488,7 +504,12 @@ public class MainActivity extends AppCompatActivity
         binding.availabilityButton.setOnClickListener((View view) ->
         {
             // Flip availability box minimization:
-            binding.setIsAvailabilityBoxMinimized(!binding.getIsAvailabilityBoxMinimized());
+            final boolean isMinimized = binding.getIsAvailabilityBoxMinimized();
+            if (!isMinimized)
+            {
+                adjustStateListsBasedOnAvailability();
+            }
+            binding.setIsAvailabilityBoxMinimized(!isMinimized);
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
     }
@@ -498,12 +519,6 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPause();
         storeArticles(allArticles, ARTICLES_FILENAME);
-        // Store preferences:
-        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putInt("sizeValue", sizeValue);
-        editor.putInt("sugarValue", sugarValue);
-        editor.putInt("articlesValue", articlesValue);
-        editor.apply();
+        storePreferences();
     }
 }

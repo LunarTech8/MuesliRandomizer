@@ -8,14 +8,23 @@
         android:label="@string/l_appName"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_rules"
+        >
+
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
+
         </activity>
+
     </application>
 
 </manifest>
