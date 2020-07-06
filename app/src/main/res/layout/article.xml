@@ -42,7 +42,7 @@
                 android:id="@+id/availableCheckbox"
                 android:layout_width="@dimen/available_button_size"
                 android:layout_height="@dimen/available_button_size"
-                android:checked="@={article.available}"
+                android:checked="@{article.available}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

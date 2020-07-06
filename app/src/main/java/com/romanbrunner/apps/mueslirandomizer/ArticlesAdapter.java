@@ -1,6 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -25,9 +26,14 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
     {
         final ArticleBinding binding;
 
-        EntryViewHolder(ArticleBinding binding)
+        EntryViewHolder(ArticleBinding binding, ArticlesAdapter articlesAdapter)
         {
             super(binding.getRoot());
+            binding.availableCheckbox.setOnClickListener((View view) ->
+            {
+                final int position = getAdapterPosition();
+                articlesAdapter.articles.get(position).setAvailable(binding.availableCheckbox.isChecked());
+            });  // Adjust article availability via listener instead of directly through the layout to avoid problems with item recycling
             this.binding = binding;
         }
     }
@@ -92,11 +98,10 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
     }
 
     @Override
-    public @NonNull
-    EntryViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType)
+    public @NonNull EntryViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType)
     {
         ArticleBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.article, viewGroup, false);
-        return new EntryViewHolder(binding);
+        return new EntryViewHolder(binding, this);
     }
 
     @Override
