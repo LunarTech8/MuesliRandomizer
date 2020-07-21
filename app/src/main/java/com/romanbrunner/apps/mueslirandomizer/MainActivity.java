@@ -57,9 +57,11 @@ public class MainActivity extends AppCompatActivity
         articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", Type.REGULAR, 9.5F, 0.15F));
         articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", Type.REGULAR, 9F, 0.13F));
         articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", Type.REGULAR, 10F, 0.13F));
+        articleList.add(new ArticleEntity("Knusper Honig-Nuss", "Kölln", Type.REGULAR, 11.5F, 0.19F));
         // High sugar regular muesli:
         articleList.add(new ArticleEntity("Nesquik Knusper-Müsli", "Nestle", Type.REGULAR, 8F, 0.21F));
         articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", Type.REGULAR, 9.5F, 0.22F));
+        articleList.add(new ArticleEntity("Crunchy Müsli Choco & Pistachio", "Kellogg", Type.REGULAR, 11.5F, 0.22F));
         articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", Type.REGULAR, 11.5F, 0.25F));
         articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", Type.REGULAR, 13.5F, 0.2F));
         articleList.add(new ArticleEntity("Knuspermüsli Honeys", "Vitalis", Type.REGULAR, 8.5F, 0.28F));
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", Type.REGULAR, 11.5F, 0.22F));
         articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", Type.REGULAR, 12F, 0.22F));
         articleList.add(new ArticleEntity("Knusper Schoko & Keks", "Kölln", Type.REGULAR, 11.5F, 0.21F));
+        articleList.add(new ArticleEntity("Knusper Schoko & Keks Kakao", "Kölln", Type.REGULAR, 12F, 0.22F));
         articleList.add(new ArticleEntity("Knusper Joghurt-Honig", "Kölln", Type.REGULAR, 11F, 0.2F));
         articleList.add(new ArticleEntity("Knusprige Haferkissen Zimt", "Kölln", Type.REGULAR, 4.5F, 0.2F));
         articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", Type.REGULAR, 12F, 0.2F));
