@@ -3,7 +3,8 @@
     <dimen name="availability_recycler_height">200dp</dimen>
     <dimen name="settings_row_height">40dp</dimen>
     <dimen name="ingredients_label_height">30dp</dimen>
-    <dimen name="label_width">40dp</dimen>
+    <dimen name="label_width_small">40dp</dimen>
+    <dimen name="label_width_large">80dp</dimen>
     <dimen name="value_width">60dp</dimen>
     <dimen name="comment_horizontal_margin_large">12dp</dimen>
     <dimen name="comment_horizontal_margin_medium">8dp</dimen>

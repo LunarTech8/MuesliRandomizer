@@ -6,6 +6,10 @@
     >
 
     <data>
+        <variable name="fillerCount" type="Integer" />
+        <variable name="selectableCount" type="Integer" />
+        <variable name="usedCount" type="Integer" />
+        <variable name="priorityCount" type="Integer" />
         <variable name="isAvailabilityBoxMinimized" type="boolean" />
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
@@ -40,6 +44,102 @@
                 android:textAllCaps="false"
                 />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/countInfoRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_row_height"
+                app:visibleGone="@{isAvailabilityBoxMinimized}"
+                >
+
+                <TextView
+                    android:id="@+id/countInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_countInfoLabel"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/fillerCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_horizontal_margin"
+                    android:text="@{@string/t_fillerCountText(fillerCount)}"
+                    app:layout_constraintStart_toEndOf="@+id/countInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/separatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_horizontal_margin"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintStart_toEndOf="@+id/fillerCount"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/selectableCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_horizontal_margin"
+                    android:text="@{@string/t_selectableCountText(selectableCount)}"
+                    app:layout_constraintStart_toEndOf="@+id/separatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/separatorBLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_horizontal_margin"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintStart_toEndOf="@+id/selectableCount"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/priorityCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_horizontal_margin"
+                    android:text="@{@string/t_priorityCountText(priorityCount)}"
+                    app:layout_constraintStart_toEndOf="@+id/separatorBLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/separatorCLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_horizontal_margin"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintStart_toEndOf="@+id/priorityCount"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/usedCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_horizontal_margin"
+                    android:text="@{@string/t_usedCountText(usedCount)}"
+                    app:layout_constraintStart_toEndOf="@+id/separatorCLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/availableArticles"
                 android:layout_width="match_parent"
@@ -66,11 +166,12 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/sizeRow"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_row_height">
+                android:layout_height="@dimen/settings_row_height"
+                >
 
                 <TextView
                     android:id="@+id/sizeLabel"
-                    android:layout_width="@dimen/label_width"
+                    android:layout_width="@dimen/label_width_small"
                     android:layout_height="wrap_content"
                     android:text="@string/t_sizeLabel"
                     app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +214,7 @@
 
                 <TextView
                     android:id="@+id/sugarLabel"
-                    android:layout_width="@dimen/label_width"
+                    android:layout_width="@dimen/label_width_small"
                     android:layout_height="wrap_content"
                     android:text="@string/t_sugarLabel"
                     app:layout_constraintStart_toStartOf="parent"
@@ -156,7 +257,7 @@
 
                 <TextView
                     android:id="@+id/articlesLabel"
-                    android:layout_width="@dimen/label_width"
+                    android:layout_width="@dimen/label_width_small"
                     android:layout_height="wrap_content"
                     android:text="@string/t_articlesLabel"
                     app:layout_constraintStart_toStartOf="parent"

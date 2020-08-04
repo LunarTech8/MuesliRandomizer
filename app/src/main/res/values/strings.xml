@@ -1,12 +1,18 @@
 <resources>
     <string name="l_appName">Muesli Randomizer</string>
 
+    <string name="t_countInfoLabel">Item counts:</string>
+    <string name="t_separatorLabel">|</string>
     <string name="t_sizeLabel">Size:</string>
     <string name="t_sugarLabel">Sugar:</string>
     <string name="t_articlesLabel">Items:</string>
     <string name="t_ingredientsLabel"><u>Muesli ingredients:</u></string>
     <string name="t_invalidSettingsLabel">Cannot find valid muesli mix for given settings.\nChange settings and retry.</string>
 
+    <string name="t_fillerCountText">%s Filler</string>
+    <string name="t_selectableCountText">%s Selectable</string>
+    <string name="t_priorityCountText">%s Fixed</string>
+    <string name="t_usedCountText">%s Used</string>
     <string name="t_weightText">%s g</string>
     <string name="t_percentageText">%s \%%</string>
     <string name="t_countText">%s (+1)</string>

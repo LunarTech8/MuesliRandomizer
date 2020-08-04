@@ -102,12 +102,12 @@ public class MainActivity extends AppCompatActivity
     private IngredientsAdapter ingredientsAdapter;
     private ArticlesAdapter availableArticlesAdapter;
     private MainScreenBinding binding;
-    private List<ArticleEntity> allArticles = new LinkedList<>();
-    private List<ArticleEntity> fillerArticles = new LinkedList<>();
-    private List<ArticleEntity> selectableArticles = new LinkedList<>();
-    private List<ArticleEntity> usedArticles = new LinkedList<>();
-    private List<ArticleEntity> chosenArticles = new LinkedList<>();
-    private List<ArticleEntity> priorityChoosing = new LinkedList<>();
+    private List<ArticleEntity> allArticles = new LinkedList<>();  // All catalogued articles, also not available ones
+    private List<ArticleEntity> fillerArticles = new LinkedList<>();  // All available filler type articles, separate from the other lists with only regular articles
+    private List<ArticleEntity> selectableArticles = new LinkedList<>();  // Selectable articles for the next muesli creation
+    private List<ArticleEntity> usedArticles = new LinkedList<>();  // Used articles, will be reshuffled into selectableArticles once that is depleted
+    private List<ArticleEntity> chosenArticles = new LinkedList<>();  // Chosen articles for the current muesli creation
+    private List<ArticleEntity> priorityChoosing = new LinkedList<>();  // Remaining articles that have to be chosen for the next muesli creation, articles are also in selectableArticles
     private int sizeValue;
     private int sugarValue;
     private int articlesValue;
@@ -289,6 +289,14 @@ public class MainActivity extends AppCompatActivity
         binding.articlesSlider.setProgress(articlesValue);
     }
 
+    private void adjustCountInfo()
+    {
+        binding.setFillerCount(fillerArticles.size());
+        binding.setSelectableCount(selectableArticles.size() + chosenArticles.size());
+        binding.setPriorityCount(priorityChoosing.size());
+        binding.setUsedCount(usedArticles.size());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -332,6 +340,7 @@ public class MainActivity extends AppCompatActivity
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
 
         // Init layout variables:
+        adjustCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
@@ -477,6 +486,7 @@ public class MainActivity extends AppCompatActivity
                     ingredientsAdapter.setIngredients(ingredients);
                     binding.setIsChosenMuesliUsed(false);
                     binding.setIsInvalidSettings(false);
+                    adjustCountInfo();
                     binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                     return;
                 }
@@ -488,6 +498,7 @@ public class MainActivity extends AppCompatActivity
                 fullResetTryCounter += 1;
             }
             binding.setIsInvalidSettings(true);
+            adjustCountInfo();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
         binding.useButton.setOnClickListener((View view) ->
@@ -503,6 +514,7 @@ public class MainActivity extends AppCompatActivity
 
             // Adjust use button:
             binding.setIsChosenMuesliUsed(true);
+            adjustCountInfo();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
 
             storeArticles(allArticles, ARTICLES_FILENAME);
@@ -514,6 +526,7 @@ public class MainActivity extends AppCompatActivity
             if (!isMinimized)
             {
                 adjustStateListsBasedOnAvailability();
+                adjustCountInfo();
             }
             binding.setIsAvailabilityBoxMinimized(!isMinimized);
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
