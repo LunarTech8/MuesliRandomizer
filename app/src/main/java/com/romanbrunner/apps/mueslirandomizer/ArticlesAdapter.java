@@ -1,5 +1,6 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +30,12 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
         EntryViewHolder(ArticleBinding binding, ArticlesAdapter articlesAdapter)
         {
             super(binding.getRoot());
-            binding.availableCheckbox.setOnClickListener((View view) ->
+            binding.availabilityButton.setOnClickListener((View view) ->
             {
                 final int position = getAdapterPosition();
-                articlesAdapter.articles.get(position).setAvailable(binding.availableCheckbox.isChecked());
-            });  // Adjust article availability via listener instead of directly through the layout to avoid problems with item recycling
+                articlesAdapter.articles.get(position).incrementMultiplier();
+                articlesAdapter.notifyItemChanged(position);
+            });
             this.binding = binding;
         }
     }
@@ -109,7 +111,16 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
     public void onBindViewHolder(EntryViewHolder exerciseViewHolder, int position)
     {
         // Adjust changeable values of the view fields by the current entries list:
-        exerciseViewHolder.binding.setArticle(articles.get(position));
+        final Article article = articles.get(position);
+        exerciseViewHolder.binding.setArticle(article);
+        if (article.isAvailable())
+        {
+            exerciseViewHolder.binding.name.setTextColor(Color.BLACK);
+        }
+        else
+        {
+            exerciseViewHolder.binding.name.setTextColor(Color.GRAY);
+        }
         exerciseViewHolder.binding.executePendingBindings();
     }
 

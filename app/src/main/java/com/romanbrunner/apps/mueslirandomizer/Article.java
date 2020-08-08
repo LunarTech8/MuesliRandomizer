@@ -10,14 +10,18 @@ public interface Article
     Type getType();
     float getSpoonWeight();
     float getSugarPercentage();
-    State getState();
-    boolean isAvailable();
+    int getMultiplier();
+    int getSelectionsLeft();
 
     void setName(String name);
     void setBrand(String brand);
     void setType(Type type);
     void setSpoonWeight(float spoonWeight);
     void setSugarPercentage(float sugarPercentage);
-    void setState(State state);
-    void setAvailable(boolean available);
+    void setMultiplier(int multiplier);
+    void setSelectionsLeft(int selectionsLeft);
+
+    boolean isAvailable();
+    void incrementMultiplier();
+    void decrementSelectionsLeft();
 }

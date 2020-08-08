@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -15,6 +16,10 @@ public class ArticleEntity implements Article
     // --------------------
     // Data code
     // --------------------
+
+    private final static int MAX_MULTIPLIER = 3;
+    private final static Charset STRING_CHARSET = StandardCharsets.UTF_8;
+    private final static int BYTE_BUFFER_LENGTH = 4;
 
     public enum Type
     {
@@ -33,23 +38,6 @@ public class ArticleEntity implements Article
         }
     }
 
-    public enum State
-    {
-        UNAVAILABLE, SELECTABLE, USED;
-
-        private static final State[] values = State.values();
-
-        public static State fromInt(int intValue)
-        {
-            if (intValue < 0 || intValue >= values.length)
-            {
-                Log.e("State", "Invalid intValue (" + intValue + " has to be at least 0 and smaller than " + values.length + ")");
-            }
-
-            return values[intValue];
-        }
-    }
-
 
     // --------------------
     // Functional code
@@ -60,7 +48,8 @@ public class ArticleEntity implements Article
     private Type type;
     private float spoonWeight;
     private float sugarPercentage;
-    private State state;
+    private int multiplier;  // Quantifier for how often the article has to be chosen before it is used, 0 means unavailable
+    private int selectionsLeft;  // Counter for how often the article can still be chosen, 0 means it is used
 
     @Override
     public String getName()
@@ -93,15 +82,15 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public State getState()
+    public int getMultiplier()
     {
-        return state;
+        return multiplier;
     }
 
     @Override
-    public boolean isAvailable()
+    public int getSelectionsLeft()
     {
-        return (state != State.UNAVAILABLE);
+        return selectionsLeft;
     }
 
     @Override
@@ -135,21 +124,44 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public void setState(State state)
+    public void setMultiplier(int multiplier)
     {
-        this.state = state;
+        this.multiplier = multiplier;
     }
 
     @Override
-    public void setAvailable(boolean available)
+    public void setSelectionsLeft(int selectionsLeft)
     {
-        if (available && this.state == State.UNAVAILABLE)
+        this.selectionsLeft = selectionsLeft;
+    }
+
+    @Override
+    public boolean isAvailable()
+    {
+        return multiplier > 0;
+    }
+
+    @Override
+    public void incrementMultiplier()
+    {
+        if (multiplier >= MAX_MULTIPLIER)
         {
-            this.state = State.SELECTABLE;
+            multiplier = 0;
+            selectionsLeft = 0;
         }
         else
         {
-            this.state = State.UNAVAILABLE;
+            multiplier += 1;
+            selectionsLeft += 1;
+        }
+    }
+
+    @Override
+    public void decrementSelectionsLeft()
+    {
+        if (selectionsLeft > 0)
+        {
+            selectionsLeft -= 1;
         }
     }
 
@@ -160,33 +172,36 @@ public class ArticleEntity implements Article
         this.type = type;
         this.spoonWeight = spoonWeight;
         this.sugarPercentage = sugarPercentage;
-        this.state = State.UNAVAILABLE;
+        this.multiplier = 0;
+        this.selectionsLeft = 0;
     }
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     ArticleEntity(byte[] dataBytes) throws IOException
     {
-        byte[] bytes;
-        ByteArrayInputStream dataInputStream = new ByteArrayInputStream(dataBytes);
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(dataBytes);
+        name = new String(readEntry(inputStream, inputStream.read()), STRING_CHARSET);
+        brand = new String(readEntry(inputStream, inputStream.read()), STRING_CHARSET);
+        type = Type.fromInt(ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getInt());
+        spoonWeight = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getFloat();
+        sugarPercentage = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getFloat();
+        multiplier = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getInt();
+        selectionsLeft = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getInt();
+    }
 
-        bytes = new byte[dataInputStream.read()];
-        dataInputStream.read(bytes);
-        name = new String(bytes, StandardCharsets.UTF_8);
+    private static byte[] readEntry(final ByteArrayInputStream inputStream, final int entryBytesLength) throws IOException
+    {
+        byte[] entryBytes = new byte[entryBytesLength];
+        //noinspection ResultOfMethodCallIgnored
+        inputStream.read(entryBytes);
+        return entryBytes;
+    }
 
-        bytes = new byte[dataInputStream.read()];
-        dataInputStream.read(bytes);
-        brand = new String(bytes, StandardCharsets.UTF_8);
-
-        type = Type.fromInt(dataInputStream.read());
-
-        bytes = new byte[4];
-        dataInputStream.read(bytes);
-        spoonWeight = ByteBuffer.wrap(bytes).getFloat();
-
-        bytes = new byte[4];
-        dataInputStream.read(bytes);
-        sugarPercentage = ByteBuffer.wrap(bytes).getFloat();
-
-        state = State.fromInt(dataInputStream.read());
+    private static void writeEntry(final ByteArrayOutputStream outputStream, final byte[] entryBytes, final boolean storeLength) throws IOException
+    {
+        if (storeLength)
+        {
+            outputStream.write(entryBytes.length);
+        }
+        outputStream.write(entryBytes);
     }
 
     static boolean isNameTheSame(Article articleA, Article articleB)
@@ -202,30 +217,20 @@ public class ArticleEntity implements Article
             && articleA.getType() == articleB.getType()
             && Float.compare(articleA.getSpoonWeight(), articleB.getSpoonWeight()) == 0
             && Float.compare(articleA.getSugarPercentage(), articleB.getSugarPercentage()) == 0
-            && articleA.getState() == articleB.getState();
+            && articleA.getSelectionsLeft() == articleB.getSelectionsLeft()
+            && articleA.getMultiplier() == articleB.getMultiplier();
     }
 
     byte[] toByteArray() throws IOException
     {
-        byte[] bytes;
-        ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
-
-        bytes = name.getBytes(StandardCharsets.UTF_8);
-        dataOutputStream.write(bytes.length);
-        dataOutputStream.write(bytes);
-
-        bytes = brand.getBytes(StandardCharsets.UTF_8);
-        dataOutputStream.write(bytes.length);
-        dataOutputStream.write(bytes);
-
-        dataOutputStream.write(type.ordinal());
-
-        dataOutputStream.write(ByteBuffer.allocate(4).putFloat(spoonWeight).array());
-
-        dataOutputStream.write(ByteBuffer.allocate(4).putFloat(sugarPercentage).array());
-
-        dataOutputStream.write(state.ordinal());
-
-        return dataOutputStream.toByteArray();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        writeEntry(outputStream, name.getBytes(STRING_CHARSET), true);
+        writeEntry(outputStream, brand.getBytes(STRING_CHARSET), true);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(type.ordinal()).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putFloat(spoonWeight).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putFloat(sugarPercentage).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(multiplier).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(selectionsLeft).array(), false);
+        return outputStream.toByteArray();
     }
 }

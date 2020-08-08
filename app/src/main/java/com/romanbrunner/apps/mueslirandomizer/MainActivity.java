@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         List<ArticleEntity> availableArticles = new LinkedList<>();
         for (ArticleEntity article: allArticles)
         {
-            if (article.getState() != State.UNAVAILABLE)
+            if (article.isAvailable())
             {
                 availableArticles.add(article);
             }
@@ -156,11 +156,11 @@ public class MainActivity extends AppCompatActivity
     {
         if (targetStateList == selectableArticles)
         {
-            sourceStateList.forEach((ArticleEntity article) -> article.setState(State.SELECTABLE));
+            sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(article.getMultiplier()));
         }
         else if (targetStateList == usedArticles)
         {
-            sourceStateList.forEach((ArticleEntity article) -> article.setState(State.USED));
+            sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(0));
         }
         targetStateList.addAll(sourceStateList);
         sourceStateList.clear();
@@ -173,44 +173,41 @@ public class MainActivity extends AppCompatActivity
             switch (article.getType())
             {
                 case FILLER:
-                    if (article.getState() != State.UNAVAILABLE)
+                    if (article.isAvailable())
                     {
                         fillerArticles.add(article);
                     }
                     break;
                 case REGULAR:
-                    switch (article.getState())
+                    if (article.isAvailable())
                     {
-                        case UNAVAILABLE:
-                            break;
-                        case SELECTABLE:
-                            selectableArticles.add(article);
-                            break;
-                        case USED:
+                        if (article.getSelectionsLeft() == 0)
+                        {
                             usedArticles.add(article);
-                            break;
-                        default:
-                            Log.e("addArticlesToFittingStateList", "Unrecognized article type");
+                        }
+                        else
+                        {
+                            selectableArticles.add(article);
+                        }
                     }
                     break;
             }
         }
     }
 
-    private void adjustStateListsBasedOnAvailability()
+    private void adjustStateLists()
     {
-        // Remove unavailable articles from state lists:
-        List<ArticleEntity> availableArticles = getAvailableArticles();
+        final List<ArticleEntity> availableArticles = getAvailableArticles();
+        // Clear state lists that could be outdated:
+        usedArticles.clear();
+        selectableArticles.clear();
+        // Remove unavailable articles from uncleared state lists:
         removeNonIntersectingElements(fillerArticles, availableArticles);
-        removeNonIntersectingElements(selectableArticles, availableArticles);
         removeNonIntersectingElements(chosenArticles, availableArticles);
-        removeNonIntersectingElements(usedArticles, availableArticles);
         removeNonIntersectingElements(priorityChoosing, availableArticles);
         // Add available articles to fitting state lists that aren't in one:
         availableArticles.removeAll(fillerArticles);
-        availableArticles.removeAll(selectableArticles);
         availableArticles.removeAll(chosenArticles);
-        availableArticles.removeAll(usedArticles);
         addArticlesToFittingStateList(availableArticles);
     }
 
@@ -428,11 +425,6 @@ public class MainActivity extends AppCompatActivity
             int fullResetTryCounter = 0;
             while (fullResetTryCounter <= 1)
             {
-                Log.d("onCreate", "------------------------");  // DEBUG:
-                Log.d("onCreate", "selectableArticles count: " + selectableArticles.size());  // DEBUG:
-                Log.d("onCreate", "chosenArticles count: " + chosenArticles.size());  // DEBUG:
-                Log.d("onCreate", "usedArticles count: " + usedArticles.size());  // DEBUG:
-                Log.d("onCreate", "priorityChoosing count: " + priorityChoosing.size());  // DEBUG:
                 for (int tryCounter = 0; tryCounter < MAX_RANDOMIZE_TRIES; tryCounter++)
                 {
                     // Return chosen articles back to the selectable pool if necessary:
@@ -508,8 +500,10 @@ public class MainActivity extends AppCompatActivity
                 Log.e("onCreate", "ChosenArticles is empty");
             }
 
-            // Move chosen articles to used pool and reset priority choosing:
-            moveArticlesToStateList(chosenArticles, usedArticles);
+            // Decrement selections left, move articles to fitting pools and reset priority choosing:
+            chosenArticles.forEach(ArticleEntity::decrementSelectionsLeft);
+            addArticlesToFittingStateList(chosenArticles);
+            chosenArticles.clear();
             priorityChoosing.clear();
 
             // Adjust use button:
@@ -525,7 +519,7 @@ public class MainActivity extends AppCompatActivity
             final boolean isMinimized = binding.getIsAvailabilityBoxMinimized();
             if (!isMinimized)
             {
-                adjustStateListsBasedOnAvailability();
+                adjustStateLists();
                 adjustCountInfo();
             }
             binding.setIsAvailabilityBoxMinimized(!isMinimized);

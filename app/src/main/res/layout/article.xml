@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,8 +22,8 @@
             android:id="@+id/dataRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/item_horizontal_margin"
-            android:layout_marginBottom="@dimen/item_horizontal_margin"
+            android:layout_marginTop="@dimen/item_vertical_margin"
+            android:layout_marginBottom="@dimen/item_vertical_margin"
             android:orientation="horizontal"
             >
 
@@ -38,11 +38,14 @@
                 app:layout_constraintTop_toTopOf="parent"
                 />
 
-            <CheckBox
-                android:id="@+id/availableCheckbox"
+            <Button
+                android:id="@+id/availabilityButton"
+                style="@android:style/Widget.Material.Light.Button.Inset"
                 android:layout_width="@dimen/available_button_size"
                 android:layout_height="@dimen/available_button_size"
-                android:checked="@{article.available}"
+                android:layout_marginEnd="@dimen/comment_horizontal_margin_small"
+                android:text="@{@string/t_availabilityText(article.multiplier)}"
+                android:textAllCaps="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

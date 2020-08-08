@@ -17,9 +17,10 @@
     <string name="t_percentageText">%s \%%</string>
     <string name="t_countText">%s (+1)</string>
     <string name="t_nameText">%s - %s</string>
+    <string name="t_availabilityText">%dx</string>
     <string name="t_ingredientText">%s Spoon(s) / %s g (%s \%% sugar)</string>
 
-    <string name="t_availabilityButton">Adjust muesli availability</string>
+    <string name="t_availabilityButton">Adjust availabilities</string>
     <string name="t_randomizeButton">Create randomized muesli</string>
     <string name="t_useButton">Use displayed muesli</string>
 </resources>
