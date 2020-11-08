@@ -55,9 +55,11 @@ public class MainActivity extends AppCompatActivity
         // Medium sugar regular muesli:
         articleList.add(new ArticleEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", Type.REGULAR, 10.5F, 0.14F));
         articleList.add(new ArticleEntity("Crunchy Müsli Cacao & Hazelnut", "Kellogg", Type.REGULAR, 10F, 0.13F));
+        articleList.add(new ArticleEntity("Knusper Müsli", "Manner", Type.REGULAR, 10.5F, 0.14F));
         articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", Type.REGULAR, 9.5F, 0.15F));
         articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", Type.REGULAR, 9F, 0.13F));
         articleList.add(new ArticleEntity("Knusper Himbeere 30% weniger Zucker", "Vitalis", Type.REGULAR, 9F, 0.15F));
+        articleList.add(new ArticleEntity("Knusper Schoko 30% weniger Zucker", "Vitalis", Type.REGULAR, 10F, 0.14F));
         articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", Type.REGULAR, 10F, 0.13F));
         articleList.add(new ArticleEntity("Knusper Honig-Nuss", "Kölln", Type.REGULAR, 11.5F, 0.19F));
         articleList.add(new ArticleEntity("Schoko-Kirsch", "Kölln", Type.REGULAR, 9.5F, 0.16F));
@@ -296,9 +298,14 @@ public class MainActivity extends AppCompatActivity
     private void adjustCountInfo()
     {
         binding.setFillerCount(fillerArticles.size());
-        binding.setSelectableCount(selectableArticles.size() + chosenArticles.size());
-        binding.setPriorityCount(priorityChoosing.size());
         binding.setUsedCount(usedArticles.size());
+        int count = 0;
+        for (ArticleEntity article: selectableArticles) { count += article.getSelectionsLeft(); }
+        for (ArticleEntity article: chosenArticles) { count += article.getSelectionsLeft(); }
+        binding.setSelectableCount(count);
+        count = 0;
+        for (ArticleEntity article: priorityChoosing) { count += article.getSelectionsLeft(); }
+        binding.setPriorityCount(count);
     }
 
     @Override
@@ -480,8 +487,8 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     // Display ingredients and adjust use button:
-                    Log.d("onCreate", "totalWeight: " + (totalWeight + fillerArticle.getSpoonWeight() * spoonCount));  // DEBUG:
-                    Log.d("onCreate", "tryCounter: " + tryCounter);  // DEBUG:
+                    Log.i("onCreate", "totalWeight: " + (totalWeight + fillerArticle.getSpoonWeight() * spoonCount));
+                    Log.i("onCreate", "tryCounter: " + tryCounter);
                     ingredientsAdapter.setIngredients(ingredients);
                     binding.setIsChosenMuesliUsed(false);
                     binding.setIsInvalidSettings(false);
