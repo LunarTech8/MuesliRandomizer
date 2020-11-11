@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardBackgroundColor="#00000000"
-        card_view:cardCornerRadius="@dimen/item_corner_radius"
+        card_view:cardCornerRadius="@dimen/border_corner_radius"
         android:padding="@dimen/comment_padding"
         >
 

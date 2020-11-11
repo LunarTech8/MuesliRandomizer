@@ -9,8 +9,9 @@
     <dimen name="comment_horizontal_margin_large">12dp</dimen>
     <dimen name="comment_horizontal_margin_medium">8dp</dimen>
     <dimen name="comment_horizontal_margin_small">4dp</dimen>
-    <dimen name="item_corner_radius">4dp</dimen>
-    <dimen name="item_border_width_medium">4dp</dimen>
+    <dimen name="border_corner_radius">4dp</dimen>
+    <dimen name="border_width_medium">4dp</dimen>
+    <dimen name="border_width_small">2dp</dimen>
     <dimen name="item_horizontal_margin_small">2dp</dimen>
     <dimen name="available_button_size">40dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->

@@ -20,7 +20,14 @@
     <string name="t_availabilityText">%dx</string>
     <string name="t_ingredientText">%s Spoon(s) / %s g (%s \%% sugar)</string>
 
+    <string name="h_name">Muesli name</string>
+    <string name="h_brand">Muesli brand</string>
+    <string name="h_weight">Spoon weight</string>
+    <string name="h_percentage">Sugar percentage</string>
+
     <string name="t_availabilityButton">Adjust availabilities</string>
     <string name="t_randomizeButton">Create randomized muesli</string>
     <string name="t_useButton">Use displayed muesli</string>
+    <string name="t_addButton">Add muesli</string>
+    <string name="t_fillerCheckbox">Filler</string>
 </resources>
