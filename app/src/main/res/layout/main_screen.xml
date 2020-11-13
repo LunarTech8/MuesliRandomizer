@@ -6,6 +6,11 @@
     >
 
     <data>
+        <variable name="nameInput" type="String" />
+        <variable name="brandInput" type="String" />
+        <variable name="isFillerInput" type="boolean" />
+        <variable name="weightInput" type="float" />
+        <variable name="percentageInput" type="float" />
         <variable name="fillerCount" type="Integer" />
         <variable name="selectableCount" type="Integer" />
         <variable name="usedCount" type="Integer" />
@@ -151,8 +156,9 @@
 
                     <EditText
                         android:id="@+id/nameField"
-                        android:layout_width="220dp"
+                        android:layout_width="@dimen/input_field_width_large"
                         android:layout_height="match_parent"
+                        android:text="@={nameInput}"
                         android:hint="@string/h_name"
                         android:importantForAutofill="no"
                         android:inputType="textNoSuggestions"
@@ -162,14 +168,14 @@
 
                     <EditText
                         android:id="@+id/brandField"
-                        android:layout_width="0dp"
+                        android:layout_width="@dimen/input_field_width_medium"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
+                        android:text="@={brandInput}"
                         android:hint="@string/h_brand"
                         android:importantForAutofill="no"
                         android:inputType="textNoSuggestions"
                         app:layout_constraintStart_toEndOf="@+id/nameField"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         />
 
@@ -186,16 +192,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:text="@string/t_fillerCheckbox"
-                        android:checked="false"
+                        android:checked="@={isFillerInput}"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         />
 
                     <EditText
                         android:id="@+id/weightField"
-                        android:layout_width="160dp"
+                        android:layout_width="@dimen/input_field_width_small"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
+                        android:text="@={weightInput}"
                         android:hint="@string/h_weight"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
@@ -205,14 +212,14 @@
 
                     <EditText
                         android:id="@+id/percentageField"
-                        android:layout_width="0dp"
+                        android:layout_width="@dimen/input_field_width_small"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
+                        android:text="@={percentageInput}"
                         android:hint="@string/h_percentage"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
                         app:layout_constraintStart_toEndOf="@+id/weightField"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         />
 

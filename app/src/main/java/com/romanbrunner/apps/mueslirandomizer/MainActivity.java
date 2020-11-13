@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -345,12 +346,17 @@ public class MainActivity extends AppCompatActivity
         {
             allArticles = defaultArticles;
         }
-        Collections.sort(allArticles, (Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
+        allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
         availableArticlesAdapter.setArticles(allArticles);
         addArticlesToFittingStateList(allArticles);
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
 
         // Init layout variables:
+        binding.setNameInput("");
+        binding.setBrandInput("");
+        binding.setIsFillerInput(false);
+        binding.setWeightInput(0F);
+        binding.setPercentageInput(0F);
         adjustCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
@@ -410,6 +416,47 @@ public class MainActivity extends AppCompatActivity
                 binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 storePreferences();
+            }
+        });
+        binding.availabilityButton.setOnClickListener((View view) ->
+        {
+            // Flip availability box minimization:
+            final boolean isMinimized = binding.getIsAvailabilityBoxMinimized();
+            if (!isMinimized)
+            {
+                adjustStateLists();
+                adjustCountInfo();
+            }
+            binding.setIsAvailabilityBoxMinimized(!isMinimized);
+            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+        });
+        binding.addButton.setOnClickListener((View view) ->
+        {
+            String newName = binding.getNameInput();
+            for (ArticleEntity article: allArticles)
+            {
+                if (Objects.equals(article.getName(), newName))
+                {
+                    newName = null;
+                    break;
+                }
+            }
+            if (newName != null && !Objects.equals(newName, ""))
+            {
+                allArticles.add(new ArticleEntity(newName, binding.getBrandInput(), (binding.getIsFillerInput()) ? Type.FILLER : Type.REGULAR, binding.getWeightInput(), binding.getPercentageInput()));
+                binding.setNameInput("");
+                binding.setBrandInput("");
+                binding.setIsFillerInput(false);
+                binding.setWeightInput(0F);
+                binding.setPercentageInput(0F);
+                binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+                // TODO: sort allArticles and scroll to new item in availableArticles list
+                // FIXME: weight and percentage doesn't allow inputs currently
+                // TODO: add a fixed " g"/" %" suffix to weight/percentage
+            }
+            else
+            {
+                Log.i("onCreate", "Cannot add empty or duplicate muesli name");
             }
         });
         binding.randomizeButton.setOnClickListener((View view) ->
@@ -526,18 +573,6 @@ public class MainActivity extends AppCompatActivity
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
 
             storeArticles(allArticles, ARTICLES_FILENAME);
-        });
-        binding.availabilityButton.setOnClickListener((View view) ->
-        {
-            // Flip availability box minimization:
-            final boolean isMinimized = binding.getIsAvailabilityBoxMinimized();
-            if (!isMinimized)
-            {
-                adjustStateLists();
-                adjustCountInfo();
-            }
-            binding.setIsAvailabilityBoxMinimized(!isMinimized);
-            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
     }
 
