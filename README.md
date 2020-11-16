@@ -10,7 +10,7 @@ New mixes are generated and evaluated until a close enough approximation to the 
     <td>Availibility multiplier table</td>
   </tr>
   <tr>
-    <td><img src="app/src/main/pics/Showcase01.jpg" width=384></td>
-    <td><img src="app/src/main/pics/Showcase02.jpg" width=384></td>
+    <td><img src="app/doc/readme/Showcase01.jpg" width=384></td>
+    <td><img src="app/doc/readme/Showcase02.jpg" width=384></td>
   </tr>
 </table>
