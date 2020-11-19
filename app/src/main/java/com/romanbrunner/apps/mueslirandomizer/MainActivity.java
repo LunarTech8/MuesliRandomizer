@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.SeekBar;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
@@ -19,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -164,11 +165,11 @@ public class MainActivity extends AppCompatActivity
 
     private void moveArticlesToStateList(List<ArticleEntity> sourceStateList, List<ArticleEntity> targetStateList)
     {
-        if (targetStateList == selectableArticles)
+        if (sourceStateList == usedArticles)
         {
             sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(article.getMultiplier()));
         }
-        else if (targetStateList == usedArticles)
+        if (targetStateList == usedArticles)
         {
             sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(0));
         }
@@ -307,6 +308,21 @@ public class MainActivity extends AppCompatActivity
         count = 0;
         for (ArticleEntity article: priorityChoosing) { count += article.getSelectionsLeft(); }
         binding.setPriorityCount(count);
+    }
+
+    private void hideKeyboard(View view)
+    {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        Objects.requireNonNull(inputMethodManager).hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void setEditTextFocusInTopBox(View view, boolean hasFocus)
+    {
+        if (!hasFocus)
+        {
+            // Hide keyboard when tapping out of edit text:
+            hideKeyboard(view);
+        }
     }
 
     @Override
@@ -451,7 +467,7 @@ public class MainActivity extends AppCompatActivity
                 binding.setPercentageInput(0F);
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 // TODO: sort allArticles and scroll to new item in availableArticles list
-                // FIXME: weight and percentage doesn't allow inputs currently
+                // FIXME: weight and percentage doesn't allow inputs via onscreen keyboard
                 // TODO: add a fixed " g"/" %" suffix to weight/percentage
             }
             else
@@ -459,6 +475,10 @@ public class MainActivity extends AppCompatActivity
                 Log.i("onCreate", "Cannot add empty or duplicate muesli name");
             }
         });
+        binding.nameField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
+        binding.brandField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
+        binding.weightField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
+        binding.percentageField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
         binding.randomizeButton.setOnClickListener((View view) ->
         {
             final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);

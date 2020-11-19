@@ -38,6 +38,8 @@
             android:layout_marginBottom="@dimen/item_horizontal_margin"
             android:orientation="vertical"
             android:background="@drawable/border_medium_rounded"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
             android:padding="@dimen/comment_padding"
             >
 
