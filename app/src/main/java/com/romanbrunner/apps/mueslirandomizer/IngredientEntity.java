@@ -9,7 +9,7 @@ public class IngredientEntity implements Ingredient
     // Functional code
     // --------------------
 
-    private Article article;
+    private final Article article;
     private int spoonCount;
 
     @Override
@@ -43,15 +43,15 @@ public class IngredientEntity implements Ingredient
     }
 
     @Override
-    public void setArticle(Article article)
-    {
-        this.article = article;
-    }
-
-    @Override
     public void setSpoonCount(int spoonCount)
     {
         this.spoonCount = spoonCount;
+    }
+
+    @Override
+    public void markAsEmpty()
+    {
+        this.article.setMultiplier(0);
     }
 
     IngredientEntity(Article article, int spoonCount)

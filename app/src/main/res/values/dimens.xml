@@ -17,6 +17,8 @@
     <dimen name="border_width_small">2dp</dimen>
     <dimen name="item_horizontal_margin_small">2dp</dimen>
     <dimen name="available_button_size">40dp</dimen>
+    <dimen name="empty_button_width">60dp</dimen>
+    <dimen name="empty_button_height">40dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>

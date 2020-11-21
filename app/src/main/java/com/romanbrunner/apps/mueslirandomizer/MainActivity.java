@@ -110,20 +110,22 @@ public class MainActivity extends AppCompatActivity
     // Functional code
     // --------------------
 
+    private final List<ArticleEntity> allArticles = new LinkedList<>();  // All catalogued articles, also not available ones
+    private final List<ArticleEntity> fillerArticles = new LinkedList<>();  // All available filler type articles, separate from the other lists with only regular articles
+    private final List<ArticleEntity> selectableArticles = new LinkedList<>();  // Selectable articles for the next muesli creation
+    private final List<ArticleEntity> usedArticles = new LinkedList<>();  // Used articles, will be reshuffled into selectableArticles once that is depleted
+    private final List<ArticleEntity> chosenArticles = new LinkedList<>();  // Chosen articles for the current muesli creation
+    private final List<ArticleEntity> priorityChoosing = new LinkedList<>();  // Remaining articles that have to be chosen for the next muesli creation, articles are also in selectableArticles
     private IngredientsAdapter ingredientsAdapter;
     private ArticlesAdapter availableArticlesAdapter;
     private MainScreenBinding binding;
-    private List<ArticleEntity> allArticles = new LinkedList<>();  // All catalogued articles, also not available ones
-    private List<ArticleEntity> fillerArticles = new LinkedList<>();  // All available filler type articles, separate from the other lists with only regular articles
-    private List<ArticleEntity> selectableArticles = new LinkedList<>();  // Selectable articles for the next muesli creation
-    private List<ArticleEntity> usedArticles = new LinkedList<>();  // Used articles, will be reshuffled into selectableArticles once that is depleted
-    private List<ArticleEntity> chosenArticles = new LinkedList<>();  // Chosen articles for the current muesli creation
-    private List<ArticleEntity> priorityChoosing = new LinkedList<>();  // Remaining articles that have to be chosen for the next muesli creation, articles are also in selectableArticles
     private int sizeValue;
     private int sugarValue;
     private int articlesValue;
 
-    private static <T> float getLowestValue(List<T> list, Function<T, Float> getter)
+    public boolean isChosenMuesliUsed = true;
+
+    private static <T> float getLowestValue(final List<T> list, final Function<T, Float> getter)
     {
         if (list.isEmpty())
         {
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         return lowestValue;
     }
 
-    private static  <T> void removeNonIntersectingElements(List<T> targetList, List<T> checkList)
+    private static  <T> void removeNonIntersectingElements(final List<T> targetList, final List<T> checkList)
     {
         Iterator<T> iterator = targetList.iterator();
         while (iterator.hasNext())
@@ -163,7 +165,7 @@ public class MainActivity extends AppCompatActivity
         return availableArticles;
     }
 
-    private void moveArticlesToStateList(List<ArticleEntity> sourceStateList, List<ArticleEntity> targetStateList)
+    private void moveArticlesToStateList(final List<ArticleEntity> sourceStateList, final List<ArticleEntity> targetStateList)
     {
         if (sourceStateList == usedArticles)
         {
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity
         sourceStateList.clear();
     }
 
-    private void addArticlesToFittingStateList(List<ArticleEntity> articles)
+    private void addArticlesToFittingStateList(final List<ArticleEntity> articles)
     {
         for (ArticleEntity article: articles)
         {
@@ -206,7 +208,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void adjustStateLists()
+    private void refreshStateLists()
     {
         final List<ArticleEntity> availableArticles = getAvailableArticles();
         // Clear state lists that could be outdated:
@@ -220,6 +222,19 @@ public class MainActivity extends AppCompatActivity
         availableArticles.removeAll(fillerArticles);
         availableArticles.removeAll(chosenArticles);
         addArticlesToFittingStateList(availableArticles);
+    }
+
+    private void refreshCountInfo()
+    {
+        binding.setFillerCount(fillerArticles.size());
+        binding.setUsedCount(usedArticles.size());
+        int count = 0;
+        for (ArticleEntity article: selectableArticles) { count += article.getSelectionsLeft(); }
+        for (ArticleEntity article: chosenArticles) { count += article.getSelectionsLeft(); }
+        binding.setSelectableCount(count);
+        count = 0;
+        for (ArticleEntity article: priorityChoosing) { count += article.getSelectionsLeft(); }
+        binding.setPriorityCount(count);
     }
 
     private void storeArticles(final List<ArticleEntity> articles, final String fileName)
@@ -297,32 +312,26 @@ public class MainActivity extends AppCompatActivity
         binding.articlesSlider.setProgress(articlesValue);
     }
 
-    private void adjustCountInfo()
-    {
-        binding.setFillerCount(fillerArticles.size());
-        binding.setUsedCount(usedArticles.size());
-        int count = 0;
-        for (ArticleEntity article: selectableArticles) { count += article.getSelectionsLeft(); }
-        for (ArticleEntity article: chosenArticles) { count += article.getSelectionsLeft(); }
-        binding.setSelectableCount(count);
-        count = 0;
-        for (ArticleEntity article: priorityChoosing) { count += article.getSelectionsLeft(); }
-        binding.setPriorityCount(count);
-    }
-
-    private void hideKeyboard(View view)
+    private void hideKeyboard(final View view)
     {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         Objects.requireNonNull(inputMethodManager).hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void setEditTextFocusInTopBox(View view, boolean hasFocus)
+    private void setEditTextFocus(final View view, final boolean hasFocus)
     {
         if (!hasFocus)
         {
             // Hide keyboard when tapping out of edit text:
             hideKeyboard(view);
         }
+    }
+
+    public void refreshData()
+    {
+        refreshStateLists();
+        refreshCountInfo();
+        availableArticlesAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -334,7 +343,7 @@ public class MainActivity extends AppCompatActivity
         loadPreferences();
 
         // Setup recycle view adapters:
-        ingredientsAdapter = new IngredientsAdapter();
+        ingredientsAdapter = new IngredientsAdapter(this);
         binding.ingredients.setAdapter(ingredientsAdapter);
         binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
         availableArticlesAdapter = new ArticlesAdapter();
@@ -360,7 +369,7 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-            allArticles = defaultArticles;
+            allArticles.addAll(defaultArticles);
         }
         allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
         availableArticlesAdapter.setArticles(allArticles);
@@ -373,12 +382,12 @@ public class MainActivity extends AppCompatActivity
         binding.setIsFillerInput(false);
         binding.setWeightInput(0F);
         binding.setPercentageInput(0F);
-        adjustCountInfo();
+        refreshCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
         binding.setIsAvailabilityBoxMinimized(true);
-        binding.setIsChosenMuesliUsed(true);
+        binding.setIsChosenMuesliUsed(isChosenMuesliUsed);
         binding.setIsInvalidSettings(false);
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
 
@@ -440,8 +449,7 @@ public class MainActivity extends AppCompatActivity
             final boolean isMinimized = binding.getIsAvailabilityBoxMinimized();
             if (!isMinimized)
             {
-                adjustStateLists();
-                adjustCountInfo();
+                refreshData();
             }
             binding.setIsAvailabilityBoxMinimized(!isMinimized);
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -475,10 +483,10 @@ public class MainActivity extends AppCompatActivity
                 Log.i("onCreate", "Cannot add empty or duplicate muesli name");
             }
         });
-        binding.nameField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
-        binding.brandField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
-        binding.weightField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
-        binding.percentageField.setOnFocusChangeListener(this::setEditTextFocusInTopBox);
+        binding.nameField.setOnFocusChangeListener(this::setEditTextFocus);
+        binding.brandField.setOnFocusChangeListener(this::setEditTextFocus);
+        binding.weightField.setOnFocusChangeListener(this::setEditTextFocus);
+        binding.percentageField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.randomizeButton.setOnClickListener((View view) ->
         {
             final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
@@ -557,9 +565,10 @@ public class MainActivity extends AppCompatActivity
                     Log.i("onCreate", "totalWeight: " + (totalWeight + fillerArticle.getSpoonWeight() * spoonCount));
                     Log.i("onCreate", "tryCounter: " + tryCounter);
                     ingredientsAdapter.setIngredients(ingredients);
-                    binding.setIsChosenMuesliUsed(false);
+                    binding.setIsChosenMuesliUsed(isChosenMuesliUsed = false);
                     binding.setIsInvalidSettings(false);
-                    adjustCountInfo();
+                    refreshCountInfo();
+                    ingredientsAdapter.notifyDataSetChanged();
                     binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                     return;
                 }
@@ -571,7 +580,7 @@ public class MainActivity extends AppCompatActivity
                 fullResetTryCounter += 1;
             }
             binding.setIsInvalidSettings(true);
-            adjustCountInfo();
+            refreshCountInfo();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
         binding.useButton.setOnClickListener((View view) ->
@@ -588,8 +597,9 @@ public class MainActivity extends AppCompatActivity
             priorityChoosing.clear();
 
             // Adjust use button:
-            binding.setIsChosenMuesliUsed(true);
-            adjustCountInfo();
+            binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
+            refreshCountInfo();
+            ingredientsAdapter.notifyDataSetChanged();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
 
             storeArticles(allArticles, ARTICLES_FILENAME);

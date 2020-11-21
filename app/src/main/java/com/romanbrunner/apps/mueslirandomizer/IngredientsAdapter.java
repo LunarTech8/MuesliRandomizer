@@ -1,6 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -19,21 +20,33 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
     // Functional code
     // --------------------
 
+    private final MainActivity mainActivity;
     private List<? extends Ingredient> ingredients;
 
     static class EntryViewHolder extends RecyclerView.ViewHolder
     {
         final IngredientBinding binding;
 
-        EntryViewHolder(IngredientBinding binding)
+        EntryViewHolder(IngredientBinding binding, IngredientsAdapter ingredientsAdapter)
         {
             super(binding.getRoot());
             this.binding = binding;
+            binding.setIsChosenMuesliUsed(ingredientsAdapter.mainActivity.isChosenMuesliUsed);
+            binding.emptyButton.setOnClickListener((View view) ->
+            {
+                final int position = getAdapterPosition();
+                ingredientsAdapter.ingredients.get(position).markAsEmpty();
+                ingredientsAdapter.mainActivity.refreshData();
+                binding.emptyButton.setFocusable(false);
+                binding.emptyButton.setEnabled(false);
+                binding.emptyButton.setFocusableInTouchMode(false);
+            });
         }
     }
 
-    IngredientsAdapter()
+    IngredientsAdapter(MainActivity mainActivity)
     {
+        this.mainActivity = mainActivity;
         ingredients = null;
     }
 
@@ -96,7 +109,7 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
     EntryViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType)
     {
         IngredientBinding binding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.ingredient, viewGroup, false);
-        return new EntryViewHolder(binding);
+        return new EntryViewHolder(binding, this);
     }
 
     @Override
@@ -105,6 +118,7 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
     {
         // Adjust changeable values of the view fields by the current entries list:
         exerciseViewHolder.binding.setIngredient(ingredients.get(position));
+        exerciseViewHolder.binding.setIsChosenMuesliUsed(mainActivity.isChosenMuesliUsed);
         exerciseViewHolder.binding.executePendingBindings();
     }
 
