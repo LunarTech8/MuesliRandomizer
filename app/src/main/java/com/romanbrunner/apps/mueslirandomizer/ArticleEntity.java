@@ -94,6 +94,12 @@ public class ArticleEntity implements Article
     }
 
     @Override
+    public boolean getIsFiller()
+    {
+        return type == Type.FILLER;
+    }
+
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -133,6 +139,12 @@ public class ArticleEntity implements Article
     public void setSelectionsLeft(int selectionsLeft)
     {
         this.selectionsLeft = selectionsLeft;
+    }
+
+    @Override
+    public void setIsFiller(boolean isFiller)
+    {
+        type = (isFiller ? Type.FILLER : Type.REGULAR);
     }
 
     @Override

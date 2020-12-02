@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -377,11 +378,7 @@ public class MainActivity extends AppCompatActivity
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
 
         // Init layout variables:
-        binding.setNameInput("");
-        binding.setBrandInput("");
-        binding.setIsFillerInput(false);
-        binding.setWeightInput(0F);
-        binding.setPercentageInput(0F);
+        binding.setNewArticle(new ArticleEntity("", "", Type.REGULAR, 0F, 0F));
         refreshCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
@@ -456,7 +453,8 @@ public class MainActivity extends AppCompatActivity
         });
         binding.addButton.setOnClickListener((View view) ->
         {
-            String newName = binding.getNameInput();
+            // Check that there is no name duplicate:
+            String newName = binding.getNewArticle().getName();
             for (ArticleEntity article: allArticles)
             {
                 if (Objects.equals(article.getName(), newName))
@@ -465,17 +463,17 @@ public class MainActivity extends AppCompatActivity
                     break;
                 }
             }
+            // Check for non-empty name and brand:
             if (newName != null && !Objects.equals(newName, ""))
             {
-                allArticles.add(new ArticleEntity(newName, binding.getBrandInput(), (binding.getIsFillerInput()) ? Type.FILLER : Type.REGULAR, binding.getWeightInput(), binding.getPercentageInput()));
-                binding.setNameInput("");
-                binding.setBrandInput("");
-                binding.setIsFillerInput(false);
-                binding.setWeightInput(0F);
-                binding.setPercentageInput(0F);
+                final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
+                allArticles.add(newArticle);
+                addArticlesToFittingStateList(Collections.singletonList(newArticle));
+                allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
+                availableArticlesAdapter.setArticles(allArticles);
+                binding.availableArticles.smoothScrollToPosition(allArticles.indexOf(newArticle));
+                binding.setNewArticle(new ArticleEntity("", "", Type.REGULAR, 0F, 0F));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
-                // TODO: sort allArticles and scroll to new item in availableArticles list
-                // FIXME: weight and percentage doesn't allow inputs via onscreen keyboard
                 // TODO: add a fixed " g"/" %" suffix to weight/percentage
             }
             else

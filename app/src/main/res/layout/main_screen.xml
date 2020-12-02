@@ -6,11 +6,7 @@
     >
 
     <data>
-        <variable name="nameInput" type="String" />
-        <variable name="brandInput" type="String" />
-        <variable name="isFillerInput" type="boolean" />
-        <variable name="weightInput" type="float" />
-        <variable name="percentageInput" type="float" />
+        <variable name="newArticle" type="com.romanbrunner.apps.mueslirandomizer.Article" />
         <variable name="fillerCount" type="Integer" />
         <variable name="selectableCount" type="Integer" />
         <variable name="usedCount" type="Integer" />
@@ -139,7 +135,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
-                android:id="@+id/muesliAddBox"
+                android:id="@+id/newArticleBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/item_horizontal_margin"
@@ -160,7 +156,7 @@
                         android:id="@+id/nameField"
                         android:layout_width="@dimen/input_field_width_large"
                         android:layout_height="match_parent"
-                        android:text="@={nameInput}"
+                        android:text="@={newArticle.name}"
                         android:hint="@string/h_name"
                         android:importantForAutofill="no"
                         android:inputType="textNoSuggestions"
@@ -173,7 +169,7 @@
                         android:layout_width="@dimen/input_field_width_medium"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
-                        android:text="@={brandInput}"
+                        android:text="@={newArticle.brand}"
                         android:hint="@string/h_brand"
                         android:importantForAutofill="no"
                         android:inputType="textNoSuggestions"
@@ -194,7 +190,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:text="@string/t_fillerCheckbox"
-                        android:checked="@={isFillerInput}"
+                        android:checked="@={newArticle.isFiller}"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         />
@@ -204,7 +200,7 @@
                         android:layout_width="@dimen/input_field_width_small"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
-                        android:text="@={weightInput}"
+                        android:text="@={newArticle.spoonWeight}"
                         android:hint="@string/h_weight"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
@@ -217,7 +213,7 @@
                         android:layout_width="@dimen/input_field_width_small"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
-                        android:text="@={percentageInput}"
+                        android:text="@={newArticle.sugarPercentage}"
                         android:hint="@string/h_percentage"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"

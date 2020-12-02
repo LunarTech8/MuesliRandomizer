@@ -81,9 +81,10 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
                 {
                     return ArticleEntity.isContentTheSame(articles.get(newItemPosition), ArticlesAdapter.this.articles.get(oldItemPosition));
                 }
-            });
+            }, true);
             this.articles = articles;
             result.dispatchUpdatesTo(this);
+            notifyDataSetChanged();  // FIXME: should not be required, find out why dispatchUpdatesTo doesn't refresh correctly
         }
     }
 

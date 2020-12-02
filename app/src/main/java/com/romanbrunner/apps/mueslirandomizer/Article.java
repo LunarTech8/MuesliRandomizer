@@ -12,6 +12,7 @@ public interface Article
     float getSugarPercentage();
     int getMultiplier();
     int getSelectionsLeft();
+    boolean getIsFiller();
 
     void setName(String name);
     void setBrand(String brand);
@@ -20,6 +21,7 @@ public interface Article
     void setSugarPercentage(float sugarPercentage);
     void setMultiplier(int multiplier);
     void setSelectionsLeft(int selectionsLeft);
+    void setIsFiller(boolean isFiller);
 
     boolean isAvailable();
     void incrementMultiplier();
