@@ -1,6 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.ArticleBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,53 +47,53 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
         articles = null;
     }
 
-    void setArticles(@NonNull final List<? extends Article> articles)
+    void setArticles(@NonNull final List<? extends Article> newArticles)
     {
-        if (this.articles == null)
+        if (articles == null)
         {
             // Add all entries:
-            this.articles = articles;
-            notifyItemRangeInserted(0, articles.size());
+            articles = new ArrayList<>(newArticles);
+            notifyItemRangeInserted(0, newArticles.size());
         }
         else
         {
+            Log.d("setArticles", "setArticles run");
             // Update changed entries:
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback()
             {
                 @Override
                 public int getOldListSize()
                 {
-                    return ArticlesAdapter.this.articles.size();
+                    return articles.size();
                 }
 
                 @Override
                 public int getNewListSize()
                 {
-                    return articles.size();
+                    return newArticles.size();
                 }
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition)
                 {
-                    return ArticlesAdapter.this.articles.get(oldItemPosition).getName().equals(articles.get(newItemPosition).getName());
+                    return articles.get(oldItemPosition).getName().equals(newArticles.get(newItemPosition).getName());
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition)
                 {
-                    return ArticleEntity.isContentTheSame(articles.get(newItemPosition), ArticlesAdapter.this.articles.get(oldItemPosition));
+                    return ArticleEntity.isContentTheSame(newArticles.get(newItemPosition), articles.get(oldItemPosition));
                 }
-            }, true);
-            this.articles = articles;
+            });
+            articles = new ArrayList<>(newArticles);
             result.dispatchUpdatesTo(this);
-            notifyDataSetChanged();  // FIXME: should not be required, find out why dispatchUpdatesTo doesn't refresh correctly
         }
     }
 
     @Override
     public int getItemCount()
     {
-        return articles == null ? 0 : articles.size();
+        return (articles == null ? 0 : articles.size());
     }
 
     @Override

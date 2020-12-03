@@ -474,7 +474,6 @@ public class MainActivity extends AppCompatActivity
                 binding.availableArticles.smoothScrollToPosition(allArticles.indexOf(newArticle));
                 binding.setNewArticle(new ArticleEntity("", "", Type.REGULAR, 0F, 0F));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
-                // TODO: add a fixed " g"/" %" suffix to weight/percentage
             }
             else
             {

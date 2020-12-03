@@ -1,4 +1,8 @@
 <resources>
+    <declare-styleable name="EditTextWithSuffix">
+        <attr name="suffix" format="string|reference" />
+        <attr name="suffixPadding" format="dimension" />
+    </declare-styleable>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -7,5 +11,4 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
 </resources>

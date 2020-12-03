@@ -195,9 +195,9 @@
                         app:layout_constraintTop_toTopOf="parent"
                         />
 
-                    <EditText
+                    <com.romanbrunner.apps.mueslirandomizer.EditTextWithSuffix
                         android:id="@+id/weightField"
-                        android:layout_width="@dimen/input_field_width_small"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                         android:text="@={newArticle.spoonWeight}"
@@ -205,12 +205,14 @@
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
                         app:layout_constraintStart_toEndOf="@+id/fillerCheckbox"
+                        app:layout_constraintEnd_toStartOf="@+id/percentageField"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:suffix=" [g]"
                         />
 
-                    <EditText
+                    <com.romanbrunner.apps.mueslirandomizer.EditTextWithSuffix
                         android:id="@+id/percentageField"
-                        android:layout_width="@dimen/input_field_width_small"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/comment_horizontal_margin_small"
                         android:text="@={newArticle.sugarPercentage}"
@@ -218,7 +220,10 @@
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
                         app:layout_constraintStart_toEndOf="@+id/weightField"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:suffix=" [%]"
+                        app:suffixPadding="@dimen/comment_horizontal_margin_large"
                         />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
