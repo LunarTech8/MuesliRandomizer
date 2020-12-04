@@ -10,9 +10,9 @@ import android.util.AttributeSet;
 
 public class EditTextWithSuffix extends androidx.appcompat.widget.AppCompatEditText
 {
-    TextPaint textPaint = new TextPaint();
+    private final TextPaint textPaint = new TextPaint();
+    private final TextPaint hintTextPaint = new TextPaint();
     private String suffix = "";
-    private float suffixPadding;
 
     public EditTextWithSuffix(Context context)
     {
@@ -36,33 +36,33 @@ public class EditTextWithSuffix extends androidx.appcompat.widget.AppCompatEditT
         textPaint.setColor(getCurrentTextColor());
         textPaint.setTextSize(getTextSize());
         textPaint.setTextAlign(Paint.Align.LEFT);
+        hintTextPaint.setColor(getCurrentHintTextColor());
+        hintTextPaint.setTextSize(getTextSize());
+        hintTextPaint.setTextAlign(Paint.Align.LEFT);
     }
 
     @Override
-    public void onDraw(Canvas c)
+    public void onDraw(Canvas canvas)
     {
-        super.onDraw(c);
-        int suffixXPosition = 0;
+        super.onDraw(canvas);
         if (getText() != null && !getText().toString().isEmpty())
         {
-            suffixXPosition = (int)textPaint.measureText(getText().toString()) + getPaddingLeft();
+            canvas.drawText(suffix, (int)textPaint.measureText(getText().toString()) + getPaddingLeft(), getBaseline(), textPaint);
         }
         else if (getHint() != null && !getHint().toString().isEmpty())
         {
-            suffixXPosition = (int)textPaint.measureText(getHint().toString()) + getPaddingLeft();  // FIXME: hint suffix should have the same colour as the hint text (gray)
+            canvas.drawText(suffix, (int)textPaint.measureText(getHint().toString()) + getPaddingLeft(), getBaseline(), hintTextPaint);
         }
-        c.drawText(suffix, Math.max(suffixXPosition, suffixPadding), getBaseline(), textPaint);  // FIXME: suffixPadding probably not needed and can be dismantled
     }
 
     private void getAttributes(Context context, AttributeSet attrs, int defStyleAttr)
     {
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.EditTextWithSuffix, defStyleAttr, 0);
+        final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.EditTextWithSuffix, defStyleAttr, 0);
         suffix = typedArray.getString(R.styleable.EditTextWithSuffix_suffix);
         if(suffix == null)
         {
             suffix = "";
         }
-        suffixPadding = typedArray.getDimension(R.styleable.EditTextWithSuffix_suffixPadding, 0F);
         typedArray.recycle();
     }
 }

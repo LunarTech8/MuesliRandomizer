@@ -22,11 +22,14 @@ public class BindingAdapters
     @BindingAdapter("android:text")
     public static void setFloat(TextView view, float value)
     {
-        if (Float.isNaN(value))
+        if (value <= 0F)
         {
-            return;
+            view.setText("");
         }
-        view.setText(String.valueOf(value));
+        else if (!Float.isNaN(value))
+        {
+            view.setText(String.valueOf(value));
+        }
     }
 
     @InverseBindingAdapter(attribute = "android:text")

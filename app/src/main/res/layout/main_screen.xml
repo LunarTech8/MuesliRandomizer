@@ -207,7 +207,7 @@
                         app:layout_constraintStart_toEndOf="@+id/fillerCheckbox"
                         app:layout_constraintEnd_toStartOf="@+id/percentageField"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:suffix=" [g]"
+                        app:suffix="@string/h_weightSuffix"
                         />
 
                     <com.romanbrunner.apps.mueslirandomizer.EditTextWithSuffix
@@ -222,8 +222,7 @@
                         app:layout_constraintStart_toEndOf="@+id/weightField"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:suffix=" [%]"
-                        app:suffixPadding="@dimen/comment_horizontal_margin_large"
+                        app:suffix="@string/h_percentageSuffix"
                         />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
