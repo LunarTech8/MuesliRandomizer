@@ -16,7 +16,6 @@ public interface Article
 
     void setName(String name);
     void setBrand(String brand);
-    void setType(Type type);
     void setSpoonWeight(float spoonWeight);
     void setSugarPercentage(float sugarPercentage);
     void setMultiplier(int multiplier);

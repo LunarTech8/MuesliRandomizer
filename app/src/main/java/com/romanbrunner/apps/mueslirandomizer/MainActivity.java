@@ -15,6 +15,10 @@ import android.widget.SeekBar;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -478,6 +482,28 @@ public class MainActivity extends AppCompatActivity
             else
             {
                 Log.i("onCreate", "Cannot add empty or duplicate muesli name");
+            }
+        });
+        binding.importButton.setOnClickListener((View view) ->
+        {
+            // TODO: read jsonString from file in documents folder
+            // TODO: merge jsonString data into allArticles, skip already existing articles
+        });
+        binding.exportButton.setOnClickListener((View view) ->
+        {
+            try
+            {
+                JSONArray jsonArray = new JSONArray();
+                for (ArticleEntity article: allArticles)
+                {
+                    jsonArray.put(article.writeToJson());
+                }
+                String jsonString = jsonArray.toString(4);
+                // TODO: write jsonString to file in documents folder
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
             }
         });
         binding.nameField.setOnFocusChangeListener(this::setEditTextFocus);

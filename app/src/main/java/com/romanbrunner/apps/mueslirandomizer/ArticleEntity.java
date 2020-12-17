@@ -2,6 +2,9 @@ package com.romanbrunner.apps.mueslirandomizer;
 
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -109,12 +112,6 @@ public class ArticleEntity implements Article
     public void setBrand(String brand)
     {
         this.brand = brand;
-    }
-
-    @Override
-    public void setType(Type type)
-    {
-        this.type = type;
     }
 
     @Override
@@ -244,5 +241,27 @@ public class ArticleEntity implements Article
         writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(multiplier).array(), false);
         writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(selectionsLeft).array(), false);
         return outputStream.toByteArray();
+    }
+
+    JSONObject writeToJson() throws JSONException
+    {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name", name);
+        jsonObject.put("brand", brand);
+        jsonObject.put("type", type);
+        jsonObject.put("spoonWeight", spoonWeight);  // TEST: check if this is transformed correctly
+        jsonObject.put("sugarPercentage", sugarPercentage);  // TEST: check if this is transformed correctly
+        return jsonObject;
+    }
+
+    void readFromJson(JSONObject jsonObject) throws JSONException
+    {
+        this.name = jsonObject.getString("name");
+        this.brand = jsonObject.getString("brand");
+        this.type = Type.fromInt(jsonObject.getInt("brand"));
+        this.spoonWeight = jsonObject.getLong("brand");  // TEST: check if this is transformed correctly
+        this.sugarPercentage = jsonObject.getLong("brand");  // TEST: check if this is transformed correctly
+        this.multiplier = 0;
+        this.selectionsLeft = 0;
     }
 }

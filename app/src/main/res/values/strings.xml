@@ -31,6 +31,8 @@
     <string name="t_randomizeButton">Create randomized muesli</string>
     <string name="t_useButton">Use displayed muesli</string>
     <string name="t_addButton">Add new item</string>
+    <string name="t_importButton">Import items</string>
+    <string name="t_exportButton">Export items</string>
     <string name="t_emptyButton">Empty</string>
     <string name="t_fillerCheckbox">Filler</string>
 </resources>

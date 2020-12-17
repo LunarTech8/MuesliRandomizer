@@ -60,7 +60,8 @@
                     android:text="@string/t_countInfoLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/fillerCount"
@@ -70,7 +71,8 @@
                     android:text="@{@string/t_fillerCountText(fillerCount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/countInfoLabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/separatorALabel"
@@ -80,7 +82,8 @@
                     android:text="@string/t_separatorLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/fillerCount"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/selectableCount"
@@ -90,7 +93,8 @@
                     android:text="@{@string/t_selectableCountText(selectableCount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/separatorALabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/separatorBLabel"
@@ -100,7 +104,8 @@
                     android:text="@string/t_separatorLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/selectableCount"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/priorityCount"
@@ -110,7 +115,8 @@
                     android:text="@{@string/t_priorityCountText(priorityCount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/separatorBLabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/separatorCLabel"
@@ -120,7 +126,8 @@
                     android:text="@string/t_separatorLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/priorityCount"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/usedCount"
@@ -130,7 +137,41 @@
                     android:text="@{@string/t_usedCountText(usedCount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/separatorCLabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/importExportRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:visibleGone="@{!isAvailabilityBoxMinimized}"
+                >
+
+                <Button
+                    android:id="@+id/importButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/t_importButton"
+                    android:textAllCaps="false"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/exportButton"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <Button
+                    android:id="@+id/exportButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/comment_horizontal_margin_small"
+                    android:text="@string/t_exportButton"
+                    android:textAllCaps="false"
+                    app:layout_constraintStart_toEndOf="@+id/importButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -156,13 +197,13 @@
                         android:id="@+id/nameField"
                         android:layout_width="@dimen/input_field_width_large"
                         android:layout_height="match_parent"
-                        android:text="@={newArticle.name}"
+                        android:layout_marginStart="4dp"
                         android:hint="@string/h_name"
                         android:importantForAutofill="no"
                         android:inputType="textNoSuggestions"
+                        android:text="@={newArticle.name}"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <EditText
                         android:id="@+id/brandField"
@@ -233,8 +274,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/t_addButton"
                     android:textAllCaps="false"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     />
 
             </LinearLayout>
