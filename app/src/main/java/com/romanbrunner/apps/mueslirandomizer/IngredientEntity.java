@@ -1,5 +1,6 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
+import java.util.Locale;
 import java.util.Objects;
 
 
@@ -31,15 +32,15 @@ public class IngredientEntity implements Ingredient
     }
 
     @Override
-    public float getWeight()
+    public String getWeightString()
     {
-        return spoonCount * article.getSpoonWeight();
+        return String.format(Locale.getDefault(), "%.1f", spoonCount * article.getSpoonWeight());
     }
 
     @Override
-    public float getSugarPercentage()
+    public String getSugarPercentageString()
     {
-        return 100 * article.getSugarPercentage();
+        return String.format(Locale.getDefault(), "%.1f", article.getSugarPercentage() * 100);
     }
 
     @Override

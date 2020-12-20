@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,12 +19,17 @@ import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,51 +53,55 @@ public class MainActivity extends AppCompatActivity
 
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
+    private final static String INTENT_TYPE_JSON = "application/octet-stream";
     private final static String ARTICLES_FILENAME = "AllArticles";
     private final static String PREFS_NAME = "GlobalPreferences";
+    private final static String EXPORT_ITEMS_FILENAME = "ExportedItems";
+    private final static int EXPORT_ITEMS_REQUEST_CODE = 1;
+    private final static int IMPORT_ITEMS_REQUEST_CODE = 2;
 
     private static List<ArticleEntity> getDefaultArticles()
     {
         List<ArticleEntity> articleList = new LinkedList<>();
 
         // Very low sugar filler muesli:
-        articleList.add(new ArticleEntity("Echte Kölln Kernige", "Kölln", Type.FILLER, 8F, 0.012F));
-        articleList.add(new ArticleEntity("Blütenzarte Kölln Flocken", "Kölln", Type.FILLER, 9F, 0.012F));
+        articleList.add(new ArticleEntity("Echte Kölln Kernige", "Kölln", Type.FILLER, 8D, 0.012D));
+        articleList.add(new ArticleEntity("Blütenzarte Kölln Flocken", "Kölln", Type.FILLER, 9D, 0.012D));
 
         // Low sugar regular muesli:
-        articleList.add(new ArticleEntity("Nuss & Krokant", "Kölln", Type.REGULAR, 9.5F, 0.077F));
+        articleList.add(new ArticleEntity("Nuss & Krokant", "Kölln", Type.REGULAR, 9.5D, 0.077D));
         // Medium sugar regular muesli:
-        articleList.add(new ArticleEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", Type.REGULAR, 10.5F, 0.14F));
-        articleList.add(new ArticleEntity("Crunchy Müsli Cacao & Hazelnut", "Kellogg", Type.REGULAR, 10F, 0.13F));
-        articleList.add(new ArticleEntity("Knusper Müsli", "Manner", Type.REGULAR, 10.5F, 0.14F));
-        articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", Type.REGULAR, 9.5F, 0.15F));
-        articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", Type.REGULAR, 9F, 0.13F));
-        articleList.add(new ArticleEntity("Knusper Himbeere 30% weniger Zucker", "Vitalis", Type.REGULAR, 9F, 0.15F));
-        articleList.add(new ArticleEntity("Knusper Schoko 30% weniger Zucker", "Vitalis", Type.REGULAR, 10F, 0.14F));
-        articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", Type.REGULAR, 10F, 0.13F));
-        articleList.add(new ArticleEntity("Knusper Honig-Nuss", "Kölln", Type.REGULAR, 11.5F, 0.19F));
-        articleList.add(new ArticleEntity("Schoko-Kirsch", "Kölln", Type.REGULAR, 9.5F, 0.16F));
+        articleList.add(new ArticleEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", Type.REGULAR, 10.5D, 0.14D));
+        articleList.add(new ArticleEntity("Crunchy Müsli Cacao & Hazelnut", "Kellogg", Type.REGULAR, 10D, 0.13D));
+        articleList.add(new ArticleEntity("Knusper Müsli", "Manner", Type.REGULAR, 10.5D, 0.14D));
+        articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", Type.REGULAR, 9.5D, 0.15D));
+        articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", Type.REGULAR, 9D, 0.13D));
+        articleList.add(new ArticleEntity("Knusper Himbeere 30% weniger Zucker", "Vitalis", Type.REGULAR, 9D, 0.15D));
+        articleList.add(new ArticleEntity("Knusper Schoko 30% weniger Zucker", "Vitalis", Type.REGULAR, 10D, 0.14D));
+        articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", Type.REGULAR, 10D, 0.13D));
+        articleList.add(new ArticleEntity("Knusper Honig-Nuss", "Kölln", Type.REGULAR, 11.5D, 0.19D));
+        articleList.add(new ArticleEntity("Schoko-Kirsch", "Kölln", Type.REGULAR, 9.5D, 0.16D));
         // High sugar regular muesli:
-        articleList.add(new ArticleEntity("Nesquik Knusper-Müsli", "Nestle", Type.REGULAR, 8F, 0.21F));
-        articleList.add(new ArticleEntity("Clusters Chocolate", "Nestle", Type.REGULAR, 8F, 0.285F));
-        articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", Type.REGULAR, 9.5F, 0.22F));
-        articleList.add(new ArticleEntity("Crunchy Müsli Choco & Pistachio", "Kellogg", Type.REGULAR, 11.5F, 0.22F));
-        articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", Type.REGULAR, 11.5F, 0.25F));
-        articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", Type.REGULAR, 13.5F, 0.2F));
-        articleList.add(new ArticleEntity("Knuspermüsli Honeys", "Vitalis", Type.REGULAR, 8.5F, 0.28F));
-        articleList.add(new ArticleEntity("Knuspermüsli Flakes + Mandeln", "Vitalis", Type.REGULAR, 10.5F, 0.24F));
-        articleList.add(new ArticleEntity("Knusper Beere & Schoko", "Kölln", Type.REGULAR, 11.5F, 0.24F));
-        articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", Type.REGULAR, 11.5F, 0.22F));
-        articleList.add(new ArticleEntity("Knusper Schoko-Minze", "Kölln", Type.REGULAR, 12F, 0.23F));
-        articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", Type.REGULAR, 12F, 0.22F));
-        articleList.add(new ArticleEntity("Knusper Schoko & Keks", "Kölln", Type.REGULAR, 11.5F, 0.21F));
-        articleList.add(new ArticleEntity("Knusper Schoko & Keks Kakao", "Kölln", Type.REGULAR, 12F, 0.22F));
-        articleList.add(new ArticleEntity("Knusper Mango-Kurkuma", "Kölln", Type.REGULAR, 11.5F, 0.2F));
-        articleList.add(new ArticleEntity("Knusper Joghurt-Honig", "Kölln", Type.REGULAR, 11F, 0.2F));
-        articleList.add(new ArticleEntity("Knusprige Haferkissen Zimt", "Kölln", Type.REGULAR, 4.5F, 0.2F));
-        articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", Type.REGULAR, 12F, 0.2F));
-        articleList.add(new ArticleEntity("Porridge Dreierlei Beere", "3 Bears", Type.REGULAR, 12.5F, 0.22F));
-        articleList.add(new ArticleEntity("Porridge Zimtiger Apfel", "3 Bears", Type.REGULAR, 11F, 0.2F));
+        articleList.add(new ArticleEntity("Nesquik Knusper-Müsli", "Nestle", Type.REGULAR, 8D, 0.21D));
+        articleList.add(new ArticleEntity("Clusters Chocolate", "Nestle", Type.REGULAR, 8D, 0.285D));
+        articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", Type.REGULAR, 9.5D, 0.22D));
+        articleList.add(new ArticleEntity("Crunchy Müsli Choco & Pistachio", "Kellogg", Type.REGULAR, 11.5D, 0.22D));
+        articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", Type.REGULAR, 11.5D, 0.25D));
+        articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", Type.REGULAR, 13.5D, 0.2D));
+        articleList.add(new ArticleEntity("Knuspermüsli Honeys", "Vitalis", Type.REGULAR, 8.5D, 0.28D));
+        articleList.add(new ArticleEntity("Knuspermüsli Flakes + Mandeln", "Vitalis", Type.REGULAR, 10.5D, 0.24D));
+        articleList.add(new ArticleEntity("Knusper Beere & Schoko", "Kölln", Type.REGULAR, 11.5D, 0.24D));
+        articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", Type.REGULAR, 11.5D, 0.22D));
+        articleList.add(new ArticleEntity("Knusper Schoko-Minze", "Kölln", Type.REGULAR, 12D, 0.23D));
+        articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", Type.REGULAR, 12D, 0.22D));
+        articleList.add(new ArticleEntity("Knusper Schoko & Keks", "Kölln", Type.REGULAR, 11.5D, 0.21D));
+        articleList.add(new ArticleEntity("Knusper Schoko & Keks Kakao", "Kölln", Type.REGULAR, 12D, 0.22D));
+        articleList.add(new ArticleEntity("Knusper Mango-Kurkuma", "Kölln", Type.REGULAR, 11.5D, 0.2D));
+        articleList.add(new ArticleEntity("Knusper Joghurt-Honig", "Kölln", Type.REGULAR, 11D, 0.2D));
+        articleList.add(new ArticleEntity("Knusprige Haferkissen Zimt", "Kölln", Type.REGULAR, 4.5D, 0.2D));
+        articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", Type.REGULAR, 12D, 0.2D));
+        articleList.add(new ArticleEntity("Porridge Dreierlei Beere", "3 Bears", Type.REGULAR, 12.5D, 0.22D));
+        articleList.add(new ArticleEntity("Porridge Zimtiger Apfel", "3 Bears", Type.REGULAR, 11D, 0.2D));
 
         return articleList;
     }
@@ -115,6 +126,8 @@ public class MainActivity extends AppCompatActivity
     // Functional code
     // --------------------
 
+    public boolean isChosenMuesliUsed = true;
+
     private final List<ArticleEntity> allArticles = new LinkedList<>();  // All catalogued articles, also not available ones
     private final List<ArticleEntity> fillerArticles = new LinkedList<>();  // All available filler type articles, separate from the other lists with only regular articles
     private final List<ArticleEntity> selectableArticles = new LinkedList<>();  // Selectable articles for the next muesli creation
@@ -127,17 +140,16 @@ public class MainActivity extends AppCompatActivity
     private int sizeValue;
     private int sugarValue;
     private int articlesValue;
+    private String itemsJsonString;
 
-    public boolean isChosenMuesliUsed = true;
-
-    private static <T> float getLowestValue(final List<T> list, final Function<T, Float> getter)
+    private static <T> double getLowestValue(final List<T> list, final Function<T, Double> getter)
     {
         if (list.isEmpty())
         {
             Log.e("getLowestValue", "Cannot get value for an empty list");
         }
 
-        float lowestValue = getter.apply(list.get(0));
+        double lowestValue = getter.apply(list.get(0));
         for (int i = 1; i < list.size(); i++)
         {
             lowestValue = Math.min(lowestValue, getter.apply(list.get(i)));
@@ -155,6 +167,13 @@ public class MainActivity extends AppCompatActivity
                 iterator.remove();
             }
         }
+    }
+
+    public void refreshData()
+    {
+        refreshStateLists();
+        refreshCountInfo();
+        availableArticlesAdapter.notifyDataSetChanged();
     }
 
     private List<ArticleEntity> getAvailableArticles()
@@ -332,11 +351,80 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void refreshData()
+    private void updateItemsJsonString()
     {
-        refreshStateLists();
-        refreshCountInfo();
-        availableArticlesAdapter.notifyDataSetChanged();
+        try
+        {
+            final JSONArray jsonArray = new JSONArray();
+            for (ArticleEntity article: allArticles)
+            {
+                jsonArray.put(article.writeToJson());
+            }
+            itemsJsonString = jsonArray.toString(4);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void intentToCreateFile(final String filename, final String type, final int requestCode)
+    {
+        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(type);
+        intent.putExtra(Intent.EXTRA_TITLE, filename);
+        startActivityForResult(intent, requestCode);
+    }
+
+    private void intentToOpenFile(final String type, final int requestCode)
+    {
+        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(type);
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData)
+    {
+        super.onActivityResult(requestCode, resultCode, resultData);
+        try
+        {
+            if (resultCode == Activity.RESULT_OK && resultData != null)
+            {
+                final Uri targetUri = resultData.getData();
+                if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
+                {
+                    final OutputStream outputStream = getContentResolver().openOutputStream(targetUri, "w");
+                    final BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(outputStream)));
+                    bufferedWriter.write(itemsJsonString);
+                    bufferedWriter.close();
+                    outputStream.close();
+                }
+                else if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
+                {
+                    final InputStream inputStream = getContentResolver().openInputStream(targetUri);
+                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+                    final StringBuilder stringBuilder = new StringBuilder();
+                    String line = bufferedReader.readLine();
+                    while (line != null)
+                    {
+                        stringBuilder.append(line);
+                        line = bufferedReader.readLine();
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    itemsJsonString = stringBuilder.toString();
+                    Log.d("import", itemsJsonString);  // DEBUG:
+                    // TODO: merge itemsJsonString into allArticles using Article.readFromJson(jsonObject), skip already existing articles
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -484,27 +572,11 @@ public class MainActivity extends AppCompatActivity
                 Log.i("onCreate", "Cannot add empty or duplicate muesli name");
             }
         });
-        binding.importButton.setOnClickListener((View view) ->
-        {
-            // TODO: read jsonString from file in documents folder
-            // TODO: merge jsonString data into allArticles, skip already existing articles
-        });
+        binding.importButton.setOnClickListener((View view) -> intentToOpenFile(INTENT_TYPE_JSON, IMPORT_ITEMS_REQUEST_CODE));
         binding.exportButton.setOnClickListener((View view) ->
         {
-            try
-            {
-                JSONArray jsonArray = new JSONArray();
-                for (ArticleEntity article: allArticles)
-                {
-                    jsonArray.put(article.writeToJson());
-                }
-                String jsonString = jsonArray.toString(4);
-                // TODO: write jsonString to file in documents folder
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
+            updateItemsJsonString();
+            intentToCreateFile(EXPORT_ITEMS_FILENAME + ".json", INTENT_TYPE_JSON, EXPORT_ITEMS_REQUEST_CODE);
         });
         binding.nameField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.brandField.setOnFocusChangeListener(this::setEditTextFocus);
@@ -513,8 +585,8 @@ public class MainActivity extends AppCompatActivity
         binding.randomizeButton.setOnClickListener((View view) ->
         {
             final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
-            final float targetWeight = sizeValue2SizeWeight(sizeValue);
-            final float targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
+            final double targetWeight = sizeValue2SizeWeight(sizeValue);
+            final double targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
 
             // Return used articles back to the selectable pool if necessary:
             if (selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
@@ -564,7 +636,7 @@ public class MainActivity extends AppCompatActivity
                     for (int i = 0; i < regularArticlesCount - 1; i++)
                     {
                         article = chosenArticles.get(i);
-                        spoonCount = Math.round(targetWeight / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
+                        spoonCount = (int)Math.round(targetWeight / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
                         spoonCount = Math.max(spoonCount, 1);
                         totalWeight += spoonCount * article.getSpoonWeight();
                         totalSugar += spoonCount * article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage());
@@ -572,12 +644,12 @@ public class MainActivity extends AppCompatActivity
                     }
                     // Calculate and add spoons for last regular article based on sugar percentage:
                     article = chosenArticles.get(regularArticlesCount - 1);
-                    spoonCount = Math.round((targetSugar - totalSugar) / (article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage())));
+                    spoonCount = (int)Math.round((targetSugar - totalSugar) / (article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage())));
                     if (spoonCount <= 0) continue;
                     totalWeight += article.getSpoonWeight() * spoonCount;
                     ingredients.add(new IngredientEntity(article, spoonCount));
                     // Calculate and add spoons for filler article based on total size:
-                    spoonCount = Math.round((targetWeight - totalWeight) / fillerArticle.getSpoonWeight());
+                    spoonCount = (int)Math.round((targetWeight - totalWeight) / fillerArticle.getSpoonWeight());
                     if (spoonCount < 0) continue;
                     if (spoonCount > 0)
                     {

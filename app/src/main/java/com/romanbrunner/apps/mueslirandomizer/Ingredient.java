@@ -6,8 +6,8 @@ public interface Ingredient
     String getName();
     String getBrand();
     int getSpoonCount();
-    float getWeight();
-    float getSugarPercentage();
+    String getWeightString();
+    String getSugarPercentageString();
 
     void setSpoonCount(int spoonCount);
     void markAsEmpty();

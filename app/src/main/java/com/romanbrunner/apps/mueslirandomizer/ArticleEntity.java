@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Objects;
 
 
@@ -22,7 +23,8 @@ public class ArticleEntity implements Article
 
     private final static int MAX_MULTIPLIER = 3;
     private final static Charset STRING_CHARSET = StandardCharsets.UTF_8;
-    private final static int BYTE_BUFFER_LENGTH = 4;
+    private final static int BYTE_BUFFER_LENGTH_INT = 4;
+    private final static int BYTE_BUFFER_LENGTH_DOUBLE = 8;
 
     public enum Type
     {
@@ -49,8 +51,8 @@ public class ArticleEntity implements Article
     private String name;
     private String brand;
     private Type type;
-    private float spoonWeight;
-    private float sugarPercentage;
+    private double spoonWeight;
+    private double sugarPercentage;
     private int multiplier;  // Quantifier for how often the article has to be chosen before it is used, 0 means unavailable
     private int selectionsLeft;  // Counter for how often the article can still be chosen, 0 means it is used
 
@@ -73,13 +75,13 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public float getSpoonWeight()
+    public double getSpoonWeight()
     {
         return spoonWeight;
     }
 
     @Override
-    public float getSugarPercentage()
+    public double getSugarPercentage()
     {
         return sugarPercentage;
     }
@@ -115,13 +117,13 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public void setSpoonWeight(float spoonWeight)
+    public void setSpoonWeight(double spoonWeight)
     {
         this.spoonWeight = spoonWeight;
     }
 
     @Override
-    public void setSugarPercentage(float sugarPercentage)
+    public void setSugarPercentage(double sugarPercentage)
     {
         this.sugarPercentage = sugarPercentage;
     }
@@ -174,7 +176,7 @@ public class ArticleEntity implements Article
         }
     }
 
-    ArticleEntity(String name, String brand, Type type, float spoonWeight, float sugarPercentage)
+    ArticleEntity(String name, String brand, Type type, double spoonWeight, double sugarPercentage)
     {
         this.name = name;
         this.brand = brand;
@@ -189,11 +191,11 @@ public class ArticleEntity implements Article
         final ByteArrayInputStream inputStream = new ByteArrayInputStream(dataBytes);
         name = new String(readEntry(inputStream, inputStream.read()), STRING_CHARSET);
         brand = new String(readEntry(inputStream, inputStream.read()), STRING_CHARSET);
-        type = Type.fromInt(ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getInt());
-        spoonWeight = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getFloat();
-        sugarPercentage = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getFloat();
-        multiplier = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getInt();
-        selectionsLeft = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH)).getInt();
+        type = Type.fromInt(ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_INT)).getInt());
+        spoonWeight = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_DOUBLE)).getDouble();
+        sugarPercentage = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_DOUBLE)).getDouble();
+        multiplier = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_INT)).getInt();
+        selectionsLeft = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_INT)).getInt();
     }
 
     private static byte[] readEntry(final ByteArrayInputStream inputStream, final int entryBytesLength) throws IOException
@@ -224,8 +226,8 @@ public class ArticleEntity implements Article
         return Objects.equals(articleA.getName(), articleB.getName())
             && Objects.equals(articleA.getBrand(), articleB.getBrand())
             && articleA.getType() == articleB.getType()
-            && Float.compare(articleA.getSpoonWeight(), articleB.getSpoonWeight()) == 0
-            && Float.compare(articleA.getSugarPercentage(), articleB.getSugarPercentage()) == 0
+            && Double.compare(articleA.getSpoonWeight(), articleB.getSpoonWeight()) == 0
+            && Double.compare(articleA.getSugarPercentage(), articleB.getSugarPercentage()) == 0
             && articleA.getSelectionsLeft() == articleB.getSelectionsLeft()
             && articleA.getMultiplier() == articleB.getMultiplier();
     }
@@ -235,11 +237,11 @@ public class ArticleEntity implements Article
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         writeEntry(outputStream, name.getBytes(STRING_CHARSET), true);
         writeEntry(outputStream, brand.getBytes(STRING_CHARSET), true);
-        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(type.ordinal()).array(), false);
-        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putFloat(spoonWeight).array(), false);
-        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putFloat(sugarPercentage).array(), false);
-        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(multiplier).array(), false);
-        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH).putInt(selectionsLeft).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_INT).putInt(type.ordinal()).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_DOUBLE).putDouble(spoonWeight).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_DOUBLE).putDouble(sugarPercentage).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_INT).putInt(multiplier).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_INT).putInt(selectionsLeft).array(), false);
         return outputStream.toByteArray();
     }
 
@@ -248,9 +250,9 @@ public class ArticleEntity implements Article
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", name);
         jsonObject.put("brand", brand);
-        jsonObject.put("type", type);
-        jsonObject.put("spoonWeight", spoonWeight);  // TEST: check if this is transformed correctly
-        jsonObject.put("sugarPercentage", sugarPercentage);  // TEST: check if this is transformed correctly
+        jsonObject.put("type", type.ordinal());
+        jsonObject.put("spoonWeight", spoonWeight);
+        jsonObject.put("sugarPercentage", sugarPercentage);
         return jsonObject;
     }
 
@@ -258,9 +260,9 @@ public class ArticleEntity implements Article
     {
         this.name = jsonObject.getString("name");
         this.brand = jsonObject.getString("brand");
-        this.type = Type.fromInt(jsonObject.getInt("brand"));
-        this.spoonWeight = jsonObject.getLong("brand");  // TEST: check if this is transformed correctly
-        this.sugarPercentage = jsonObject.getLong("brand");  // TEST: check if this is transformed correctly
+        this.type = Type.fromInt(jsonObject.getInt("type"));
+        this.spoonWeight = jsonObject.getDouble("spoonWeight");
+        this.sugarPercentage = jsonObject.getDouble("sugarPercentage");
         this.multiplier = 0;
         this.selectionsLeft = 0;
     }

@@ -20,33 +20,33 @@ public class BindingAdapters
     }
 
     @BindingAdapter("android:text")
-    public static void setFloat(TextView view, float value)
+    public static void setDouble(TextView view, double value)
     {
-        if (value <= 0F)
+        if (value <= 0.0D)
         {
             view.setText("");
         }
-        else if (!Float.isNaN(value))
+        else if (!Double.isNaN(value))
         {
             view.setText(String.valueOf(value));
         }
     }
 
     @InverseBindingAdapter(attribute = "android:text")
-    public static float getFloat(TextView view)
+    public static double getDouble(TextView view)
     {
         String num = view.getText().toString();
         if(num.isEmpty())
         {
-            return 0.0F;
+            return 0.0D;
         }
         try
         {
-            return Float.parseFloat(num);
+            return Double.parseDouble(num);
         }
         catch (NumberFormatException e)
         {
-            return 0.0F;
+            return 0.0D;
         }
     }
 }

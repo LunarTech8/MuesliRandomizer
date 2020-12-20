@@ -8,16 +8,16 @@ public interface Article
     String getName();
     String getBrand();
     Type getType();
-    float getSpoonWeight();
-    float getSugarPercentage();
+    double getSpoonWeight();
+    double getSugarPercentage();
     int getMultiplier();
     int getSelectionsLeft();
     boolean getIsFiller();
 
     void setName(String name);
     void setBrand(String brand);
-    void setSpoonWeight(float spoonWeight);
-    void setSugarPercentage(float sugarPercentage);
+    void setSpoonWeight(double spoonWeight);
+    void setSugarPercentage(double sugarPercentage);
     void setMultiplier(int multiplier);
     void setSelectionsLeft(int selectionsLeft);
     void setIsFiller(boolean isFiller);
