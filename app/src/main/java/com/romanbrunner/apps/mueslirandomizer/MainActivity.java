@@ -19,6 +19,7 @@ import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -53,14 +54,14 @@ public class MainActivity extends AppCompatActivity
 
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
-    private final static String INTENT_TYPE_JSON = "application/octet-stream";
+    private final static String INTENT_TYPE_JSON = "*/*";  // No MIME type for json yet, thus allowing every file
     private final static String ARTICLES_FILENAME = "AllArticles";
     private final static String PREFS_NAME = "GlobalPreferences";
-    private final static String EXPORT_ITEMS_FILENAME = "ExportedItems";
+    private final static String EXPORT_ITEMS_FILENAME = "MuesliItemsData";
     private final static int EXPORT_ITEMS_REQUEST_CODE = 1;
     private final static int IMPORT_ITEMS_REQUEST_CODE = 2;
 
-    private static List<ArticleEntity> getDefaultArticles()
+    private static List<ArticleEntity> getDefaultArticles()  // TODO: remove this list and instead check in and use a default articles json with this data
     {
         List<ArticleEntity> articleList = new LinkedList<>();
 
@@ -364,6 +365,40 @@ public class MainActivity extends AppCompatActivity
         }
         catch (JSONException e)
         {
+            Log.e("updateItemsJsonString", "Update of itemsJsonString to values of allArticles failed, setting it to an empty string");
+            itemsJsonString = "";
+            e.printStackTrace();
+        }
+    }
+
+    private void mergeItemsJsonString()
+    {
+        try
+        {
+            final JSONArray jsonArray = new JSONArray(itemsJsonString);
+            boolean hasNewItems = false;
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                ArticleEntity newArticle = new ArticleEntity(jsonObject);
+                // Add json entry as new article if an entry with the same name doesn't exist already:
+                if (allArticles.stream().noneMatch(article -> isNameTheSame(article, newArticle)))
+                {
+                    allArticles.add(newArticle);
+                    addArticlesToFittingStateList(Collections.singletonList(newArticle));
+                    hasNewItems = true;
+                }
+            }
+            if (hasNewItems)
+            {
+                allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
+                availableArticlesAdapter.setArticles(allArticles);
+            }
+        }
+        catch (JSONException e)
+        {
+            Log.e("mergeItemsJsonString", "itemsJsonString is corrupted, resetting it to the values of allArticles");
+            updateItemsJsonString();
             e.printStackTrace();
         }
     }
@@ -398,6 +433,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     final OutputStream outputStream = getContentResolver().openOutputStream(targetUri, "w");
                     final BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(outputStream)));
+                    updateItemsJsonString();
                     bufferedWriter.write(itemsJsonString);
                     bufferedWriter.close();
                     outputStream.close();
@@ -413,16 +449,23 @@ public class MainActivity extends AppCompatActivity
                         stringBuilder.append(line);
                         line = bufferedReader.readLine();
                     }
+                    itemsJsonString = stringBuilder.toString();
+                    mergeItemsJsonString();
                     bufferedReader.close();
                     inputStream.close();
-                    itemsJsonString = stringBuilder.toString();
-                    Log.d("import", itemsJsonString);  // DEBUG:
-                    // TODO: merge itemsJsonString into allArticles using Article.readFromJson(jsonObject), skip already existing articles
                 }
             }
         }
         catch (IOException e)
         {
+            if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
+            {
+                Log.e("onActivityResult", "Export request failed");
+            }
+            else if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
+            {
+                Log.e("onActivityResult", "Import request failed");
+            }
             e.printStackTrace();
         }
     }
@@ -545,20 +588,16 @@ public class MainActivity extends AppCompatActivity
         });
         binding.addButton.setOnClickListener((View view) ->
         {
-            // Check that there is no name duplicate:
-            String newName = binding.getNewArticle().getName();
-            for (ArticleEntity article: allArticles)
+            final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
+            // Check for name duplicate:
+            final boolean isDuplicate = allArticles.stream().anyMatch(article -> isNameTheSame(article, newArticle));
+            // Check for empty name or brand:
+            final String newName = newArticle.getName();
+            final String newBrand = newArticle.getBrand();
+            final boolean hasEmptyField = (newName == null || Objects.equals(newName, "") || newBrand == null || Objects.equals(newBrand, ""));
+            // Add and sort in new article, update adapter and scroll to its position:
+            if (!isDuplicate && !hasEmptyField)
             {
-                if (Objects.equals(article.getName(), newName))
-                {
-                    newName = null;
-                    break;
-                }
-            }
-            // Check for non-empty name and brand:
-            if (newName != null && !Objects.equals(newName, ""))
-            {
-                final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
                 allArticles.add(newArticle);
                 addArticlesToFittingStateList(Collections.singletonList(newArticle));
                 allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
@@ -573,11 +612,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         binding.importButton.setOnClickListener((View view) -> intentToOpenFile(INTENT_TYPE_JSON, IMPORT_ITEMS_REQUEST_CODE));
-        binding.exportButton.setOnClickListener((View view) ->
-        {
-            updateItemsJsonString();
-            intentToCreateFile(EXPORT_ITEMS_FILENAME + ".json", INTENT_TYPE_JSON, EXPORT_ITEMS_REQUEST_CODE);
-        });
+        binding.exportButton.setOnClickListener((View view) -> intentToCreateFile(EXPORT_ITEMS_FILENAME + ".json", INTENT_TYPE_JSON, EXPORT_ITEMS_REQUEST_CODE));
         binding.nameField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.brandField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.weightField.setOnFocusChangeListener(this::setEditTextFocus);

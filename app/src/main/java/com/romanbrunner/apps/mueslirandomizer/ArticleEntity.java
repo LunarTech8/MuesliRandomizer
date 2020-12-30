@@ -186,6 +186,12 @@ public class ArticleEntity implements Article
         this.multiplier = 0;
         this.selectionsLeft = 0;
     }
+    ArticleEntity(JSONObject jsonObject) throws JSONException
+    {
+        readFromJson(jsonObject);
+        this.multiplier = 0;
+        this.selectionsLeft = 0;
+    }
     ArticleEntity(byte[] dataBytes) throws IOException
     {
         final ByteArrayInputStream inputStream = new ByteArrayInputStream(dataBytes);
@@ -263,7 +269,5 @@ public class ArticleEntity implements Article
         this.type = Type.fromInt(jsonObject.getInt("type"));
         this.spoonWeight = jsonObject.getDouble("spoonWeight");
         this.sugarPercentage = jsonObject.getDouble("sugarPercentage");
-        this.multiplier = 0;
-        this.selectionsLeft = 0;
     }
 }
