@@ -6,12 +6,13 @@
     >
 
     <data>
+        <import type="com.romanbrunner.apps.mueslirandomizer.MainActivity.UserMode"/>
         <variable name="newArticle" type="com.romanbrunner.apps.mueslirandomizer.Article" />
         <variable name="fillerCount" type="Integer" />
         <variable name="selectableCount" type="Integer" />
         <variable name="usedCount" type="Integer" />
         <variable name="priorityCount" type="Integer" />
-        <variable name="isAvailabilityBoxMinimized" type="boolean" />
+        <variable name="userMode" type="UserMode" />
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
         <variable name="articlesCount" type="Integer" />
@@ -28,7 +29,7 @@
         >
 
         <LinearLayout
-            android:id="@+id/availabilityBox"
+            android:id="@+id/headerBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/item_horizontal_margin"
@@ -39,19 +40,46 @@
             android:padding="@dimen/comment_padding"
             >
 
-            <Button
-                android:id="@+id/availabilityButton"
+            <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/t_availabilityButton"
-                android:textAllCaps="false"
-                />
+                android:orientation="horizontal"
+                android:checkedButton="@+id/mixMuesliButton"
+                >
+
+                <RadioButton
+                    android:id="@+id/mixMuesliButton"
+                    android:layout_width="@dimen/user_mode_button_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/item_horizontal_margin"
+                    android:text="@string/t_mixMuesliButton"
+                    android:onClick="onRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/availabilityButton"
+                    android:layout_width="@dimen/user_mode_button_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/item_horizontal_margin"
+                    android:text="@string/t_availabilityButton"
+                    android:onClick="onRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/editItemsButton"
+                    android:layout_width="@dimen/user_mode_button_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_editItemsButton"
+                    android:onClick="onRadioButtonClicked"
+                    />
+
+            </RadioGroup>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/countInfoRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_row_height"
-                app:visibleGone="@{isAvailabilityBoxMinimized}">
+                >
 
                 <TextView
                     android:id="@+id/countInfoLabel"
@@ -64,7 +92,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/fillerCount"
+                    android:id="@+id/fillerCountView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/item_horizontal_margin"
@@ -81,12 +109,12 @@
                     android:layout_margin="@dimen/item_horizontal_margin"
                     android:text="@string/t_separatorLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/fillerCount"
+                    app:layout_constraintStart_toEndOf="@+id/fillerCountView"
                     app:layout_constraintTop_toTopOf="parent"
                     />
 
                 <TextView
-                    android:id="@+id/selectableCount"
+                    android:id="@+id/selectableCountView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/item_horizontal_margin"
@@ -103,12 +131,12 @@
                     android:layout_margin="@dimen/item_horizontal_margin"
                     android:text="@string/t_separatorLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/selectableCount"
+                    app:layout_constraintStart_toEndOf="@+id/selectableCountView"
                     app:layout_constraintTop_toTopOf="parent"
                     />
 
                 <TextView
-                    android:id="@+id/priorityCount"
+                    android:id="@+id/priorityCountView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/item_horizontal_margin"
@@ -125,12 +153,12 @@
                     android:layout_margin="@dimen/item_horizontal_margin"
                     android:text="@string/t_separatorLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/priorityCount"
+                    app:layout_constraintStart_toEndOf="@+id/priorityCountView"
                     app:layout_constraintTop_toTopOf="parent"
                     />
 
                 <TextView
-                    android:id="@+id/usedCount"
+                    android:id="@+id/usedCountView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/item_horizontal_margin"
@@ -142,12 +170,27 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/availabilityBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/item_horizontal_margin"
+            android:orientation="vertical"
+            android:background="@drawable/border_medium_rounded"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:padding="@dimen/comment_padding"
+            app:visibleGone="@{userMode!=UserMode.MIX_MUESLI}"
+            >
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/importExportRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:visibleGone="@{!isAvailabilityBoxMinimized}"
+                app:visibleGone="@{userMode==UserMode.EDIT_ITEMS}"
                 >
 
                 <Button
@@ -184,7 +227,7 @@
                 android:background="@drawable/border_small_angular"
                 android:layout_marginStart="@dimen/item_horizontal_margin_small"
                 android:layout_marginEnd="@dimen/item_horizontal_margin_small"
-                app:visibleGone="@{!isAvailabilityBoxMinimized}"
+                app:visibleGone="@{userMode==UserMode.EDIT_ITEMS}"
                 >
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -285,7 +328,6 @@
                 android:layout_marginStart="@dimen/item_horizontal_margin_small"
                 android:layout_marginEnd="@dimen/item_horizontal_margin_small"
                 app:layoutManager="LinearLayoutManager"
-                app:visibleGone="@{!isAvailabilityBoxMinimized}"
                 />
 
         </LinearLayout>
@@ -298,7 +340,7 @@
             android:orientation="vertical"
             android:background="@drawable/border_medium_rounded"
             android:padding="@dimen/comment_padding"
-            app:visibleGone="@{isAvailabilityBoxMinimized}"
+            app:visibleGone="@{userMode==UserMode.MIX_MUESLI}"
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -326,13 +368,13 @@
                     android:max="@integer/sizeSliderMax"
                     android:progress="3"
                     app:layout_constraintStart_toEndOf="@+id/sizeLabel"
-                    app:layout_constraintEnd_toStartOf="@+id/sizeWeight"
+                    app:layout_constraintEnd_toStartOf="@+id/sizeWeightView"
                     app:layout_constraintTop_toTopOf="parent"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
                 <TextView
-                    android:id="@+id/sizeWeight"
+                    android:id="@+id/sizeWeightView"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
                     android:text="@{@string/t_weightText(sizeWeight)}"
@@ -369,13 +411,13 @@
                     android:max="@integer/sugarSliderMax"
                     android:progress="2"
                     app:layout_constraintStart_toEndOf="@+id/sugarLabel"
-                    app:layout_constraintEnd_toStartOf="@+id/sugarPercentage"
+                    app:layout_constraintEnd_toStartOf="@+id/sugarPercentageView"
                     app:layout_constraintTop_toTopOf="parent"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
                 <TextView
-                    android:id="@+id/sugarPercentage"
+                    android:id="@+id/sugarPercentageView"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
                     android:text="@{@string/t_percentageText(sugarPercentage)}"
@@ -412,13 +454,13 @@
                     android:max="@integer/articleSliderMax"
                     android:progress="1"
                     app:layout_constraintStart_toEndOf="@+id/articlesLabel"
-                    app:layout_constraintEnd_toStartOf="@+id/articlesCount"
+                    app:layout_constraintEnd_toStartOf="@+id/articlesCountView"
                     app:layout_constraintTop_toTopOf="parent"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
                 <TextView
-                    android:id="@+id/articlesCount"
+                    android:id="@+id/articlesCountView"
                     android:layout_width="@dimen/value_width"
                     android:layout_height="wrap_content"
                     android:text="@{@string/t_countText(articlesCount)}"
@@ -445,7 +487,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@drawable/border_medium_rounded"
-            app:visibleGone="@{isAvailabilityBoxMinimized}"
+            app:visibleGone="@{userMode==UserMode.MIX_MUESLI}"
             >
 
             <TextView

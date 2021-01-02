@@ -32,7 +32,7 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
         EntryViewHolder(ArticleBinding binding, ArticlesAdapter articlesAdapter)
         {
             super(binding.getRoot());
-            binding.availabilityButton.setOnClickListener((View view) ->
+            binding.multiplierButton.setOnClickListener((View view) ->
             {
                 final int position = getAdapterPosition();
                 articlesAdapter.articles.get(position).incrementMultiplier();

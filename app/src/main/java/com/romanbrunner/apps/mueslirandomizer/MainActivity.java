@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
@@ -142,6 +143,11 @@ public class MainActivity extends AppCompatActivity
     private int sugarValue;
     private int articlesValue;
     private String itemsJsonString;
+
+    public enum UserMode
+    {
+        MIX_MUESLI, AVAILABILITY, EDIT_ITEMS
+    }
 
     private static <T> double getLowestValue(final List<T> list, final Function<T, Double> getter)
     {
@@ -429,6 +435,7 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == Activity.RESULT_OK && resultData != null)
             {
                 final Uri targetUri = resultData.getData();
+                assert targetUri != null;
                 if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
                 {
                     final OutputStream outputStream = getContentResolver().openOutputStream(targetUri, "w");
@@ -468,6 +475,26 @@ public class MainActivity extends AppCompatActivity
             }
             e.printStackTrace();
         }
+    }
+
+    public void onRadioButtonClicked(View view)
+    {
+        final int id = view.getId();
+        if (id == R.id.mixMuesliButton)
+        {
+            binding.setUserMode(UserMode.MIX_MUESLI);
+        }
+        else if (id == R.id.availabilityButton)
+        {
+            refreshData();
+            binding.setUserMode(UserMode.AVAILABILITY);
+        }
+        else if (id == R.id.editItemsButton)
+        {
+            binding.setUserMode(UserMode.EDIT_ITEMS);
+            // TODO: replace multiplierButton with removeButton ("x") when in UserMode.EDIT_ITEMS and implement functionality
+        }
+        binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
     }
 
     @Override
@@ -513,12 +540,12 @@ public class MainActivity extends AppCompatActivity
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
 
         // Init layout variables:
+        binding.setUserMode(UserMode.MIX_MUESLI);
         binding.setNewArticle(new ArticleEntity("", "", Type.REGULAR, 0F, 0F));
         refreshCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
-        binding.setIsAvailabilityBoxMinimized(true);
         binding.setIsChosenMuesliUsed(isChosenMuesliUsed);
         binding.setIsInvalidSettings(false);
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -574,17 +601,6 @@ public class MainActivity extends AppCompatActivity
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 storePreferences();
             }
-        });
-        binding.availabilityButton.setOnClickListener((View view) ->
-        {
-            // Flip availability box minimization:
-            final boolean isMinimized = binding.getIsAvailabilityBoxMinimized();
-            if (!isMinimized)
-            {
-                refreshData();
-            }
-            binding.setIsAvailabilityBoxMinimized(!isMinimized);
-            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
         });
         binding.addButton.setOnClickListener((View view) ->
         {

@@ -39,7 +39,7 @@
                 />
 
             <Button
-                android:id="@+id/availabilityButton"
+                android:id="@+id/multiplierButton"
                 style="@android:style/Widget.Material.Light.Button.Inset"
                 android:layout_width="@dimen/available_button_size"
                 android:layout_height="@dimen/available_button_size"

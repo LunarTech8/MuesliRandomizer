@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="user_mode_button_width">120dp</dimen>
     <dimen name="availability_recycler_height">200dp</dimen>
     <dimen name="settings_row_height">40dp</dimen>
     <dimen name="ingredients_label_height">30dp</dimen>

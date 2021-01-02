@@ -27,7 +27,9 @@
     <string name="h_weightSuffix">\u0020[g]</string>
     <string name="h_percentageSuffix">\u0020[\%]</string>
 
-    <string name="t_availabilityButton">Adjust availabilities</string>
+    <string name="t_mixMuesliButton">Mix muesli</string>
+    <string name="t_availabilityButton">Availabilities</string>
+    <string name="t_editItemsButton">Edit items</string>
     <string name="t_randomizeButton">Create randomized muesli</string>
     <string name="t_useButton">Use displayed muesli</string>
     <string name="t_addButton">Add new item</string>
