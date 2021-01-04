@@ -23,6 +23,7 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
     // Functional code
     // --------------------
 
+    private final MainActivity mainActivity;
     private List<? extends Article> articles;
 
     static class EntryViewHolder extends RecyclerView.ViewHolder
@@ -32,18 +33,29 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
         EntryViewHolder(ArticleBinding binding, ArticlesAdapter articlesAdapter)
         {
             super(binding.getRoot());
+            binding.setUserMode(articlesAdapter.mainActivity.userMode);
             binding.multiplierButton.setOnClickListener((View view) ->
             {
                 final int position = getAdapterPosition();
                 articlesAdapter.articles.get(position).incrementMultiplier();
+                articlesAdapter.mainActivity.refreshData(false);
                 articlesAdapter.notifyItemChanged(position);
+            });
+            binding.removeButton.setOnClickListener((View view) ->
+            {
+                final int position = getAdapterPosition();
+                articlesAdapter.mainActivity.removeArticle((ArticleEntity)articlesAdapter.articles.get(position));
+                articlesAdapter.mainActivity.refreshData(false);
+                articlesAdapter.articles.remove(position);
+                articlesAdapter.notifyItemRemoved(position);
             });
             this.binding = binding;
         }
     }
 
-    ArticlesAdapter()
+    ArticlesAdapter(MainActivity mainActivity)
     {
+        this.mainActivity = mainActivity;
         articles = null;
     }
 
@@ -124,6 +136,7 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
         {
             exerciseViewHolder.binding.name.setTextColor(Color.GRAY);
         }
+        exerciseViewHolder.binding.setUserMode(mainActivity.userMode);
         exerciseViewHolder.binding.executePendingBindings();
     }
 

@@ -36,7 +36,7 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
             {
                 final int position = getAdapterPosition();
                 ingredientsAdapter.ingredients.get(position).markAsEmpty();
-                ingredientsAdapter.mainActivity.refreshData();
+                ingredientsAdapter.mainActivity.refreshData(false);
                 binding.emptyButton.setFocusable(false);
                 binding.emptyButton.setEnabled(false);
                 binding.emptyButton.setFocusableInTouchMode(false);

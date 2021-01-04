@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.RadioButton;
 import android.widget.SeekBar;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
@@ -128,6 +127,12 @@ public class MainActivity extends AppCompatActivity
     // Functional code
     // --------------------
 
+    public enum UserMode
+    {
+        MIX_MUESLI, AVAILABILITY, EDIT_ITEMS
+    }
+
+    public UserMode userMode = UserMode.MIX_MUESLI;
     public boolean isChosenMuesliUsed = true;
 
     private final List<ArticleEntity> allArticles = new LinkedList<>();  // All catalogued articles, also not available ones
@@ -144,11 +149,6 @@ public class MainActivity extends AppCompatActivity
     private int articlesValue;
     private String itemsJsonString;
 
-    public enum UserMode
-    {
-        MIX_MUESLI, AVAILABILITY, EDIT_ITEMS
-    }
-
     private static <T> double getLowestValue(final List<T> list, final Function<T, Double> getter)
     {
         if (list.isEmpty())
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity
         return lowestValue;
     }
 
-    private static  <T> void removeNonIntersectingElements(final List<T> targetList, final List<T> checkList)
+    private static <T> void removeNonIntersectingElements(final List<T> targetList, final List<T> checkList)
     {
         Iterator<T> iterator = targetList.iterator();
         while (iterator.hasNext())
@@ -176,11 +176,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void refreshData()
+    public void refreshData(boolean reloadArticleAdapter)
     {
         refreshStateLists();
         refreshCountInfo();
-        availableArticlesAdapter.notifyDataSetChanged();
+        if (reloadArticleAdapter)
+        {
+            availableArticlesAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void removeArticle(final ArticleEntity article)
+    {
+        allArticles.remove(article);
     }
 
     private List<ArticleEntity> getAvailableArticles()
@@ -482,18 +490,19 @@ public class MainActivity extends AppCompatActivity
         final int id = view.getId();
         if (id == R.id.mixMuesliButton)
         {
-            binding.setUserMode(UserMode.MIX_MUESLI);
+            userMode = UserMode.MIX_MUESLI;
         }
         else if (id == R.id.availabilityButton)
         {
-            refreshData();
-            binding.setUserMode(UserMode.AVAILABILITY);
+            userMode = UserMode.AVAILABILITY;
+            refreshData(true);
         }
         else if (id == R.id.editItemsButton)
         {
-            binding.setUserMode(UserMode.EDIT_ITEMS);
-            // TODO: replace multiplierButton with removeButton ("x") when in UserMode.EDIT_ITEMS and implement functionality
+            userMode = UserMode.EDIT_ITEMS;
+            refreshData(true);
         }
+        binding.setUserMode(userMode);
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
     }
 
@@ -509,7 +518,7 @@ public class MainActivity extends AppCompatActivity
         ingredientsAdapter = new IngredientsAdapter(this);
         binding.ingredients.setAdapter(ingredientsAdapter);
         binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
-        availableArticlesAdapter = new ArticlesAdapter();
+        availableArticlesAdapter = new ArticlesAdapter(this);
         binding.availableArticles.setAdapter(availableArticlesAdapter);
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
 
@@ -540,7 +549,7 @@ public class MainActivity extends AppCompatActivity
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
 
         // Init layout variables:
-        binding.setUserMode(UserMode.MIX_MUESLI);
+        binding.setUserMode(userMode);
         binding.setNewArticle(new ArticleEntity("", "", Type.REGULAR, 0F, 0F));
         refreshCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
