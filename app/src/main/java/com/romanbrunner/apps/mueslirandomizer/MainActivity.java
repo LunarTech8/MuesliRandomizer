@@ -1,13 +1,16 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,52 +63,7 @@ public class MainActivity extends AppCompatActivity
     private final static String EXPORT_ITEMS_FILENAME = "MuesliItemsData";
     private final static int EXPORT_ITEMS_REQUEST_CODE = 1;
     private final static int IMPORT_ITEMS_REQUEST_CODE = 2;
-
-    private static List<ArticleEntity> getDefaultArticles()  // TODO: remove this list and instead check in and use a default articles json with this data
-    {
-        List<ArticleEntity> articleList = new LinkedList<>();
-
-        // Very low sugar filler muesli:
-        articleList.add(new ArticleEntity("Echte Kölln Kernige", "Kölln", Type.FILLER, 8D, 0.012D));
-        articleList.add(new ArticleEntity("Blütenzarte Kölln Flocken", "Kölln", Type.FILLER, 9D, 0.012D));
-
-        // Low sugar regular muesli:
-        articleList.add(new ArticleEntity("Nuss & Krokant", "Kölln", Type.REGULAR, 9.5D, 0.077D));
-        // Medium sugar regular muesli:
-        articleList.add(new ArticleEntity("Superfood Crunchy Müsli Cacao & Nuts", "Kellogg", Type.REGULAR, 10.5D, 0.14D));
-        articleList.add(new ArticleEntity("Crunchy Müsli Cacao & Hazelnut", "Kellogg", Type.REGULAR, 10D, 0.13D));
-        articleList.add(new ArticleEntity("Knusper Müsli", "Manner", Type.REGULAR, 10.5D, 0.14D));
-        articleList.add(new ArticleEntity("Schokomüsli Feinherb", "Vitalis", Type.REGULAR, 9.5D, 0.15D));
-        articleList.add(new ArticleEntity("Joghurtmüsli mit Erdbeer-Stücken", "Vitalis", Type.REGULAR, 9D, 0.13D));
-        articleList.add(new ArticleEntity("Knusper Himbeere 30% weniger Zucker", "Vitalis", Type.REGULAR, 9D, 0.15D));
-        articleList.add(new ArticleEntity("Knusper Schoko 30% weniger Zucker", "Vitalis", Type.REGULAR, 10D, 0.14D));
-        articleList.add(new ArticleEntity("Schoko 30% weniger Zucker", "Kölln", Type.REGULAR, 10D, 0.13D));
-        articleList.add(new ArticleEntity("Knusper Honig-Nuss", "Kölln", Type.REGULAR, 11.5D, 0.19D));
-        articleList.add(new ArticleEntity("Schoko-Kirsch", "Kölln", Type.REGULAR, 9.5D, 0.16D));
-        // High sugar regular muesli:
-        articleList.add(new ArticleEntity("Nesquik Knusper-Müsli", "Nestle", Type.REGULAR, 8D, 0.21D));
-        articleList.add(new ArticleEntity("Clusters Chocolate", "Nestle", Type.REGULAR, 8D, 0.285D));
-        articleList.add(new ArticleEntity("Crunchy Müsli Red Berries", "Kellogg", Type.REGULAR, 9.5D, 0.22D));
-        articleList.add(new ArticleEntity("Crunchy Müsli Choco & Pistachio", "Kellogg", Type.REGULAR, 11.5D, 0.22D));
-        articleList.add(new ArticleEntity("Knuspermüsli Nuss-Nougat", "Vitalis", Type.REGULAR, 11.5D, 0.25D));
-        articleList.add(new ArticleEntity("Knuspermüsli Plus Nuss Mischung", "Vitalis", Type.REGULAR, 13.5D, 0.2D));
-        articleList.add(new ArticleEntity("Knuspermüsli Honeys", "Vitalis", Type.REGULAR, 8.5D, 0.28D));
-        articleList.add(new ArticleEntity("Knuspermüsli Flakes + Mandeln", "Vitalis", Type.REGULAR, 10.5D, 0.24D));
-        articleList.add(new ArticleEntity("Knusper Beere & Schoko", "Kölln", Type.REGULAR, 11.5D, 0.24D));
-        articleList.add(new ArticleEntity("Knusper Schoko-Krokant", "Kölln", Type.REGULAR, 11.5D, 0.22D));
-        articleList.add(new ArticleEntity("Knusper Schoko-Minze", "Kölln", Type.REGULAR, 12D, 0.23D));
-        articleList.add(new ArticleEntity("Knusper Schoko & Kaffee", "Kölln", Type.REGULAR, 12D, 0.22D));
-        articleList.add(new ArticleEntity("Knusper Schoko & Keks", "Kölln", Type.REGULAR, 11.5D, 0.21D));
-        articleList.add(new ArticleEntity("Knusper Schoko & Keks Kakao", "Kölln", Type.REGULAR, 12D, 0.22D));
-        articleList.add(new ArticleEntity("Knusper Mango-Kurkuma", "Kölln", Type.REGULAR, 11.5D, 0.2D));
-        articleList.add(new ArticleEntity("Knusper Joghurt-Honig", "Kölln", Type.REGULAR, 11D, 0.2D));
-        articleList.add(new ArticleEntity("Knusprige Haferkissen Zimt", "Kölln", Type.REGULAR, 4.5D, 0.2D));
-        articleList.add(new ArticleEntity("Knusper Schoko Feinherb 30% weniger Fett", "Kölln", Type.REGULAR, 12D, 0.2D));
-        articleList.add(new ArticleEntity("Porridge Dreierlei Beere", "3 Bears", Type.REGULAR, 12.5D, 0.22D));
-        articleList.add(new ArticleEntity("Porridge Zimtiger Apfel", "3 Bears", Type.REGULAR, 11D, 0.2D));
-
-        return articleList;
-    }
+    private final static int DEFAULT_ARTICLES_RES_ID = R.raw.default_muesli_items_data;
 
     private static float sizeValue2SizeWeight(int sizeValue)
     {
@@ -293,16 +251,18 @@ public class MainActivity extends AppCompatActivity
                     Log.e("onPause", "Data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
                 }
             }
+            dataOutputStream.close();
             FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
             fileOutputStream.write(dataOutputStream.toByteArray());
+            fileOutputStream.close();
         }
         catch (IOException e)
         {
+            Log.e("storeArticles", "Storing articles to " + fileName + " failed");
             e.printStackTrace();
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private boolean loadArticles(final List<ArticleEntity> articles, final String fileName)
     {
         try
@@ -317,14 +277,17 @@ public class MainActivity extends AppCompatActivity
                 while ((length = fileInputStream.read()) != -1)
                 {
                     bytes = new byte[length];
+                    //noinspection ResultOfMethodCallIgnored
                     fileInputStream.read(bytes);
                     articles.add(new ArticleEntity(bytes));
                 }
+                fileInputStream.close();
                 return true;
             }
         }
         catch (IOException e)
         {
+            Log.e("loadArticles", "Loading articles from " + fileName + " failed");
             e.printStackTrace();
         }
         return false;
@@ -434,58 +397,32 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intent, requestCode);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent resultData)
+    private String readTextFile(final Uri targetUri) throws IOException
     {
-        super.onActivityResult(requestCode, resultCode, resultData);
-        try
+        final InputStream inputStream = getContentResolver().openInputStream(targetUri);
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        final StringBuilder stringBuilder = new StringBuilder();
+        String line = bufferedReader.readLine();
+        while (line != null)
         {
-            if (resultCode == Activity.RESULT_OK && resultData != null)
-            {
-                final Uri targetUri = resultData.getData();
-                assert targetUri != null;
-                if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
-                {
-                    final OutputStream outputStream = getContentResolver().openOutputStream(targetUri, "w");
-                    final BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(outputStream)));
-                    updateItemsJsonString();
-                    bufferedWriter.write(itemsJsonString);
-                    bufferedWriter.close();
-                    outputStream.close();
-                }
-                else if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
-                {
-                    final InputStream inputStream = getContentResolver().openInputStream(targetUri);
-                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
-                    final StringBuilder stringBuilder = new StringBuilder();
-                    String line = bufferedReader.readLine();
-                    while (line != null)
-                    {
-                        stringBuilder.append(line);
-                        line = bufferedReader.readLine();
-                    }
-                    itemsJsonString = stringBuilder.toString();
-                    mergeItemsJsonString();
-                    bufferedReader.close();
-                    inputStream.close();
-                }
-            }
+            stringBuilder.append(line);
+            line = bufferedReader.readLine();
         }
-        catch (IOException e)
-        {
-            if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
-            {
-                Log.e("onActivityResult", "Export request failed");
-            }
-            else if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
-            {
-                Log.e("onActivityResult", "Import request failed");
-            }
-            e.printStackTrace();
-        }
+        bufferedReader.close();
+        inputStream.close();
+        return stringBuilder.toString();
     }
 
-    public void onRadioButtonClicked(View view)
+    private void writeTextFile(final Uri targetUri, final String text) throws IOException
+    {
+        final OutputStream outputStream = getContentResolver().openOutputStream(targetUri, "w");
+        final BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(outputStream)));
+        bufferedWriter.write(text);
+        bufferedWriter.close();
+        outputStream.close();
+    }
+
+    public void onRadioButtonClicked(@NonNull View view)
     {
         final int id = view.getId();
         if (id == R.id.mixMuesliButton)
@@ -507,6 +444,42 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData)
+    {
+        super.onActivityResult(requestCode, resultCode, resultData);
+        try
+        {
+            if (resultCode == Activity.RESULT_OK && resultData != null)
+            {
+                final Uri targetUri = resultData.getData();
+                assert targetUri != null;
+                if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
+                {
+                    itemsJsonString = readTextFile(targetUri);
+                    mergeItemsJsonString();
+                }
+                else if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
+                {
+                    updateItemsJsonString();
+                    writeTextFile(targetUri, itemsJsonString);
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
+            {
+                Log.e("onActivityResult", "Import request failed");
+            }
+            else if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
+            {
+                Log.e("onActivityResult", "Export request failed");
+            }
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -522,29 +495,22 @@ public class MainActivity extends AppCompatActivity
         binding.availableArticles.setAdapter(availableArticlesAdapter);
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
 
-        // Load or create all articles and add them to the fitting state lists:
-        final List<ArticleEntity> defaultArticles = getDefaultArticles();
+        // Load all articles and add them to the fitting state lists:
         if (loadArticles(allArticles, ARTICLES_FILENAME))
         {
-            // Add missing default articles:
-            defaultLoop: for (ArticleEntity articleA : defaultArticles)
-            {
-                for (ArticleEntity articleB : allArticles)
-                {
-                    if (isNameTheSame(articleA, articleB))
-                    {
-                        continue defaultLoop;
-                    }
-                }
-                allArticles.add(articleA);
-            }
+            availableArticlesAdapter.setArticles(allArticles);
         }
-        else
+        try
         {
-            allArticles.addAll(defaultArticles);
+            final Resources resources = this.getResources();
+            itemsJsonString = readTextFile(new Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE).authority(resources.getResourcePackageName(DEFAULT_ARTICLES_RES_ID)).appendPath(resources.getResourceTypeName(DEFAULT_ARTICLES_RES_ID)).appendPath(resources.getResourceEntryName(DEFAULT_ARTICLES_RES_ID)).build());
+            mergeItemsJsonString();
         }
-        allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
-        availableArticlesAdapter.setArticles(allArticles);
+        catch (IOException e)
+        {
+            Log.e("onCreate", "Default muesli item data import failed");
+            e.printStackTrace();
+        }
         addArticlesToFittingStateList(allArticles);
         if (!selectableArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
 
