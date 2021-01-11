@@ -126,6 +126,13 @@
         "sugarPercentage": 0.23
     },
     {
+        "name": "Knusprige Haferfleks Schoko",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 6.5,
+        "sugarPercentage": 0.27
+    },
+    {
         "name": "Knusprige Haferkissen Zimt",
         "brand": "Kölln",
         "type": 1,
@@ -222,6 +229,13 @@
         "type": 1,
         "spoonWeight": 13.5,
         "sugarPercentage": 0.2
+    },
+    {
+        "name": "Knuspermüsli Schoko + Keks",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 11.5,
+        "sugarPercentage": 0.26
     },
     {
         "name": "Schokomüsli Feinherb",
