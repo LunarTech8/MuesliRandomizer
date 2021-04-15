@@ -44,6 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{@string/t_nameText(ingredient.brand, ingredient.name)}"
+                    android:textStyle="bold"
                     />
 
                 <TextView

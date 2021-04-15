@@ -183,8 +183,8 @@ public class ArticleEntity implements Article
         this.type = type;
         this.spoonWeight = spoonWeight;
         this.sugarPercentage = sugarPercentage;
-        this.multiplier = 0;
-        this.selectionsLeft = 0;
+        this.multiplier = 1;
+        this.selectionsLeft = 1;
     }
     ArticleEntity(JSONObject jsonObject) throws JSONException
     {
