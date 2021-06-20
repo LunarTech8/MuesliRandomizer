@@ -7,11 +7,32 @@
         "sugarPercentage": 0.22
     },
     {
+        "name": "Porridge Feinster Kakao",
+        "brand": "3 Bears",
+        "type": 1,
+        "spoonWeight": 11,
+        "sugarPercentage": 0.19
+    },
+    {
+        "name": "Porridge Winterzauber",
+        "brand": "3 Bears",
+        "type": 1,
+        "spoonWeight": 13,
+        "sugarPercentage": 0.21
+    },
+    {
         "name": "Porridge Zimtiger Apfel",
         "brand": "3 Bears",
         "type": 1,
         "spoonWeight": 11,
         "sugarPercentage": 0.2
+    },
+    {
+        "name": "Dark Chocolate Himbeere",
+        "brand": "Davert",
+        "type": 1,
+        "spoonWeight": 10.5,
+        "sugarPercentage": 0.27
     },
     {
         "name": "Crunchy Müsli Cacao & Hazelnut",
@@ -42,6 +63,13 @@
         "sugarPercentage": 0.14
     },
     {
+        "name": "Toppas Classic",
+        "brand": "Kellogg",
+        "type": 1,
+        "spoonWeight": 8,
+        "sugarPercentage": 0.17
+    },
+    {
         "name": "Blütenzarte Kölln Flocken",
         "brand": "Kölln",
         "type": 0,
@@ -70,6 +98,13 @@
         "sugarPercentage": 0.19
     },
     {
+        "name": "Knusper Joghurt-Himbeer 30% weniger Fett",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 11.5,
+        "sugarPercentage": 0.21
+    },
+    {
         "name": "Knusper Joghurt-Honig",
         "brand": "Kölln",
         "type": 1,
@@ -81,6 +116,13 @@
         "brand": "Kölln",
         "type": 1,
         "spoonWeight": 11.5,
+        "sugarPercentage": 0.2
+    },
+    {
+        "name": "Knusper Nuss & Schoko",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 13,
         "sugarPercentage": 0.2
     },
     {
@@ -140,6 +182,13 @@
         "sugarPercentage": 0.2
     },
     {
+        "name": "Multikorn Flocken Kernig",
+        "brand": "Kölln",
+        "type": 0,
+        "spoonWeight": 10,
+        "sugarPercentage": 0.021
+    },
+    {
         "name": "Nuss & Krokant",
         "brand": "Kölln",
         "type": 1,
@@ -159,6 +208,13 @@
         "type": 1,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.16
+    },
+    {
+        "name": "Zartes Bircher",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 11.5,
+        "sugarPercentage": 0.17
     },
     {
         "name": "Knusper Müsli",
@@ -236,6 +292,13 @@
         "type": 1,
         "spoonWeight": 11.5,
         "sugarPercentage": 0.26
+    },
+    {
+        "name": "Schokomüsli 30% weniger Zucker",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 10.5,
+        "sugarPercentage": 0.14
     },
     {
         "name": "Schokomüsli Feinherb",
