@@ -35,6 +35,13 @@
         "sugarPercentage": 0.27
     },
     {
+        "name": "Magic Forest",
+        "brand": "Davert",
+        "type": 1,
+        "spoonWeight": 10,
+        "sugarPercentage": 0.22
+    },
+    {
         "name": "Crunchy Müsli Cacao & Hazelnut",
         "brand": "Kellogg",
         "type": 1,
@@ -47,6 +54,13 @@
         "type": 1,
         "spoonWeight": 11.5,
         "sugarPercentage": 0.22
+    },
+    {
+        "name": "Crunchy Müsli Dark Choco & Coconut",
+        "brand": "Kellogg",
+        "type": 1,
+        "spoonWeight": 9,
+        "sugarPercentage": 0.13
     },
     {
         "name": "Crunchy Müsli Red Berries",
@@ -89,6 +103,13 @@
         "type": 1,
         "spoonWeight": 11.5,
         "sugarPercentage": 0.24
+    },
+    {
+        "name": "Knusper Chai & Schoko",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 13,
+        "sugarPercentage": 0.21
     },
     {
         "name": "Knusper Honig-Nuss",
@@ -236,6 +257,13 @@
         "type": 1,
         "spoonWeight": 8,
         "sugarPercentage": 0.21
+    },
+    {
+        "name": "Crunchy Müsli",
+        "brand": "Ovomaltine",
+        "type": 1,
+        "spoonWeight": 9,
+        "sugarPercentage": 0.2
     },
     {
         "name": "Joghurtmüsli mit Erdbeer-Stücken",
