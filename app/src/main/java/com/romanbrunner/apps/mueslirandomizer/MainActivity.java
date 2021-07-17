@@ -1,5 +1,9 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -61,8 +65,6 @@ public class MainActivity extends AppCompatActivity
     private final static String ARTICLES_FILENAME = "AllArticles";
     private final static String PREFS_NAME = "GlobalPreferences";
     private final static String EXPORT_ITEMS_FILENAME = "MuesliItemsData";
-    private final static int EXPORT_ITEMS_REQUEST_CODE = 1;
-    private final static int IMPORT_ITEMS_REQUEST_CODE = 2;
     private final static int DEFAULT_ARTICLES_RES_ID = R.raw.default_muesli_items_data;
 
     private static float sizeValue2SizeWeight(int sizeValue)
@@ -85,6 +87,12 @@ public class MainActivity extends AppCompatActivity
     // Functional code
     // --------------------
 
+    // TODO: display total values of muesli
+    // TODO: Instead of buttons "Create randomized muesli" and "Use displayed muesli" have "New", "Use" and "Discard"
+    // TODO: no item counts in "Edit items"
+    // TODO: more data for items in "Edit items"
+    // TODO: filler as separate list in "Availabilities"
+
     public enum UserMode
     {
         MIX_MUESLI, AVAILABILITY, EDIT_ITEMS
@@ -106,6 +114,8 @@ public class MainActivity extends AppCompatActivity
     private int sugarValue;
     private int articlesValue;
     private String itemsJsonString;
+    private ActivityResultLauncher<Intent> createFileActivityLauncher;
+    private ActivityResultLauncher<Intent> openFileActivityLauncher;
 
     private static <T> double getLowestValue(final List<T> list, final Function<T, Double> getter)
     {
@@ -234,7 +244,7 @@ public class MainActivity extends AppCompatActivity
         binding.setPriorityCount(count);
     }
 
-    private void storeArticles(final List<ArticleEntity> articles, final String fileName)
+    private void storeArticles(final List<ArticleEntity> articles)
     {
         try
         {
@@ -252,27 +262,27 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             dataOutputStream.close();
-            FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+            FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ARTICLES_FILENAME, Context.MODE_PRIVATE);
             fileOutputStream.write(dataOutputStream.toByteArray());
             fileOutputStream.close();
         }
         catch (IOException e)
         {
-            Log.e("storeArticles", "Storing articles to " + fileName + " failed");
+            Log.e("storeArticles", "Storing articles to " + ARTICLES_FILENAME + " failed");
             e.printStackTrace();
         }
     }
 
-    private boolean loadArticles(final List<ArticleEntity> articles, final String fileName)
+    private boolean loadArticles(final List<ArticleEntity> articles)
     {
         try
         {
             final Context context = getApplicationContext();
             final List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
-            if (fileNames.contains(fileName))
+            if (fileNames.contains(ARTICLES_FILENAME))
             {
                 byte[] bytes;
-                FileInputStream fileInputStream = context.openFileInput(fileName);
+                FileInputStream fileInputStream = context.openFileInput(ARTICLES_FILENAME);
                 int length;
                 while ((length = fileInputStream.read()) != -1)
                 {
@@ -287,7 +297,7 @@ public class MainActivity extends AppCompatActivity
         }
         catch (IOException e)
         {
-            Log.e("loadArticles", "Loading articles from " + fileName + " failed");
+            Log.e("loadArticles", "Loading articles from " + ARTICLES_FILENAME + " failed");
             e.printStackTrace();
         }
         return false;
@@ -380,23 +390,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void intentToCreateFile(final String filename, final String type, final int requestCode)
-    {
-        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(type);
-        intent.putExtra(Intent.EXTRA_TITLE, filename);
-        startActivityForResult(intent, requestCode);
-    }
-
-    private void intentToOpenFile(final String type, final int requestCode)
-    {
-        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(type);
-        startActivityForResult(intent, requestCode);
-    }
-
     private String readTextFile(final Uri targetUri) throws IOException
     {
         final InputStream inputStream = getContentResolver().openInputStream(targetUri);
@@ -444,48 +437,54 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent resultData)
-    {
-        super.onActivityResult(requestCode, resultCode, resultData);
-        try
-        {
-            if (resultCode == Activity.RESULT_OK && resultData != null)
-            {
-                final Uri targetUri = resultData.getData();
-                assert targetUri != null;
-                if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
-                {
-                    itemsJsonString = readTextFile(targetUri);
-                    mergeItemsJsonString();
-                }
-                else if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
-                {
-                    updateItemsJsonString();
-                    writeTextFile(targetUri, itemsJsonString);
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            if (requestCode == IMPORT_ITEMS_REQUEST_CODE)
-            {
-                Log.e("onActivityResult", "Import request failed");
-            }
-            else if (requestCode == EXPORT_ITEMS_REQUEST_CODE)
-            {
-                Log.e("onActivityResult", "Export request failed");
-            }
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         final Random random = new Random();
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
         loadPreferences();
+
+        // Setup activity result launcher for document handling:
+        ActivityResultCallback<ActivityResult> createFileActivityCallback = result ->
+        {
+            try
+            {
+                final Intent resultData = result.getData();
+                if (result.getResultCode() == Activity.RESULT_OK && resultData != null)
+                {
+                    final Uri targetUri = resultData.getData();
+                    assert targetUri != null;
+                    updateItemsJsonString();
+                    writeTextFile(targetUri, itemsJsonString);
+                }
+            }
+            catch (IOException e)
+            {
+                Log.e("createFileActivityCallback", "Export request failed");
+                e.printStackTrace();
+            }
+        };
+        createFileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), createFileActivityCallback);
+        ActivityResultCallback<ActivityResult> openFileActivityCallback = result ->
+        {
+            try
+            {
+                final Intent resultData = result.getData();
+                if (result.getResultCode() == Activity.RESULT_OK && resultData != null)
+                {
+                    final Uri targetUri = resultData.getData();
+                    assert targetUri != null;
+                    itemsJsonString = readTextFile(targetUri);
+                    mergeItemsJsonString();
+                }
+            }
+            catch (IOException e)
+            {
+                Log.e("createFileActivityCallback", "Import request failed");
+                e.printStackTrace();
+            }
+        };
+        openFileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), openFileActivityCallback);
 
         // Setup recycle view adapters:
         ingredientsAdapter = new IngredientsAdapter(this);
@@ -496,7 +495,7 @@ public class MainActivity extends AppCompatActivity
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
 
         // Load all articles and add them to the fitting state lists:
-        if (loadArticles(allArticles, ARTICLES_FILENAME))
+        if (loadArticles(allArticles))
         {
             availableArticlesAdapter.setArticles(allArticles);
         }
@@ -602,8 +601,8 @@ public class MainActivity extends AppCompatActivity
                 Log.i("onCreate", "Cannot add empty or duplicate muesli name");
             }
         });
-        binding.importButton.setOnClickListener((View view) -> intentToOpenFile(INTENT_TYPE_JSON, IMPORT_ITEMS_REQUEST_CODE));
-        binding.exportButton.setOnClickListener((View view) -> intentToCreateFile(EXPORT_ITEMS_FILENAME + ".json", INTENT_TYPE_JSON, EXPORT_ITEMS_REQUEST_CODE));
+        binding.importButton.setOnClickListener((View view) -> openFileActivityLauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType(INTENT_TYPE_JSON)));
+        binding.exportButton.setOnClickListener((View view) -> createFileActivityLauncher.launch(new Intent(Intent.ACTION_CREATE_DOCUMENT).putExtra(Intent.EXTRA_TITLE, EXPORT_ITEMS_FILENAME + ".json").addCategory(Intent.CATEGORY_OPENABLE).setType(INTENT_TYPE_JSON)));
         binding.nameField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.brandField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.weightField.setOnFocusChangeListener(this::setEditTextFocus);
@@ -723,7 +722,7 @@ public class MainActivity extends AppCompatActivity
             ingredientsAdapter.notifyDataSetChanged();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
 
-            storeArticles(allArticles, ARTICLES_FILENAME);
+            storeArticles(allArticles);
         });
     }
 
@@ -731,7 +730,7 @@ public class MainActivity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
-        storeArticles(allArticles, ARTICLES_FILENAME);
+        storeArticles(allArticles);
         storePreferences();
     }
 }

@@ -36,14 +36,14 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
             binding.setUserMode(articlesAdapter.mainActivity.userMode);
             binding.multiplierButton.setOnClickListener((View view) ->
             {
-                final int position = getAdapterPosition();
+                final int position = getBindingAdapterPosition();
                 articlesAdapter.articles.get(position).incrementMultiplier();
                 articlesAdapter.mainActivity.refreshData(false);
                 articlesAdapter.notifyItemChanged(position);
             });
             binding.removeButton.setOnClickListener((View view) ->
             {
-                final int position = getAdapterPosition();
+                final int position = getBindingAdapterPosition();
                 articlesAdapter.mainActivity.removeArticle((ArticleEntity)articlesAdapter.articles.get(position));
                 articlesAdapter.mainActivity.refreshData(false);
                 articlesAdapter.articles.remove(position);

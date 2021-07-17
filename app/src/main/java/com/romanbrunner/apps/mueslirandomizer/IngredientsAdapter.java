@@ -1,5 +1,6 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +35,10 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
             binding.setIsChosenMuesliUsed(ingredientsAdapter.mainActivity.isChosenMuesliUsed);
             binding.emptyButton.setOnClickListener((View view) ->
             {
-                final int position = getAdapterPosition();
+                final int position = getBindingAdapterPosition();
                 ingredientsAdapter.ingredients.get(position).markAsEmpty();
                 ingredientsAdapter.mainActivity.refreshData(false);
-                binding.emptyButton.setFocusable(false);
-                binding.emptyButton.setEnabled(false);
-                binding.emptyButton.setFocusableInTouchMode(false);
+                setButtonFocusability(binding.emptyButton, false);
             });
         }
     }
@@ -48,6 +47,13 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
     {
         this.mainActivity = mainActivity;
         ingredients = null;
+    }
+
+    static void setButtonFocusability(final android.widget.Button button, boolean enable)
+    {
+        button.setFocusable(enable);
+        button.setEnabled(enable);
+        button.setFocusableInTouchMode(enable);
     }
 
     void setIngredients(@NonNull final List<? extends Ingredient> ingredients)
@@ -119,6 +125,10 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
         // Adjust changeable values of the view fields by the current entries list:
         exerciseViewHolder.binding.setIngredient(ingredients.get(position));
         exerciseViewHolder.binding.setIsChosenMuesliUsed(mainActivity.isChosenMuesliUsed);
+        if (!mainActivity.isChosenMuesliUsed)
+        {
+            setButtonFocusability(exerciseViewHolder.binding.emptyButton, true);
+        }
         exerciseViewHolder.binding.executePendingBindings();
     }
 
