@@ -2,6 +2,7 @@ package com.romanbrunner.apps.mueslirandomizer;
 
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Objects;
 
 
@@ -39,6 +41,23 @@ public class ArticleEntity implements Article
             }
 
             return values[intValue];
+        }
+
+        public @NotNull String toString()
+        {
+            if (this == FILLER)
+            {
+                return "Filler";
+            }
+            else if (this == REGULAR)
+            {
+                return "Regular";
+            }
+            else
+            {
+                Log.e("Type", "Unrecognized type (" + this + ")");
+                return "UNRECOGNIZED";
+            }
         }
     }
 
@@ -74,15 +93,33 @@ public class ArticleEntity implements Article
     }
 
     @Override
+    public String getTypeString()
+    {
+        return type.toString();
+    }
+
+    @Override
     public double getSpoonWeight()
     {
         return spoonWeight;
     }
 
     @Override
+    public String getSpoonWeightString()
+    {
+        return String.format(Locale.getDefault(), "%.1f", spoonWeight);
+    }
+
+    @Override
     public double getSugarPercentage()
     {
         return sugarPercentage;
+    }
+
+    @Override
+    public String getSugarPercentageString()
+    {
+        return String.format(Locale.getDefault(), "%.1f", sugarPercentage * 100);
     }
 
     @Override

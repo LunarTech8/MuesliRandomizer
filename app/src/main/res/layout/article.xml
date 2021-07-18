@@ -21,7 +21,6 @@
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/dataRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/item_vertical_margin"
@@ -43,18 +42,36 @@
                 app:visibleGone="@{userMode==UserMode.AVAILABILITY}"
                 />
 
-            <TextView
-                android:id="@+id/name"
+            <LinearLayout
+                android:id="@+id/dataColumn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginStart="@dimen/comment_horizontal_margin_medium"
                 android:layout_marginEnd="@dimen/comment_horizontal_margin_medium"
-                android:text="@{@string/t_nameText(article.brand, article.name)}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/multiplierButton"
                 app:layout_constraintEnd_toStartOf="@+id/removeButton"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                >
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/t_nameText(article.brand, article.name)}"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:id="@+id/data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/t_articleText(article.typeString, article.spoonWeightString, article.sugarPercentageString)}"
+                    app:visibleGone="@{userMode==UserMode.EDIT_ITEMS}"
+                    />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/removeButton"

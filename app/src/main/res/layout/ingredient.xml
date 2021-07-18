@@ -29,7 +29,7 @@
             >
 
             <LinearLayout
-                android:id="@+id/dataRow"
+                android:id="@+id/dataColumn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -51,7 +51,7 @@
                     android:id="@+id/data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{@string/t_ingredientText(ingredient.spoonCount, ingredient.weightString, ingredient.sugarPercentageString)}"
+                    android:text="@{@string/t_ingredientText(ingredient.spoonCountString, ingredient.weightString, ingredient.sugarPercentageString)}"
                     />
 
             </LinearLayout>

@@ -131,10 +131,12 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
         if (article.isAvailable())
         {
             exerciseViewHolder.binding.name.setTextColor(Color.BLACK);
+            exerciseViewHolder.binding.data.setTextColor(Color.BLACK);
         }
         else
         {
             exerciseViewHolder.binding.name.setTextColor(Color.GRAY);
+            exerciseViewHolder.binding.data.setTextColor(Color.GRAY);
         }
         exerciseViewHolder.binding.setUserMode(mainActivity.userMode);
         exerciseViewHolder.binding.executePendingBindings();

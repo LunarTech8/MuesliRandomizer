@@ -11,7 +11,7 @@ public class IngredientEntity implements Ingredient
     // --------------------
 
     private final Article article;
-    private int spoonCount;
+    private final int spoonCount;
 
     @Override
     public String getName()
@@ -32,6 +32,19 @@ public class IngredientEntity implements Ingredient
     }
 
     @Override
+    public String getSpoonCountString()
+    {
+        if (spoonCount == 1)
+        {
+            return "1 spoon";
+        }
+        else
+        {
+            return String.format(Locale.getDefault(), "%d spoons", spoonCount);
+        }
+    }
+
+    @Override
     public String getWeightString()
     {
         return String.format(Locale.getDefault(), "%.1f", spoonCount * article.getSpoonWeight());
@@ -41,12 +54,6 @@ public class IngredientEntity implements Ingredient
     public String getSugarPercentageString()
     {
         return String.format(Locale.getDefault(), "%.1f", article.getSugarPercentage() * 100);
-    }
-
-    @Override
-    public void setSpoonCount(int spoonCount)
-    {
-        this.spoonCount = spoonCount;
     }
 
     @Override

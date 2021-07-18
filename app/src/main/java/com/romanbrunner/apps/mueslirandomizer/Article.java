@@ -8,8 +8,11 @@ public interface Article
     String getName();
     String getBrand();
     Type getType();
+    String getTypeString();
     double getSpoonWeight();
+    String getSpoonWeightString();
     double getSugarPercentage();
+    String getSugarPercentageString();
     int getMultiplier();
     int getSelectionsLeft();
     boolean getIsFiller();

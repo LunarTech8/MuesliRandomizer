@@ -79,6 +79,7 @@
                 android:id="@+id/countInfoRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_row_height"
+                app:visibleGone="@{userMode!=UserMode.EDIT_ITEMS}"
                 >
 
                 <TextView

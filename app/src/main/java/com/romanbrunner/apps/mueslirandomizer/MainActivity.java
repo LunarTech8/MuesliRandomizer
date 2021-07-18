@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity
 
     // TODO: display total values of muesli
     // TODO: Instead of buttons "Create randomized muesli" and "Use displayed muesli" have "New", "Use" and "Discard"
-    // TODO: no item counts in "Edit items"
-    // TODO: more data for items in "Edit items"
-    // TODO: filler as separate list in "Availabilities"
 
     public enum UserMode
     {

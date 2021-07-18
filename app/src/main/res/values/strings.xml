@@ -18,7 +18,8 @@
     <string name="t_countText">%s (+1)</string>
     <string name="t_nameText">%s - %s</string>
     <string name="t_availabilityText">%dx</string>
-    <string name="t_ingredientText">%s Spoon(s) [%s g] | %s \%% sugar</string>
+    <string name="t_articleText">%s | %s g per spoon | %s \%% sugar</string>
+    <string name="t_ingredientText">%s [%s g] | %s \%% sugar</string>
 
     <string name="h_name">Name</string>
     <string name="h_brand">Brand</string>
