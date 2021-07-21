@@ -39,7 +39,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:visibleGone="@{userMode==UserMode.AVAILABILITY}"
+                app:isVisible="@{userMode==UserMode.AVAILABILITY}"
                 />
 
             <LinearLayout
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{@string/t_articleText(article.typeString, article.spoonWeightString, article.sugarPercentageString)}"
-                    app:visibleGone="@{userMode==UserMode.EDIT_ITEMS}"
+                    app:isVisible="@{userMode==UserMode.EDIT_ITEMS}"
                     />
 
             </LinearLayout>
@@ -84,7 +84,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:visibleGone="@{userMode==UserMode.EDIT_ITEMS}"
+                app:isVisible="@{userMode==UserMode.EDIT_ITEMS}"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

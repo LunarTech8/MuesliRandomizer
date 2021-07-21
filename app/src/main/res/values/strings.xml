@@ -6,6 +6,7 @@
     <string name="t_sizeLabel">Size:</string>
     <string name="t_sugarLabel">Sugar:</string>
     <string name="t_articlesLabel">Items:</string>
+    <string name="t_totalValuesLabel"><u>Muesli total values:</u></string>
     <string name="t_ingredientsLabel"><u>Muesli ingredients:</u></string>
     <string name="t_invalidSettingsLabel">Cannot find valid muesli mix for given settings.\nChange settings and retry.</string>
 
@@ -19,6 +20,7 @@
     <string name="t_nameText">%s - %s</string>
     <string name="t_availabilityText">%dx</string>
     <string name="t_articleText">%s | %s g per spoon | %s \%% sugar</string>
+    <string name="t_totalValuesText">%s [%s g] | %s \%% sugar</string>
     <string name="t_ingredientText">%s [%s g] | %s \%% sugar</string>
 
     <string name="h_name">Name</string>
@@ -31,8 +33,9 @@
     <string name="t_mixMuesliButton">Mix muesli</string>
     <string name="t_availabilityButton">Availabilities</string>
     <string name="t_editItemsButton">Edit items</string>
-    <string name="t_randomizeButton">Create randomized muesli</string>
-    <string name="t_useButton">Use displayed muesli</string>
+    <string name="t_newButton">New muesli</string>
+    <string name="t_useButton">Use muesli</string>
+    <string name="t_clearButton">Clear list</string>
     <string name="t_addButton">Add new item</string>
     <string name="t_importButton">Import items</string>
     <string name="t_exportButton">Export items</string>

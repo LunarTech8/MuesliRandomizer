@@ -16,7 +16,11 @@
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
         <variable name="articlesCount" type="Integer" />
+        <variable name="totalSpoonCount" type="String" />
+        <variable name="totalWeight" type="String" />
+        <variable name="totalSugarPercentage" type="String" />
         <variable name="isChosenMuesliUsed" type="boolean" />
+        <variable name="isIngredientsListEmpty" type="boolean" />
         <variable name="isInvalidSettings" type="boolean" />
     </data>
 
@@ -79,7 +83,7 @@
                 android:id="@+id/countInfoRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_row_height"
-                app:visibleGone="@{userMode!=UserMode.EDIT_ITEMS}"
+                app:isVisible="@{userMode!=UserMode.EDIT_ITEMS}"
                 >
 
                 <TextView
@@ -183,7 +187,7 @@
             android:clickable="true"
             android:focusableInTouchMode="true"
             android:padding="@dimen/comment_padding"
-            app:visibleGone="@{userMode!=UserMode.MIX_MUESLI}"
+            app:isVisible="@{userMode!=UserMode.MIX_MUESLI}"
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -191,7 +195,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:visibleGone="@{userMode==UserMode.EDIT_ITEMS}"
+                app:isVisible="@{userMode==UserMode.EDIT_ITEMS}"
                 >
 
                 <Button
@@ -228,7 +232,7 @@
                 android:background="@drawable/border_small_angular"
                 android:layout_marginStart="@dimen/item_horizontal_margin_small"
                 android:layout_marginEnd="@dimen/item_horizontal_margin_small"
-                app:visibleGone="@{userMode==UserMode.EDIT_ITEMS}"
+                app:isVisible="@{userMode==UserMode.EDIT_ITEMS}"
                 >
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -341,7 +345,7 @@
             android:orientation="vertical"
             android:background="@drawable/border_medium_rounded"
             android:padding="@dimen/comment_padding"
-            app:visibleGone="@{userMode==UserMode.MIX_MUESLI}"
+            app:isVisible="@{userMode==UserMode.MIX_MUESLI}"
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -472,14 +476,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
-                android:id="@+id/randomizeButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/t_randomizeButton"
-                android:textAllCaps="false"
-                />
-
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -488,8 +484,81 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@drawable/border_medium_rounded"
-            app:visibleGone="@{userMode==UserMode.MIX_MUESLI}"
+            app:isVisible="@{userMode==UserMode.MIX_MUESLI}"
             >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mixButtonsRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                >
+
+                <Button
+                    android:id="@+id/newButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/t_newButton"
+                    android:textAllCaps="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/useButton"
+                    />
+
+                <Button
+                    android:id="@+id/useButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/t_useButton"
+                    android:textAllCaps="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/newButton"
+                    app:layout_constraintEnd_toStartOf="@+id/clearButton"
+                    app:isFocusable="@{!isChosenMuesliUsed}"
+                    />
+
+                <Button
+                    android:id="@+id/clearButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/t_clearButton"
+                    android:textAllCaps="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/useButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:isFocusable="@{!isIngredientsListEmpty}"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/totalValuesLabel"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ingredients_label_height"
+                android:layout_marginStart="@dimen/comment_horizontal_margin_medium"
+                android:layout_marginEnd="@dimen/comment_horizontal_margin_medium"
+                android:gravity="center_vertical"
+                android:text="@string/t_totalValuesLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mixButtonsRow"
+                app:isVisible="@{!isIngredientsListEmpty}"
+                />
+
+            <TextView
+                android:id="@+id/totalValues"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/comment_horizontal_margin_medium"
+                android:layout_marginEnd="@dimen/comment_horizontal_margin_medium"
+                android:gravity="center_vertical"
+                android:text="@{@string/t_totalValuesText(totalSpoonCount, totalWeight, totalSugarPercentage)}"
+                android:textColor="@android:color/black"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/totalValuesLabel"
+                app:isVisible="@{!isIngredientsListEmpty}"
+                />
 
             <TextView
                 android:id="@+id/ingredientsLabel"
@@ -500,7 +569,8 @@
                 android:gravity="center_vertical"
                 android:text="@string/t_ingredientsLabel"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/totalValues"
+                app:isVisible="@{!isIngredientsListEmpty}"
                 />
 
             <TextView
@@ -512,7 +582,7 @@
                 android:text="@string/t_invalidSettingsLabel"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ingredientsLabel"
-                app:visibleGone="@{isInvalidSettings}"
+                app:isVisible="@{isInvalidSettings}"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -523,20 +593,9 @@
                 android:layout_marginEnd="@dimen/item_horizontal_margin_small"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ingredientsLabel"
-                app:layout_constraintBottom_toTopOf="@+id/useButton"
-                app:layoutManager="LinearLayoutManager"
-                app:visibleGone="@{!isInvalidSettings}"
-                />
-
-            <Button
-                android:id="@+id/useButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/t_useButton"
-                android:textAllCaps="false"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:visibleGone="@{!isChosenMuesliUsed}"
+                app:layoutManager="LinearLayoutManager"
+                app:isVisible="@{!isInvalidSettings}"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

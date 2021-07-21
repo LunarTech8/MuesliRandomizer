@@ -54,7 +54,6 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
     {
         button.setFocusable(enable);
         button.setEnabled(enable);
-        button.setFocusableInTouchMode(enable);
     }
 
     void setIngredients(@NonNull final List<? extends Ingredient> ingredients)

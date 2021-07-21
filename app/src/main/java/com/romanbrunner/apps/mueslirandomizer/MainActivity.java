@@ -87,9 +87,6 @@ public class MainActivity extends AppCompatActivity
     // Functional code
     // --------------------
 
-    // TODO: display total values of muesli
-    // TODO: Instead of buttons "Create randomized muesli" and "Use displayed muesli" have "New", "Use" and "Discard"
-
     public enum UserMode
     {
         MIX_MUESLI, AVAILABILITY, EDIT_ITEMS
@@ -518,6 +515,7 @@ public class MainActivity extends AppCompatActivity
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
         binding.setIsChosenMuesliUsed(isChosenMuesliUsed);
+        binding.setIsIngredientsListEmpty(true);
         binding.setIsInvalidSettings(false);
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
 
@@ -604,7 +602,7 @@ public class MainActivity extends AppCompatActivity
         binding.brandField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.weightField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.percentageField.setOnFocusChangeListener(this::setEditTextFocus);
-        binding.randomizeButton.setOnClickListener((View view) ->
+        binding.newButton.setOnClickListener((View view) ->
         {
             final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
             final double targetWeight = sizeValue2SizeWeight(sizeValue);
@@ -618,9 +616,13 @@ public class MainActivity extends AppCompatActivity
                 moveArticlesToStateList(usedArticles, selectableArticles);
             }
 
+            // Check general conditions for valid mix:
             if (fillerArticles.size() <= 0 || selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
             {
+                // Adjust mix buttons and ingredients list:
                 Log.i("onCreate", "Not enough available articles for a valid mix");
+                binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
+                binding.setIsIngredientsListEmpty(true);
                 binding.setIsInvalidSettings(true);
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 return;
@@ -649,8 +651,11 @@ public class MainActivity extends AppCompatActivity
                     ArticleEntity fillerArticle = fillerArticles.get(random.nextInt(fillerArticles.size()));
 
                     // Determine ingredients:
+                    int totalSpoons = 0;
                     float totalWeight = 0F;
                     float totalSugar = 0F;
+                    float weight;
+                    float sugarPartialSum = 0F;
                     ingredients.clear();
                     ArticleEntity article;
                     int spoonCount;
@@ -660,29 +665,42 @@ public class MainActivity extends AppCompatActivity
                         article = chosenArticles.get(i);
                         spoonCount = (int)Math.round(targetWeight / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
                         spoonCount = Math.max(spoonCount, 1);
-                        totalWeight += spoonCount * article.getSpoonWeight();
-                        totalSugar += spoonCount * article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage());
+                        weight = spoonCount * (float)article.getSpoonWeight();
+                        totalSpoons += spoonCount;
+                        totalWeight += weight;
+                        totalSugar += weight * article.getSugarPercentage();
+                        sugarPartialSum += weight * (article.getSugarPercentage() - fillerArticle.getSugarPercentage());
                         ingredients.add(new IngredientEntity(article, spoonCount));
                     }
                     // Calculate and add spoons for last regular article based on sugar percentage:
                     article = chosenArticles.get(regularArticlesCount - 1);
-                    spoonCount = (int)Math.round((targetSugar - totalSugar) / (article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage())));
+                    spoonCount = (int)Math.round((targetSugar - targetWeight * fillerArticle.getSugarPercentage() - sugarPartialSum) / (article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage())));
                     if (spoonCount <= 0) continue;
-                    totalWeight += article.getSpoonWeight() * spoonCount;
+                    weight = spoonCount * (float)article.getSpoonWeight();
+                    totalSpoons += spoonCount;
+                    totalWeight += weight;
+                    totalSugar += weight * article.getSugarPercentage();
                     ingredients.add(new IngredientEntity(article, spoonCount));
                     // Calculate and add spoons for filler article based on total size:
                     spoonCount = (int)Math.round((targetWeight - totalWeight) / fillerArticle.getSpoonWeight());
                     if (spoonCount < 0) continue;
                     if (spoonCount > 0)
                     {
+                        weight = spoonCount * (float)fillerArticle.getSpoonWeight();
+                        totalSpoons += spoonCount;
+                        totalWeight += weight;
+                        totalSugar += weight * fillerArticle.getSugarPercentage();
                         ingredients.add(new IngredientEntity(fillerArticle, spoonCount));
                     }
 
-                    // Display ingredients and adjust use button:
-                    Log.i("onCreate", "totalWeight: " + (totalWeight + fillerArticle.getSpoonWeight() * spoonCount));
+                    // Adjust mix buttons and ingredients list:
                     Log.i("onCreate", "tryCounter: " + tryCounter);
+                    binding.setTotalSpoonCount(String.format(Locale.getDefault(), "%d spoons", totalSpoons));
+                    binding.setTotalWeight(String.format(Locale.getDefault(), "%.1f", totalWeight));
+                    binding.setTotalSugarPercentage(String.format(Locale.getDefault(), "%.1f", 100 * totalSugar / totalWeight));
                     ingredientsAdapter.setIngredients(ingredients);
                     binding.setIsChosenMuesliUsed(isChosenMuesliUsed = false);
+                    binding.setIsIngredientsListEmpty(false);
                     binding.setIsInvalidSettings(false);
                     refreshCountInfo();
                     ingredientsAdapter.notifyDataSetChanged();
@@ -696,6 +714,9 @@ public class MainActivity extends AppCompatActivity
                 Log.i("onCreate", "Cannot find valid mix with selectable articles, retrying with full reset");
                 fullResetTryCounter += 1;
             }
+            // Adjust mix buttons and ingredients list:
+            binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
+            binding.setIsIngredientsListEmpty(true);
             binding.setIsInvalidSettings(true);
             refreshCountInfo();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -713,12 +734,32 @@ public class MainActivity extends AppCompatActivity
             chosenArticles.clear();
             priorityChoosing.clear();
 
-            // Adjust use button:
+            // Adjust mix buttons and ingredients list:
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
             refreshCountInfo();
             ingredientsAdapter.notifyDataSetChanged();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
 
+            // Store updated articles in memory:
+            storeArticles(allArticles);
+        });
+        binding.clearButton.setOnClickListener((View view) ->
+        {
+            // Return chosen articles back to the selectable pool if necessary:
+            if (!chosenArticles.isEmpty())
+            {
+                moveArticlesToStateList(chosenArticles, selectableArticles);
+            }
+
+            // Adjust mix buttons and ingredients list:
+            ingredientsAdapter.setIngredients(new ArrayList<>(0));
+            binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
+            binding.setIsIngredientsListEmpty(true);
+            refreshCountInfo();
+            ingredientsAdapter.notifyDataSetChanged();
+            binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
+
+            // Store updated articles in memory:
             storeArticles(allArticles);
         });
     }
@@ -727,6 +768,8 @@ public class MainActivity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
+
+        // Store updated articles and preferences in memory:
         storeArticles(allArticles);
         storePreferences();
     }

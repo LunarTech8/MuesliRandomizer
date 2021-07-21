@@ -13,10 +13,17 @@ public class BindingAdapters
     // Functional code
     // --------------------
 
-    @BindingAdapter("visibleGone")
-    public static void showHide(View view, boolean show)
+    @BindingAdapter("isVisible")
+    public static void setViewability(View view, boolean show)
     {
         view.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @BindingAdapter("isFocusable")
+    public static void setFocusability(View view, boolean enable)
+    {
+        view.setFocusable(enable);
+        view.setEnabled(enable);
     }
 
     @BindingAdapter("android:text")
