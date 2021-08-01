@@ -91,6 +91,13 @@
         "sugarPercentage": 0.012
     },
     {
+        "name": "Dinkel Flocken Zart",
+        "brand": "Kölln",
+        "type": 0,
+        "spoonWeight": 8,
+        "sugarPercentage": 0.017
+    },
+    {
         "name": "Echte Kölln Kernige",
         "brand": "Kölln",
         "type": 0,
