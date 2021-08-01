@@ -20,6 +20,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
@@ -42,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -82,6 +83,11 @@ public class MainActivity extends AppCompatActivity
         return articlesValue + 1;
     }
 
+    private static int toppingsValue2ToppingsCount(int toppingsValue)
+    {
+        return toppingsValue;
+    }
+
 
     // --------------------
     // Functional code
@@ -97,16 +103,18 @@ public class MainActivity extends AppCompatActivity
 
     private final List<ArticleEntity> allArticles = new LinkedList<>();  // All catalogued articles, also not available ones
     private final List<ArticleEntity> fillerArticles = new LinkedList<>();  // All available filler type articles, separate from the other lists with only regular articles
-    private final List<ArticleEntity> selectableArticles = new LinkedList<>();  // Selectable articles for the next muesli creation
+    private final List<ArticleEntity> toppingArticles = new LinkedList<>();  // All available topping type articles, separate from the other lists with only regular articles
+    private final List<ArticleEntity> selectableArticles = new LinkedList<>();  // Selectable articles for the next muesli mix creation
     private final List<ArticleEntity> usedArticles = new LinkedList<>();  // Used articles, will be reshuffled into selectableArticles once that is depleted
-    private final List<ArticleEntity> chosenArticles = new LinkedList<>();  // Chosen articles for the current muesli creation
-    private final List<ArticleEntity> priorityChoosing = new LinkedList<>();  // Remaining articles that have to be chosen for the next muesli creation, articles are also in selectableArticles
+    private final List<ArticleEntity> chosenArticles = new LinkedList<>();  // Chosen articles for the current muesli mix creation
+    private final List<ArticleEntity> priorityChoosing = new LinkedList<>();  // Remaining articles that have to be chosen for the next muesli mix creation, articles are also in selectableArticles
     private IngredientsAdapter ingredientsAdapter;
     private ArticlesAdapter availableArticlesAdapter;
     private MainScreenBinding binding;
     private int sizeValue;
     private int sugarValue;
     private int articlesValue;
+    private int toppingsValue;
     private String itemsJsonString;
     private ActivityResultLauncher<Intent> createFileActivityLauncher;
     private ActivityResultLauncher<Intent> openFileActivityLauncher;
@@ -128,14 +136,7 @@ public class MainActivity extends AppCompatActivity
 
     private static <T> void removeNonIntersectingElements(final List<T> targetList, final List<T> checkList)
     {
-        Iterator<T> iterator = targetList.iterator();
-        while (iterator.hasNext())
-        {
-            if (!checkList.contains(iterator.next()))
-            {
-                iterator.remove();
-            }
-        }
+        targetList.removeIf(t -> !checkList.contains(t));
     }
 
     public void refreshData(boolean reloadArticleAdapter)
@@ -192,6 +193,12 @@ public class MainActivity extends AppCompatActivity
                         fillerArticles.add(article);
                     }
                     break;
+                case TOPPING:
+                    if (article.isAvailable())
+                    {
+                        toppingArticles.add(article);
+                    }
+                    break;
                 case REGULAR:
                     if (article.isAvailable())
                     {
@@ -217,25 +224,28 @@ public class MainActivity extends AppCompatActivity
         selectableArticles.clear();
         // Remove unavailable articles from uncleared state lists:
         removeNonIntersectingElements(fillerArticles, availableArticles);
+        removeNonIntersectingElements(toppingArticles, availableArticles);
         removeNonIntersectingElements(chosenArticles, availableArticles);
         removeNonIntersectingElements(priorityChoosing, availableArticles);
         // Add available articles to fitting state lists that aren't in one:
         availableArticles.removeAll(fillerArticles);
+        availableArticles.removeAll(toppingArticles);
         availableArticles.removeAll(chosenArticles);
         addArticlesToFittingStateList(availableArticles);
     }
 
     private void refreshCountInfo()
     {
-        binding.setFillerCount(fillerArticles.size());
-        binding.setUsedCount(usedArticles.size());
+        binding.setUsedAmount(usedArticles.size());
         int count = 0;
         for (ArticleEntity article: selectableArticles) { count += article.getSelectionsLeft(); }
         for (ArticleEntity article: chosenArticles) { count += article.getSelectionsLeft(); }
-        binding.setSelectableCount(count);
+        binding.setSelectableAmount(count);
         count = 0;
         for (ArticleEntity article: priorityChoosing) { count += article.getSelectionsLeft(); }
-        binding.setPriorityCount(count);
+        binding.setPriorityAmount(count);
+        binding.setFillerAmount(fillerArticles.size());
+        binding.setToppingAmount(toppingArticles.size());
     }
 
     private void storeArticles(final List<ArticleEntity> articles)
@@ -304,6 +314,7 @@ public class MainActivity extends AppCompatActivity
         editor.putInt("sizeValue", sizeValue);
         editor.putInt("sugarValue", sugarValue);
         editor.putInt("articlesValue", articlesValue);
+        editor.putInt("toppingsValue", toppingsValue);
         editor.apply();
     }
 
@@ -313,9 +324,11 @@ public class MainActivity extends AppCompatActivity
         sizeValue = sharedPrefs.getInt("sizeValue", binding.sizeSlider.getProgress());
         sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
         articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());
+        toppingsValue = sharedPrefs.getInt("toppingsValue", binding.articlesSlider.getProgress());
         binding.sizeSlider.setProgress(sizeValue);
         binding.sugarSlider.setProgress(sugarValue);
         binding.articlesSlider.setProgress(articlesValue);
+        binding.toppingsSlider.setProgress(toppingsValue);
     }
 
     private void hideKeyboard(final View view)
@@ -372,7 +385,7 @@ public class MainActivity extends AppCompatActivity
             }
             if (hasNewItems)
             {
-                allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
+                allArticles.sort(Comparator.comparing(article -> (article.getBrand() + article.getName())));
                 availableArticlesAdapter.setArticles(allArticles);
             }
         }
@@ -480,13 +493,15 @@ public class MainActivity extends AppCompatActivity
         };
         openFileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), openFileActivityCallback);
 
-        // Setup recycle view adapters:
+        // Setup adapters and layout managers:
         ingredientsAdapter = new IngredientsAdapter(this);
         binding.ingredients.setAdapter(ingredientsAdapter);
         binding.ingredients.setLayoutManager(new LinearLayoutManager(this));
         availableArticlesAdapter = new ArticlesAdapter(this);
         binding.availableArticles.setAdapter(availableArticlesAdapter);
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
+        final ArrayAdapter<Type> typeSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, Type.values());
+        binding.typeSpinner.setAdapter(typeSpinnerAdapter);
 
         // Load all articles and add them to the fitting state lists:
         if (loadArticles(allArticles))
@@ -509,11 +524,13 @@ public class MainActivity extends AppCompatActivity
 
         // Init layout variables:
         binding.setUserMode(userMode);
-        binding.setNewArticle(new ArticleEntity("", "", Type.REGULAR, 0F, 0F));
+        binding.typeSpinner.setSelection(typeSpinnerAdapter.getPosition(Type.REGULAR));
+        binding.setNewArticle(new ArticleEntity("", "", (Type)binding.typeSpinner.getSelectedItem(), 0F, 0F));
         refreshCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
+        binding.setToppingsCount(toppingsValue2ToppingsCount(toppingsValue));
         binding.setIsChosenMuesliUsed(isChosenMuesliUsed);
         binding.setIsIngredientsListEmpty(true);
         binding.setIsInvalidSettings(false);
@@ -571,6 +588,36 @@ public class MainActivity extends AppCompatActivity
                 storePreferences();
             }
         });
+        binding.toppingsSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+            {
+                toppingsValue = progress;
+                binding.setToppingsCount(toppingsValue2ToppingsCount(toppingsValue));
+                binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+                storePreferences();
+            }
+        });
+        binding.typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                final Type selectedType = (Type)(adapterView.getItemAtPosition(position));
+                final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
+                newArticle.setType(selectedType);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
         binding.addButton.setOnClickListener((View view) ->
         {
             final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
@@ -585,10 +632,10 @@ public class MainActivity extends AppCompatActivity
             {
                 allArticles.add(newArticle);
                 addArticlesToFittingStateList(Collections.singletonList(newArticle));
-                allArticles.sort((Comparator<Article>) (articleA, articleB) -> (articleA.getBrand() + articleA.getName()).compareTo(articleB.getBrand() + articleB.getName()));
+                allArticles.sort(Comparator.comparing(article -> (article.getBrand() + article.getName())));
                 availableArticlesAdapter.setArticles(allArticles);
                 binding.availableArticles.smoothScrollToPosition(allArticles.indexOf(newArticle));
-                binding.setNewArticle(new ArticleEntity("", "", Type.REGULAR, 0F, 0F));
+                binding.setNewArticle(new ArticleEntity("", "", newArticle.getType(), 0F, 0F));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
             }
             else
@@ -604,9 +651,10 @@ public class MainActivity extends AppCompatActivity
         binding.percentageField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.newButton.setOnClickListener((View view) ->
         {
-            final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
             final double targetWeight = sizeValue2SizeWeight(sizeValue);
             final double targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
+            final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
+            final int toppingsCount = toppingsValue2ToppingsCount(toppingsValue);  // TODO: implement
 
             // Return used articles back to the selectable pool if necessary:
             if (selectableArticles.size() + chosenArticles.size() < regularArticlesCount)

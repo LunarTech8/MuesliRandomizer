@@ -2,5 +2,6 @@
 <resources>
     <integer name="sizeSliderMax">4</integer>
     <integer name="sugarSliderMax">4</integer>
-    <integer name="articleSliderMax">4</integer>
+    <integer name="articlesSliderMax">4</integer>
+    <integer name="toppingsSliderMax">4</integer>
 </resources>

@@ -29,7 +29,7 @@ public class ArticleEntity implements Article
 
     public enum Type
     {
-        FILLER, REGULAR;
+        FILLER, REGULAR, TOPPING;
 
         private static final Type[] values = Type.values();
 
@@ -52,6 +52,10 @@ public class ArticleEntity implements Article
             else if (this == REGULAR)
             {
                 return "Regular";
+            }
+            else if (this == TOPPING)
+            {
+                return "Topping";
             }
             else
             {
@@ -135,12 +139,6 @@ public class ArticleEntity implements Article
     }
 
     @Override
-    public boolean getIsFiller()
-    {
-        return type == Type.FILLER;
-    }
-
-    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -150,6 +148,12 @@ public class ArticleEntity implements Article
     public void setBrand(String brand)
     {
         this.brand = brand;
+    }
+
+    @Override
+    public void setType(Type type)
+    {
+        this.type = type;
     }
 
     @Override
@@ -174,12 +178,6 @@ public class ArticleEntity implements Article
     public void setSelectionsLeft(int selectionsLeft)
     {
         this.selectionsLeft = selectionsLeft;
-    }
-
-    @Override
-    public void setIsFiller(boolean isFiller)
-    {
-        type = (isFiller ? Type.FILLER : Type.REGULAR);
     }
 
     @Override

@@ -15,15 +15,14 @@ public interface Article
     String getSugarPercentageString();
     int getMultiplier();
     int getSelectionsLeft();
-    boolean getIsFiller();
 
     void setName(String name);
     void setBrand(String brand);
+    void setType(Type type);
     void setSpoonWeight(double spoonWeight);
     void setSugarPercentage(double sugarPercentage);
     void setMultiplier(int multiplier);
     void setSelectionsLeft(int selectionsLeft);
-    void setIsFiller(boolean isFiller);
 
     boolean isAvailable();
     void incrementMultiplier();

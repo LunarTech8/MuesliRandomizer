@@ -1,22 +1,24 @@
 <resources>
     <string name="l_appName">Muesli Randomizer</string>
 
-    <string name="t_countInfoLabel">Item counts:</string>
+    <string name="t_countInfoLabel">Items:</string>
     <string name="t_separatorLabel">|</string>
     <string name="t_sizeLabel">Size:</string>
     <string name="t_sugarLabel">Sugar:</string>
-    <string name="t_articlesLabel">Items:</string>
-    <string name="t_totalValuesLabel"><u>Muesli total values:</u></string>
-    <string name="t_ingredientsLabel"><u>Muesli ingredients:</u></string>
+    <string name="t_articlesLabel">Muesli:</string>
+    <string name="t_toppingsLabel">Toppings:</string>
+    <string name="t_muesliMixLabel"><u>Muesli mix total values and ingredients:</u></string>
     <string name="t_invalidSettingsLabel">Cannot find valid muesli mix for given settings.\nChange settings and retry.</string>
 
-    <string name="t_fillerCountText">%s Filler</string>
-    <string name="t_selectableCountText">%s Selectable</string>
-    <string name="t_priorityCountText">%s Fixed</string>
-    <string name="t_usedCountText">%s Used</string>
+    <string name="t_selectableAmountText">%s Selectable</string>
+    <string name="t_priorityAmountText">%s Fixed</string>
+    <string name="t_usedAmountText">%s Used</string>
+    <string name="t_fillerAmountText">%s Filler</string>
+    <string name="t_toppingsAmountText">%s Toppings</string>
     <string name="t_weightText">%s g</string>
     <string name="t_percentageText">%s \%%</string>
-    <string name="t_countText">%s (+1)</string>
+    <string name="t_countPlusOneText">%s (+1)</string>
+    <string name="t_countText">%s</string>
     <string name="t_nameText">%s - %s</string>
     <string name="t_availabilityText">%dx</string>
     <string name="t_articleText">%s | %s g per spoon | %s \%% sugar</string>
@@ -33,13 +35,12 @@
     <string name="t_mixMuesliButton">Mix muesli</string>
     <string name="t_availabilityButton">Availabilities</string>
     <string name="t_editItemsButton">Edit items</string>
-    <string name="t_newButton">New muesli</string>
-    <string name="t_useButton">Use muesli</string>
+    <string name="t_newButton">New mix</string>
+    <string name="t_useButton">Use mix</string>
     <string name="t_clearButton">Clear list</string>
     <string name="t_addButton">Add new item</string>
     <string name="t_importButton">Import items</string>
     <string name="t_exportButton">Export items</string>
     <string name="t_removeButton">X</string>
     <string name="t_emptyButton">Empty</string>
-    <string name="t_fillerCheckbox">Filler</string>
 </resources>
