@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity
     // Data code
     // --------------------
 
-    private final static float FILLER_INGREDIENT_RATIO = 0.5F;
+    private final static float FILLER_INGREDIENT_RATIO = 0.5F;  // Ratio compared to first regular article, 1 being equal ratio
+    private final static float TOPPINGS_INGREDIENT_RATIO = 0.1F;  // Ratio of whole mix
     private final static int MAX_RANDOMIZE_TRIES = 1024;
     private final static String INTENT_TYPE_JSON = "*/*";  // No MIME type for json yet, thus allowing every file
     private final static String ARTICLES_FILENAME = "AllArticles";
@@ -654,7 +655,7 @@ public class MainActivity extends AppCompatActivity
             final double targetWeight = sizeValue2SizeWeight(sizeValue);
             final double targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
             final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
-            final int toppingsCount = toppingsValue2ToppingsCount(toppingsValue);  // TODO: implement
+            final int toppingsCount = toppingsValue2ToppingsCount(toppingsValue);
 
             // Return used articles back to the selectable pool if necessary:
             if (selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
@@ -665,7 +666,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Check general conditions for valid mix:
-            if (fillerArticles.size() <= 0 || selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
+            if (fillerArticles.size() <= 0 || selectableArticles.size() + chosenArticles.size() < regularArticlesCount || toppingArticles.size() < toppingsCount)
             {
                 // Adjust mix buttons and ingredients list:
                 Log.i("onCreate", "Not enough available articles for a valid mix");
@@ -678,6 +679,8 @@ public class MainActivity extends AppCompatActivity
 
             // Retry with randomized ingredients until a valid mix is found:
             final List<IngredientEntity> ingredients = new ArrayList<>(regularArticlesCount + 1);
+            final List<ArticleEntity> selectableToppingArticles = new ArrayList<>(toppingArticles);
+            final List<ArticleEntity> chosenToppingArticles = new ArrayList<>(toppingsCount);  // TODO: implement usage
             int fullResetTryCounter = 0;
             while (fullResetTryCounter <= 1)
             {
@@ -688,6 +691,11 @@ public class MainActivity extends AppCompatActivity
                     {
                         moveArticlesToStateList(chosenArticles, selectableArticles);
                     }
+                    if (!chosenToppingArticles.isEmpty())
+                    {
+                        selectableToppingArticles.addAll(chosenToppingArticles);
+                        chosenToppingArticles.clear();
+                    }
 
                     // Chose articles for muesli:
                     chosenArticles.addAll(priorityChoosing);
@@ -697,6 +705,10 @@ public class MainActivity extends AppCompatActivity
                         chosenArticles.add(selectableArticles.remove(random.nextInt(selectableArticles.size())));
                     }
                     ArticleEntity fillerArticle = fillerArticles.get(random.nextInt(fillerArticles.size()));
+                    for (int i = 0; i < regularArticlesCount - priorityChoosing.size(); i++)
+                    {
+                        chosenToppingArticles.add(selectableToppingArticles.remove(random.nextInt(selectableToppingArticles.size())));
+                    }
 
                     // Determine ingredients:
                     int totalSpoons = 0;
