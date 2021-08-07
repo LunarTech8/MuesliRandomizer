@@ -518,7 +518,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/item_margin_small"
                     android:max="@integer/toppingsSliderMax"
-                    android:progress="1"
+                    android:progress="0"
                     app:layout_constraintStart_toEndOf="@+id/toppingsLabel"
                     app:layout_constraintEnd_toStartOf="@+id/toppingsDataView"
                     app:layout_constraintTop_toTopOf="parent"

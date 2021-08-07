@@ -252,6 +252,13 @@
         "sugarPercentage": 0.14
     },
     {
+        "name": "Cini Minis Applecrush",
+        "brand": "Nestle",
+        "type": 1,
+        "spoonWeight": 9.5,
+        "sugarPercentage": 0.247
+    },
+    {
         "name": "Clusters Chocolate",
         "brand": "Nestle",
         "type": 1,

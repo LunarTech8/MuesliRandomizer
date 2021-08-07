@@ -106,9 +106,9 @@ public class MainActivity extends AppCompatActivity
     private final List<ArticleEntity> fillerArticles = new LinkedList<>();  // All available filler type articles, separate from the other lists with only regular articles
     private final List<ArticleEntity> toppingArticles = new LinkedList<>();  // All available topping type articles, separate from the other lists with only regular articles
     private final List<ArticleEntity> selectableArticles = new LinkedList<>();  // Selectable articles for the next muesli mix creation
-    private final List<ArticleEntity> usedArticles = new LinkedList<>();  // Used articles, will be reshuffled into selectableArticles once that is depleted
-    private final List<ArticleEntity> chosenArticles = new LinkedList<>();  // Chosen articles for the current muesli mix creation
-    private final List<ArticleEntity> priorityChoosing = new LinkedList<>();  // Remaining articles that have to be chosen for the next muesli mix creation, articles are also in selectableArticles
+    private final List<ArticleEntity> usedRegularArticles = new LinkedList<>();  // Used regular articles, will be reshuffled into selectableArticles once that is depleted
+    private final List<ArticleEntity> chosenRegularArticles = new LinkedList<>();  // Chosen regular articles for the current muesli mix creation
+    private final List<ArticleEntity> priorityRegularArticles = new LinkedList<>();  // Remaining regular articles that have to be chosen for the next muesli mix creation, articles are also in selectableArticles
     private IngredientsAdapter ingredientsAdapter;
     private ArticlesAdapter availableArticlesAdapter;
     private MainScreenBinding binding;
@@ -170,11 +170,11 @@ public class MainActivity extends AppCompatActivity
 
     private void moveArticlesToStateList(final List<ArticleEntity> sourceStateList, final List<ArticleEntity> targetStateList)
     {
-        if (sourceStateList == usedArticles)
+        if (sourceStateList == usedRegularArticles)
         {
             sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(article.getMultiplier()));
         }
-        if (targetStateList == usedArticles)
+        if (targetStateList == usedRegularArticles)
         {
             sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(0));
         }
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         if (article.getSelectionsLeft() == 0)
                         {
-                            usedArticles.add(article);
+                            usedRegularArticles.add(article);
                         }
                         else
                         {
@@ -221,29 +221,29 @@ public class MainActivity extends AppCompatActivity
     {
         final List<ArticleEntity> availableArticles = getAvailableArticles();
         // Clear state lists that could be outdated:
-        usedArticles.clear();
+        usedRegularArticles.clear();
         selectableArticles.clear();
         // Remove unavailable articles from uncleared state lists:
         removeNonIntersectingElements(fillerArticles, availableArticles);
         removeNonIntersectingElements(toppingArticles, availableArticles);
-        removeNonIntersectingElements(chosenArticles, availableArticles);
-        removeNonIntersectingElements(priorityChoosing, availableArticles);
+        removeNonIntersectingElements(chosenRegularArticles, availableArticles);
+        removeNonIntersectingElements(priorityRegularArticles, availableArticles);
         // Add available articles to fitting state lists that aren't in one:
         availableArticles.removeAll(fillerArticles);
         availableArticles.removeAll(toppingArticles);
-        availableArticles.removeAll(chosenArticles);
+        availableArticles.removeAll(chosenRegularArticles);
         addArticlesToFittingStateList(availableArticles);
     }
 
     private void refreshCountInfo()
     {
-        binding.setUsedAmount(usedArticles.size());
+        binding.setUsedAmount(usedRegularArticles.size());
         int count = 0;
         for (ArticleEntity article: selectableArticles) { count += article.getSelectionsLeft(); }
-        for (ArticleEntity article: chosenArticles) { count += article.getSelectionsLeft(); }
+        for (ArticleEntity article: chosenRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableAmount(count);
         count = 0;
-        for (ArticleEntity article: priorityChoosing) { count += article.getSelectionsLeft(); }
+        for (ArticleEntity article: priorityRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setPriorityAmount(count);
         binding.setFillerAmount(fillerArticles.size());
         binding.setToppingAmount(toppingArticles.size());
@@ -658,15 +658,15 @@ public class MainActivity extends AppCompatActivity
             final int toppingsCount = toppingsValue2ToppingsCount(toppingsValue);
 
             // Return used articles back to the selectable pool if necessary:
-            if (selectableArticles.size() + chosenArticles.size() < regularArticlesCount)
+            if (selectableArticles.size() + chosenRegularArticles.size() < regularArticlesCount)
             {
-                priorityChoosing.addAll(selectableArticles);
-                priorityChoosing.addAll(chosenArticles);
-                moveArticlesToStateList(usedArticles, selectableArticles);
+                priorityRegularArticles.addAll(selectableArticles);
+                priorityRegularArticles.addAll(chosenRegularArticles);
+                moveArticlesToStateList(usedRegularArticles, selectableArticles);
             }
 
             // Check general conditions for valid mix:
-            if (fillerArticles.size() <= 0 || selectableArticles.size() + chosenArticles.size() < regularArticlesCount || toppingArticles.size() < toppingsCount)
+            if (fillerArticles.size() <= 0 || selectableArticles.size() + chosenRegularArticles.size() < regularArticlesCount || toppingArticles.size() < toppingsCount)
             {
                 // Adjust mix buttons and ingredients list:
                 Log.i("onCreate", "Not enough available articles for a valid mix");
@@ -680,16 +680,16 @@ public class MainActivity extends AppCompatActivity
             // Retry with randomized ingredients until a valid mix is found:
             final List<IngredientEntity> ingredients = new ArrayList<>(regularArticlesCount + 1);
             final List<ArticleEntity> selectableToppingArticles = new ArrayList<>(toppingArticles);
-            final List<ArticleEntity> chosenToppingArticles = new ArrayList<>(toppingsCount);  // TODO: implement usage
+            final List<ArticleEntity> chosenToppingArticles = new ArrayList<>(toppingsCount);
             int fullResetTryCounter = 0;
             while (fullResetTryCounter <= 1)
             {
                 for (int tryCounter = 0; tryCounter < MAX_RANDOMIZE_TRIES; tryCounter++)
                 {
                     // Return chosen articles back to the selectable pool if necessary:
-                    if (!chosenArticles.isEmpty())
+                    if (!chosenRegularArticles.isEmpty())
                     {
-                        moveArticlesToStateList(chosenArticles, selectableArticles);
+                        moveArticlesToStateList(chosenRegularArticles, selectableArticles);
                     }
                     if (!chosenToppingArticles.isEmpty())
                     {
@@ -698,14 +698,14 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     // Chose articles for muesli:
-                    chosenArticles.addAll(priorityChoosing);
-                    selectableArticles.removeAll(priorityChoosing);
-                    for (int i = 0; i < regularArticlesCount - priorityChoosing.size(); i++)
+                    chosenRegularArticles.addAll(priorityRegularArticles);
+                    selectableArticles.removeAll(priorityRegularArticles);
+                    for (int i = 0; i < regularArticlesCount - priorityRegularArticles.size(); i++)
                     {
-                        chosenArticles.add(selectableArticles.remove(random.nextInt(selectableArticles.size())));
+                        chosenRegularArticles.add(selectableArticles.remove(random.nextInt(selectableArticles.size())));
                     }
                     ArticleEntity fillerArticle = fillerArticles.get(random.nextInt(fillerArticles.size()));
-                    for (int i = 0; i < regularArticlesCount - priorityChoosing.size(); i++)
+                    for (int i = 0; i < toppingsCount; i++)
                     {
                         chosenToppingArticles.add(selectableToppingArticles.remove(random.nextInt(selectableToppingArticles.size())));
                     }
@@ -716,14 +716,29 @@ public class MainActivity extends AppCompatActivity
                     float totalSugar = 0F;
                     float weight;
                     float sugarPartialSum = 0F;
+                    float toppingsWeight;
                     ingredients.clear();
                     ArticleEntity article;
                     int spoonCount;
-                    // Calculate and add spoons for first regular articles based on number of ingredients:
+                    // Calculate and add spoons for topping articles based on toppings ratio:
+                    for (int i = 0; i < toppingsCount; i++)
+                    {
+                        article = chosenToppingArticles.get(i);
+                        spoonCount = (int)Math.round(targetWeight * TOPPINGS_INGREDIENT_RATIO / (article.getSpoonWeight() * toppingsCount));
+                        spoonCount = Math.max(spoonCount, 1);
+                        weight = spoonCount * (float)article.getSpoonWeight();
+                        totalSpoons += spoonCount;
+                        totalWeight += weight;
+                        totalSugar += weight * article.getSugarPercentage();
+                        sugarPartialSum += weight * (article.getSugarPercentage() - fillerArticle.getSugarPercentage());
+                        ingredients.add(new IngredientEntity(article, spoonCount));
+                    }
+                    toppingsWeight = totalWeight;
+                    // Calculate and add spoons for non-last regular articles based on number of ingredients:
                     for (int i = 0; i < regularArticlesCount - 1; i++)
                     {
-                        article = chosenArticles.get(i);
-                        spoonCount = (int)Math.round(targetWeight / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
+                        article = chosenRegularArticles.get(i);
+                        spoonCount = (int)Math.round((targetWeight - toppingsWeight) / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
                         spoonCount = Math.max(spoonCount, 1);
                         weight = spoonCount * (float)article.getSpoonWeight();
                         totalSpoons += spoonCount;
@@ -733,7 +748,7 @@ public class MainActivity extends AppCompatActivity
                         ingredients.add(new IngredientEntity(article, spoonCount));
                     }
                     // Calculate and add spoons for last regular article based on sugar percentage:
-                    article = chosenArticles.get(regularArticlesCount - 1);
+                    article = chosenRegularArticles.get(regularArticlesCount - 1);
                     spoonCount = (int)Math.round((targetSugar - targetWeight * fillerArticle.getSugarPercentage() - sugarPartialSum) / (article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage())));
                     if (spoonCount <= 0) continue;
                     weight = spoonCount * (float)article.getSpoonWeight();
@@ -768,9 +783,9 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
                 // Return used and chosen articles back to the selectable pool and reset priority choosing:
-                moveArticlesToStateList(usedArticles, selectableArticles);
-                moveArticlesToStateList(chosenArticles, selectableArticles);
-                priorityChoosing.clear();
+                moveArticlesToStateList(usedRegularArticles, selectableArticles);
+                moveArticlesToStateList(chosenRegularArticles, selectableArticles);
+                priorityRegularArticles.clear();
                 Log.i("onCreate", "Cannot find valid mix with selectable articles, retrying with full reset");
                 fullResetTryCounter += 1;
             }
@@ -783,16 +798,16 @@ public class MainActivity extends AppCompatActivity
         });
         binding.useButton.setOnClickListener((View view) ->
         {
-            if (chosenArticles.isEmpty())
+            if (chosenRegularArticles.isEmpty())
             {
                 Log.e("onCreate", "ChosenArticles is empty");
             }
 
             // Decrement selections left, move articles to fitting pools and reset priority choosing:
-            chosenArticles.forEach(ArticleEntity::decrementSelectionsLeft);
-            addArticlesToFittingStateList(chosenArticles);
-            chosenArticles.clear();
-            priorityChoosing.clear();
+            chosenRegularArticles.forEach(ArticleEntity::decrementSelectionsLeft);
+            addArticlesToFittingStateList(chosenRegularArticles);
+            chosenRegularArticles.clear();
+            priorityRegularArticles.clear();
 
             // Adjust mix buttons and ingredients list:
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
@@ -806,9 +821,9 @@ public class MainActivity extends AppCompatActivity
         binding.clearButton.setOnClickListener((View view) ->
         {
             // Return chosen articles back to the selectable pool if necessary:
-            if (!chosenArticles.isEmpty())
+            if (!chosenRegularArticles.isEmpty())
             {
-                moveArticlesToStateList(chosenArticles, selectableArticles);
+                moveArticlesToStateList(chosenRegularArticles, selectableArticles);
             }
 
             // Adjust mix buttons and ingredients list:
