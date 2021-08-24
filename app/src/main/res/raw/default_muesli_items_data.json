@@ -348,5 +348,26 @@
         "type": 1,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.15
+    },
+    {
+        "name": "Gebrannte Erdnusskerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 17,
+        "sugarPercentage": 0.36
+    },
+    {
+        "name": "Kirsche naturbelassen",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 16.5,
+        "sugarPercentage": 0.52
+    },
+    {
+        "name": "Sonnenblumenkerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 12,
+        "sugarPercentage": 0.024
     }
 ]
