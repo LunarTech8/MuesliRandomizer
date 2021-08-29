@@ -2,6 +2,7 @@ package com.romanbrunner.apps.mueslirandomizer;
 
 import android.util.Log;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +64,23 @@ public class ArticleEntity implements Article
                 return "UNRECOGNIZED";
             }
         }
+
+        public @NotNull String toSpoonName()
+        {
+            if (this == FILLER || this == REGULAR)
+            {
+                return "tablespoon";
+            }
+            else if (this == TOPPING)
+            {
+                return "teaspoon";
+            }
+            else
+            {
+                Log.e("Type", "Unrecognized type (" + this + ")");
+                return "UNRECOGNIZED";
+            }
+        }
     }
 
 
@@ -100,6 +118,18 @@ public class ArticleEntity implements Article
     public String getTypeString()
     {
         return type.toString();
+    }
+
+    @Override
+    public String getSpoonName()
+    {
+        return type.toSpoonName();
+    }
+
+    @Override
+    public String getSpoonNameCapitalized()
+    {
+        return StringUtils.capitalize(type.toSpoonName());
     }
 
     @Override

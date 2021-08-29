@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -140,6 +141,7 @@ public class MainActivity extends AppCompatActivity
         targetList.removeIf(t -> !checkList.contains(t));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void refreshData(boolean reloadArticleAdapter)
     {
         refreshStateLists();
@@ -444,6 +446,7 @@ public class MainActivity extends AppCompatActivity
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -614,6 +617,8 @@ public class MainActivity extends AppCompatActivity
                 final Type selectedType = (Type)(adapterView.getItemAtPosition(position));
                 final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
                 newArticle.setType(selectedType);
+                binding.setNewArticle(newArticle);  // Required to update weight field hint
+                binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
             }
 
             @Override

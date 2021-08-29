@@ -9,6 +9,8 @@ public interface Article
     String getBrand();
     Type getType();
     String getTypeString();
+    String getSpoonName();
+    String getSpoonNameCapitalized();
     double getSpoonWeight();
     String getSpoonWeightString();
     double getSugarPercentage();

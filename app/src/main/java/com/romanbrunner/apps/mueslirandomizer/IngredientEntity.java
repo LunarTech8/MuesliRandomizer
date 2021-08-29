@@ -36,11 +36,11 @@ public class IngredientEntity implements Ingredient
     {
         if (spoonCount == 1)
         {
-            return "1 spoon";
+            return "1 " + article.getSpoonName();
         }
         else
         {
-            return String.format(Locale.getDefault(), "%d spoons", spoonCount);
+            return String.format(Locale.getDefault(), "%d " + article.getSpoonName() + "s", spoonCount);
         }
     }
 

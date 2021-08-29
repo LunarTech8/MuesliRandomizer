@@ -42,6 +42,13 @@
         "sugarPercentage": 0.22
     },
     {
+        "name": " Kirsche naturbelassen",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 7.5,
+        "sugarPercentage": 0.52
+    },
+    {
         "name": "Crunchy Müsli Cacao & Hazelnut",
         "brand": "Kellogg",
         "type": 1,
@@ -182,6 +189,13 @@
         "sugarPercentage": 0.2
     },
     {
+        "name": "Knusper Schoko-Karamell",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 12,
+        "sugarPercentage": 0.21
+    },
+    {
         "name": "Knusper Schoko-Krokant",
         "brand": "Kölln",
         "type": 1,
@@ -252,6 +266,13 @@
         "sugarPercentage": 0.14
     },
     {
+        "name": "Allnatural Porridge Apfel",
+        "brand": "Nesquik",
+        "type": 1,
+        "spoonWeight": 12.5,
+        "sugarPercentage": 0.12300000000000001
+    },
+    {
         "name": "Cini Minis Applecrush",
         "brand": "Nestle",
         "type": 1,
@@ -278,6 +299,27 @@
         "type": 1,
         "spoonWeight": 9,
         "sugarPercentage": 0.2
+    },
+    {
+        "name": "Cashew-Cranberry-Mix",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 6,
+        "sugarPercentage": 0.3
+    },
+    {
+        "name": "Gebrannte Erdnusskerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 7.5,
+        "sugarPercentage": 0.36
+    },
+    {
+        "name": "Sonnenblumenkerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 6,
+        "sugarPercentage": 0.024
     },
     {
         "name": "Joghurtmüsli mit Erdbeer-Stücken",
@@ -348,26 +390,5 @@
         "type": 1,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.15
-    },
-    {
-        "name": "Gebrannte Erdnusskerne",
-        "brand": "Seeberger",
-        "type": 2,
-        "spoonWeight": 17,
-        "sugarPercentage": 0.36
-    },
-    {
-        "name": "Kirsche naturbelassen",
-        "brand": "Farmer's Snack",
-        "type": 2,
-        "spoonWeight": 16.5,
-        "sugarPercentage": 0.52
-    },
-    {
-        "name": "Sonnenblumenkerne",
-        "brand": "Seeberger",
-        "type": 2,
-        "spoonWeight": 12,
-        "sugarPercentage": 0.024
     }
 ]
