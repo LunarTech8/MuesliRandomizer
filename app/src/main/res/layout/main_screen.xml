@@ -17,7 +17,7 @@
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
         <variable name="articlesCount" type="Integer" />
-        <variable name="toppingsCount" type="Integer" />
+        <variable name="toppingPercentage" type="String" />
         <variable name="totalSpoonCount" type="String" />
         <variable name="totalWeight" type="String" />
         <variable name="totalSugarPercentage" type="String" />
@@ -497,40 +497,40 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/toppingsRow"
+                android:id="@+id/toppingRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_row_height"
                 android:orientation="horizontal"
                 >
 
                 <TextView
-                    android:id="@+id/toppingsLabel"
+                    android:id="@+id/toppingLabel"
                     android:layout_width="@dimen/label_width_medium"
                     android:layout_height="wrap_content"
-                    android:text="@string/t_toppingsLabel"
+                    android:text="@string/t_toppingLabel"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     />
 
                 <SeekBar
-                    android:id="@+id/toppingsSlider"
+                    android:id="@+id/toppingSlider"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/item_margin_small"
                     android:max="@integer/toppingsSliderMax"
                     android:progress="0"
-                    app:layout_constraintStart_toEndOf="@+id/toppingsLabel"
-                    app:layout_constraintEnd_toStartOf="@+id/toppingsDataView"
+                    app:layout_constraintStart_toEndOf="@+id/toppingLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/toppingDataView"
                     app:layout_constraintTop_toTopOf="parent"
                     style="@style/Widget.AppCompat.SeekBar.Discrete"
                     />
 
                 <TextView
-                    android:id="@+id/toppingsDataView"
+                    android:id="@+id/toppingDataView"
                     android:layout_width="@dimen/label_width_small"
                     android:layout_height="wrap_content"
-                    android:text="@{@string/t_countText(toppingsCount)}"
+                    android:text="@{@string/t_percentageText(toppingPercentage)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"

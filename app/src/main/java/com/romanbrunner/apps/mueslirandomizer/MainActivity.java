@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
     // --------------------
 
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;  // Ratio compared to first regular article, 1 being equal ratio
-    private final static float TOPPINGS_INGREDIENT_RATIO = 0.1F;  // Ratio of whole mix
+    private final static int TOPPINGS_INGREDIENT_COUNT = 1;  // Currently fixed, might be transformed back into a dynamic slider value
     private final static int MAX_RANDOMIZE_TRIES = 1024;
     private final static String INTENT_TYPE_JSON = "*/*";  // No MIME type for json yet, thus allowing every file
     private final static String ARTICLES_FILENAME = "AllArticles";
@@ -85,9 +85,9 @@ public class MainActivity extends AppCompatActivity
         return articlesValue + 1;
     }
 
-    private static int toppingsValue2ToppingsCount(int toppingsValue)
+    private static float toppingValue2ToppingPercentage(int toppingValue)
     {
-        return toppingsValue;
+        return (toppingValue > 0 ? 0.05F : 0F) + 0.05F * toppingValue;
     }
 
 
@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity
         binding.sizeSlider.setProgress(sizeValue);
         binding.sugarSlider.setProgress(sugarValue);
         binding.articlesSlider.setProgress(articlesValue);
-        binding.toppingsSlider.setProgress(toppingsValue);
+        binding.toppingSlider.setProgress(toppingsValue);
     }
 
     private void hideKeyboard(final View view)
@@ -534,7 +534,7 @@ public class MainActivity extends AppCompatActivity
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
         binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
         binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
-        binding.setToppingsCount(toppingsValue2ToppingsCount(toppingsValue));
+        binding.setToppingPercentage(String.format(Locale.getDefault(), "%.0f", toppingValue2ToppingPercentage(toppingsValue) * 100));
         binding.setIsChosenMuesliUsed(isChosenMuesliUsed);
         binding.setIsIngredientsListEmpty(true);
         binding.setIsInvalidSettings(false);
@@ -592,7 +592,7 @@ public class MainActivity extends AppCompatActivity
                 storePreferences();
             }
         });
-        binding.toppingsSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        binding.toppingSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
@@ -604,7 +604,7 @@ public class MainActivity extends AppCompatActivity
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
                 toppingsValue = progress;
-                binding.setToppingsCount(toppingsValue2ToppingsCount(toppingsValue));
+                binding.setToppingPercentage(String.format(Locale.getDefault(), "%.0f", toppingValue2ToppingPercentage(toppingsValue) * 100));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 storePreferences();
             }
@@ -657,10 +657,11 @@ public class MainActivity extends AppCompatActivity
         binding.percentageField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.newButton.setOnClickListener((View view) ->
         {
-            final double targetWeight = sizeValue2SizeWeight(sizeValue);
-            final double targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
+            final float targetWeight = sizeValue2SizeWeight(sizeValue);
+            final float targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
             final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
-            final int toppingsCount = toppingsValue2ToppingsCount(toppingsValue);
+            final float toppingPercentage = toppingValue2ToppingPercentage(toppingsValue);
+            final int toppingsCount = (toppingPercentage > 0 ? TOPPINGS_INGREDIENT_COUNT : 0);
 
             // Return used articles back to the selectable pool if necessary:
             if (selectableArticles.size() + chosenRegularArticles.size() < regularArticlesCount)
@@ -725,11 +726,11 @@ public class MainActivity extends AppCompatActivity
                     ingredients.clear();
                     ArticleEntity article;
                     int spoonCount;
-                    // Calculate and add spoons for topping articles based on toppings ratio:
+                    // Calculate and add spoons for topping articles based on topping percentage:
                     for (int i = 0; i < toppingsCount; i++)
                     {
                         article = chosenToppingArticles.get(i);
-                        spoonCount = (int)Math.round(targetWeight * TOPPINGS_INGREDIENT_RATIO / (article.getSpoonWeight() * toppingsCount));
+                        spoonCount = (int)Math.round(targetWeight * toppingPercentage / (article.getSpoonWeight() * toppingsCount));
                         spoonCount = Math.max(spoonCount, 1);
                         weight = spoonCount * (float)article.getSpoonWeight();
                         totalSpoons += spoonCount;
