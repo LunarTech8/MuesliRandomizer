@@ -7,7 +7,6 @@
     <string name="t_toppingsCountInfoLabel">Toppings:</string>
     <string name="t_fillersCountInfoLabel">Fillers:</string>
     <string name="t_separatorLabel">|</string>
-    <string name="t_delimiterLabel">---</string>
     <string name="t_sizeLabel">Size:</string>
     <string name="t_sugarLabel">Sugar:</string>
     <string name="t_articlesLabel">Muesli:</string>
@@ -43,8 +42,9 @@
     <!-- Hints: -->
     <string name="h_name">Name</string>
     <string name="h_brand">Brand</string>
+    <string name="h_type">Type</string>
     <string name="h_weight">%1$s</string>
-    <string name="h_percentage">Sugar</string>
     <string name="h_weightSuffix">\u0020[g]</string>
+    <string name="h_percentage">Sugar</string>
     <string name="h_percentageSuffix">\u0020[\%]</string>
 </resources>

@@ -6,7 +6,7 @@
     <dimen name="count_info_row_height">25dp</dimen>
     <dimen name="ingredients_label_height">30dp</dimen>
     <dimen name="weight_field_min_width">125dp</dimen>
-    <dimen name="user_mode_button_width">120dp</dimen>
+    <dimen name="user_mode_button_width">115dp</dimen>
     <dimen name="available_button_size">40dp</dimen>
     <dimen name="empty_button_width">60dp</dimen>
     <dimen name="empty_button_height">40dp</dimen>

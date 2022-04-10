@@ -58,7 +58,6 @@
                     android:id="@+id/mixMuesliButton"
                     android:layout_width="@dimen/user_mode_button_width"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/item_horizontal_margin"
                     android:text="@string/t_mixMuesliButton"
                     android:onClick="onRadioButtonClicked"
                     />
@@ -67,7 +66,6 @@
                     android:id="@+id/availabilityButton"
                     android:layout_width="@dimen/user_mode_button_width"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/item_horizontal_margin"
                     android:text="@string/t_availabilityButton"
                     android:onClick="onRadioButtonClicked"
                     />
@@ -160,7 +158,8 @@
                 android:id="@+id/countInfoBRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/count_info_row_height"
-                app:isVisible="@{userMode!=UserMode.EDIT_ITEMS}">
+                app:isVisible="@{userMode!=UserMode.EDIT_ITEMS}"
+                >
 
                 <TextView
                     android:id="@+id/toppingsCountInfoLabel"
@@ -169,7 +168,8 @@
                     android:text="@string/t_toppingsCountInfoLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/toppingsSelectableCountView"
@@ -179,7 +179,8 @@
                     android:text="@{@string/t_selectableAmountText(selectableToppingAmount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/toppingsCountInfoLabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/toppingsSeparatorALabel"
@@ -189,7 +190,8 @@
                     android:text="@string/t_separatorLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/toppingsSelectableCountView"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/toppingsUsedCountView"
@@ -199,27 +201,27 @@
                     android:text="@{@string/t_usedAmountText(usedToppingAmount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/toppingsSeparatorALabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
-                <TextView
-                    android:id="@+id/toppingsDelimiterALabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/item_margin_small"
-                    android:text="@string/t_delimiterLabel"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/toppingsUsedCountView"
-                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/countInfoCRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode!=UserMode.EDIT_ITEMS}"
+                >
 
                 <TextView
                     android:id="@+id/fillersCountInfoLabel"
-                    android:layout_width="@dimen/label_width_small"
+                    android:layout_width="@dimen/label_width_medium"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/item_margin_small"
                     android:text="@string/t_fillersCountInfoLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/toppingsDelimiterALabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:id="@+id/fillersAvailableCountView"
@@ -229,7 +231,8 @@
                     android:text="@{@string/t_availableAmountText(fillerAmount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/fillersCountInfoLabel"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -309,7 +312,8 @@
                         android:inputType="textNoSuggestions"
                         android:text="@={newArticle.name}"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
 
                     <EditText
                         android:id="@+id/brandField"
@@ -336,6 +340,8 @@
                         android:id="@+id/typeSpinner"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:contentDescription="@string/h_type"
+                        android:background="@null"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         />
@@ -354,6 +360,7 @@
                         app:layout_constraintEnd_toStartOf="@+id/percentageField"
                         app:layout_constraintTop_toTopOf="parent"
                         app:suffix="@string/h_weightSuffix"
+                        tools:ignore="SpeakableTextPresentCheck"
                         />
 
                     <com.romanbrunner.apps.mueslirandomizer.EditTextWithSuffix

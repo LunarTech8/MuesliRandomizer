@@ -10,6 +10,7 @@ public interface Article
     Type getType();
     String getTypeString();
     String getSpoonName();
+    String getSpoonNameShort();
     String getSpoonNameCapitalized();
     double getSpoonWeight();
     String getSpoonWeightString();

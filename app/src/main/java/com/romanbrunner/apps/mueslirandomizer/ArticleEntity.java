@@ -65,15 +65,29 @@ public class ArticleEntity implements Article
             }
         }
 
-        public @NotNull String toSpoonName()
+        public @NotNull String toSpoonName(boolean isShort)
         {
             if (this == FILLER || this == REGULAR)
             {
-                return "tablespoon";
+                if (isShort)
+                {
+                    return "tablesp.";
+                }
+                else
+                {
+                    return "tablespoon";
+                }
             }
             else if (this == TOPPING)
             {
-                return "teaspoon";
+                if (isShort)
+                {
+                    return "teasp.";
+                }
+                else
+                {
+                    return "teaspoon";
+                }
             }
             else
             {
@@ -123,13 +137,19 @@ public class ArticleEntity implements Article
     @Override
     public String getSpoonName()
     {
-        return type.toSpoonName();
+        return type.toSpoonName(false);
+    }
+
+    @Override
+    public String getSpoonNameShort()
+    {
+        return type.toSpoonName(true);
     }
 
     @Override
     public String getSpoonNameCapitalized()
     {
-        return StringUtils.capitalize(type.toSpoonName());
+        return StringUtils.capitalize(type.toSpoonName(false));
     }
 
     @Override

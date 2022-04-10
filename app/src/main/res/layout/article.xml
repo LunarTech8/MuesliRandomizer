@@ -67,7 +67,7 @@
                     android:id="@+id/data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{@string/t_articleText(article.typeString, article.spoonWeightString, article.SpoonName, article.sugarPercentageString)}"
+                    android:text="@{@string/t_articleText(article.typeString, article.spoonWeightString, article.SpoonNameShort, article.sugarPercentageString)}"
                     app:isVisible="@{userMode==UserMode.EDIT_ITEMS}"
                     />
 
