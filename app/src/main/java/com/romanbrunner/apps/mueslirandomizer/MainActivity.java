@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity
     public boolean isChosenMuesliUsed = true;
 
     private final List<ArticleEntity> allArticles = new LinkedList<>();  // All catalogued articles, also not available ones
-    private final List<ArticleEntity> fillerArticles = new LinkedList<>();  // All available filler type articles, separate from the other lists with only regular articles
+    private final List<ArticleEntity> selectableFillerArticles = new LinkedList<>();  // Selectable filler type articles, separate from the other lists with only regular articles
+    private final List<ArticleEntity> usedFillerArticles = new LinkedList<>();  // Used filler type articles, separate from the other lists with only regular articles
     private final List<ArticleEntity> selectableToppingArticles = new LinkedList<>();  // Selectable topping articles for the next muesli mix creation
     private final List<ArticleEntity> usedToppingArticles = new LinkedList<>();  // Used topping articles, will be reshuffled into selectableToppingArticles once that is depleted
     private final List<ArticleEntity> chosenToppingArticles = new LinkedList<>();  // Chosen topping articles for the current muesli mix creation
@@ -176,11 +177,11 @@ public class MainActivity extends AppCompatActivity
 
     private void moveArticlesToStateList(final List<ArticleEntity> sourceStateList, final List<ArticleEntity> targetStateList)
     {
-        if (sourceStateList == usedRegularArticles || sourceStateList == usedToppingArticles)
+        if (sourceStateList == usedRegularArticles || sourceStateList == usedToppingArticles || sourceStateList == selectableToppingArticles)
         {
             sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(article.getMultiplier()));
         }
-        if (targetStateList == usedRegularArticles || targetStateList == usedToppingArticles)
+        if (targetStateList == usedRegularArticles || targetStateList == usedToppingArticles || targetStateList == usedFillerArticles)
         {
             sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(0));
         }
@@ -192,40 +193,36 @@ public class MainActivity extends AppCompatActivity
     {
         for (ArticleEntity article: articles)
         {
+            if (!article.isAvailable())
+            {
+                continue;
+            }
+            List<ArticleEntity> usedList;
+            List<ArticleEntity> selectableList;
             switch (article.getType())
             {
                 case FILLER:
-                    if (article.isAvailable())
-                    {
-                        fillerArticles.add(article);
-                    }
+                    usedList = usedFillerArticles;
+                    selectableList = selectableFillerArticles;
                     break;
                 case TOPPING:
-                    if (article.isAvailable())
-                    {
-                        if (article.getSelectionsLeft() == 0)
-                        {
-                            usedToppingArticles.add(article);
-                        }
-                        else
-                        {
-                            selectableToppingArticles.add(article);
-                        }
-                    }
+                    usedList = usedToppingArticles;
+                    selectableList = selectableToppingArticles;
                     break;
                 case REGULAR:
-                    if (article.isAvailable())
-                    {
-                        if (article.getSelectionsLeft() == 0)
-                        {
-                            usedRegularArticles.add(article);
-                        }
-                        else
-                        {
-                            selectableRegularArticles.add(article);
-                        }
-                    }
+                    usedList = usedRegularArticles;
+                    selectableList = selectableRegularArticles;
                     break;
+                default:
+                    continue;
+            }
+            if (article.getSelectionsLeft() == 0)
+            {
+                usedList.add(article);
+            }
+            else
+            {
+                selectableList.add(article);
             }
         }
     }
@@ -234,17 +231,17 @@ public class MainActivity extends AppCompatActivity
     {
         final List<ArticleEntity> availableArticles = getAvailableArticles();
         // Clear state lists that could be outdated:
+        usedFillerArticles.clear();
+        selectableFillerArticles.clear();
         usedToppingArticles.clear();
         selectableToppingArticles.clear();
         usedRegularArticles.clear();
         selectableRegularArticles.clear();
         // Remove unavailable articles from not-cleared state lists:
-        removeNonIntersectingElements(fillerArticles, availableArticles);
         removeNonIntersectingElements(chosenToppingArticles, availableArticles);
         removeNonIntersectingElements(chosenRegularArticles, availableArticles);
         removeNonIntersectingElements(priorityRegularArticles, availableArticles);
         // Add available articles to fitting state lists that aren't in one:
-        availableArticles.removeAll(fillerArticles);
         availableArticles.removeAll(chosenToppingArticles);
         availableArticles.removeAll(chosenRegularArticles);
         addArticlesToFittingStateList(availableArticles);
@@ -268,7 +265,10 @@ public class MainActivity extends AppCompatActivity
         binding.setSelectableToppingAmount(count);
         binding.setUsedToppingAmount(usedToppingArticles.size());
         // Fillers:
-        binding.setFillerAmount(fillerArticles.size());
+        count = 0;
+        for (ArticleEntity article: selectableFillerArticles) { count += article.getSelectionsLeft(); }
+        binding.setSelectableFillerAmount(count);
+        binding.setUsedFillerAmount(usedFillerArticles.size());
     }
 
     private void storeArticles(final List<ArticleEntity> articles)
@@ -557,7 +557,7 @@ public class MainActivity extends AppCompatActivity
         /** Chose articles for muesli from global lists. */
         public void choseArticles(final Random random)
         {
-            fillerArticle = fillerArticles.get(random.nextInt(fillerArticles.size()));
+            fillerArticle = selectableFillerArticles.get(random.nextInt(selectableFillerArticles.size()));
             for (int i = 0; i < toppingsCount; i++)
             {
                 chosenToppingArticles.add(selectableToppingArticles.remove(random.nextInt(selectableToppingArticles.size())));
@@ -755,7 +755,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         addArticlesToFittingStateList(allArticles);
-        if (!selectableRegularArticles.isEmpty() && !fillerArticles.isEmpty() && getLowestValue(selectableRegularArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(fillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
+        if (!selectableRegularArticles.isEmpty() && !selectableFillerArticles.isEmpty() && getLowestValue(selectableRegularArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(selectableFillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
 
         // Init layout variables:
         binding.setUserMode(userMode);
@@ -913,6 +913,10 @@ public class MainActivity extends AppCompatActivity
             muesliMix = new MuesliMix(targetWeight, targetSugar, regularArticlesCount, toppingPercentage, toppingArticlesCount);
 
             // Return used articles back to the selectable pool if necessary:
+            if (selectableFillerArticles.size() <= 0)
+            {
+                moveArticlesToStateList(usedFillerArticles, selectableFillerArticles);
+            }
             if (selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
             {
                 moveArticlesToStateList(usedToppingArticles, selectableToppingArticles);
@@ -925,7 +929,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Check general conditions for valid mix:
-            if (fillerArticles.size() <= 0 || selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount || selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
+            if (selectableFillerArticles.size() <= 0 || selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount || selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
             {
                 muesliMix.updateDisplayInvalid(binding);
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -949,6 +953,7 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
                 // Return used and chosen articles back to the selectable pool and reset priority choosing:
+                moveArticlesToStateList(usedFillerArticles, selectableFillerArticles);
                 moveArticlesToStateList(usedToppingArticles, selectableToppingArticles);
                 moveArticlesToStateList(chosenToppingArticles, selectableToppingArticles);
                 moveArticlesToStateList(usedRegularArticles, selectableRegularArticles);
@@ -975,6 +980,9 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Decrement selections left, move articles to fitting pools and reset priority choosing:
+            selectableFillerArticles.remove(muesliMix.fillerArticle);
+            muesliMix.fillerArticle.decrementSelectionsLeft();
+            addArticlesToFittingStateList(Collections.singletonList(muesliMix.fillerArticle));
             chosenToppingArticles.forEach(ArticleEntity::decrementSelectionsLeft);
             addArticlesToFittingStateList(chosenToppingArticles);
             chosenToppingArticles.clear();

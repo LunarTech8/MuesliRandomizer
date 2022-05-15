@@ -13,7 +13,8 @@
         <variable name="priorityRegularAmount" type="Integer" />
         <variable name="selectableToppingAmount" type="Integer" />
         <variable name="usedToppingAmount" type="Integer" />
-        <variable name="fillerAmount" type="Integer" />
+        <variable name="selectableFillerAmount" type="Integer" />
+        <variable name="usedFillerAmount" type="Integer" />
         <variable name="userMode" type="UserMode" />
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
@@ -224,15 +225,38 @@
                     />
 
                 <TextView
-                    android:id="@+id/fillersAvailableCountView"
+                    android:id="@+id/fillersSelectableCountView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/item_margin_small"
-                    android:text="@{@string/t_availableAmountText(fillerAmount)}"
+                    android:text="@{@string/t_availableAmountText(selectableFillerAmount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/fillersCountInfoLabel"
                     app:layout_constraintTop_toTopOf="parent"
                     />
+
+                <TextView
+                    android:id="@+id/fillersSeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/fillersSelectableCountView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/fillersUsedCountView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_usedAmountText(usedFillerAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/fillersSeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
