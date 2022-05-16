@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity
 
     private void moveArticlesToStateList(final List<ArticleEntity> sourceStateList, final List<ArticleEntity> targetStateList)
     {
-        if (sourceStateList == usedRegularArticles || sourceStateList == usedToppingArticles || sourceStateList == selectableToppingArticles)
+        if (sourceStateList == usedRegularArticles || sourceStateList == usedToppingArticles || sourceStateList == usedFillerArticles)
         {
             sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(article.getMultiplier()));
         }
@@ -465,6 +465,7 @@ public class MainActivity extends AppCompatActivity
             this.regularArticlesCount = regularArticlesCount;
             this.toppingPercentage = toppingPercentage;
             this.toppingsCount = toppingsCount;
+            fillerArticle = null;
             ingredients = new ArrayList<>(regularArticlesCount + 1);
         }
 
@@ -628,6 +629,10 @@ public class MainActivity extends AppCompatActivity
                 totalWeight += weight;
                 totalSugar += weight * fillerArticle.getSugarPercentage();
                 ingredients.add(new IngredientEntity(fillerArticle, spoonCount));
+            }
+            else
+            {
+                fillerArticle = null;
             }
             return true;
         }
@@ -980,9 +985,13 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Decrement selections left, move articles to fitting pools and reset priority choosing:
-            selectableFillerArticles.remove(muesliMix.fillerArticle);
-            muesliMix.fillerArticle.decrementSelectionsLeft();
-            addArticlesToFittingStateList(Collections.singletonList(muesliMix.fillerArticle));
+            if (muesliMix.fillerArticle != null)
+            {
+                selectableFillerArticles.remove(muesliMix.fillerArticle);
+                muesliMix.fillerArticle.decrementSelectionsLeft();
+                addArticlesToFittingStateList(Collections.singletonList(muesliMix.fillerArticle));
+                muesliMix.fillerArticle = null;
+            }
             chosenToppingArticles.forEach(ArticleEntity::decrementSelectionsLeft);
             addArticlesToFittingStateList(chosenToppingArticles);
             chosenToppingArticles.clear();

@@ -9,14 +9,14 @@ android {
             keyAlias 'mr-appkey'
         }
     }
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     defaultConfig {
         applicationId "com.romanbrunner.apps.mueslirandomizer"
         minSdkVersion 28
-        targetSdkVersion 31
-        versionCode 11
-        versionName "1.8.0"
+        targetSdkVersion 32
+        versionCode 12
+        versionName "1.9.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

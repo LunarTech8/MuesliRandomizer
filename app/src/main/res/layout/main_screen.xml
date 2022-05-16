@@ -229,7 +229,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/item_margin_small"
-                    android:text="@{@string/t_availableAmountText(selectableFillerAmount)}"
+                    android:text="@{@string/t_selectableAmountText(selectableFillerAmount)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/fillersCountInfoLabel"
                     app:layout_constraintTop_toTopOf="parent"
