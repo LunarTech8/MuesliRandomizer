@@ -14,8 +14,6 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,24 +27,23 @@ import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
@@ -63,7 +60,7 @@ public class MainActivity extends AppCompatActivity
 
     private final static float FILLER_INGREDIENT_RATIO = 0.5F;  // Ratio compared to first regular article, 1 being equal ratio
     private final static int TOPPINGS_INGREDIENT_COUNT = 1;  // Currently fixed, might be transformed back into a dynamic slider value
-    private final static int MAX_FULL_RESET_RANDOMIZE_TRIES = 1;
+    private final static int MAX_FULL_RESET_RANDOMIZE_TRIES = 3;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
     private final static String INTENT_TYPE_JSON = "*/*";  // No MIME type for json yet, thus allowing every file
     private final static String ARTICLES_FILENAME = "AllArticles";
@@ -113,7 +110,7 @@ public class MainActivity extends AppCompatActivity
     private final List<ArticleEntity> selectableRegularArticles = new LinkedList<>();  // Selectable regular articles for the next muesli mix creation
     private final List<ArticleEntity> usedRegularArticles = new LinkedList<>();  // Used regular articles, will be reshuffled into selectableArticles once that is depleted
     private final List<ArticleEntity> chosenRegularArticles = new LinkedList<>();  // Chosen regular articles for the current muesli mix creation
-    private final List<ArticleEntity> priorityRegularArticles = new LinkedList<>();  // Remaining regular articles that have to be chosen for the next muesli mix creation, articles are also in selectableArticles
+    private final Set<ArticleEntity> priorityRegularArticles = new LinkedHashSet<>();  // Remaining regular articles that have to be chosen for the next muesli mix creation, articles are also in selectableArticles
     private IngredientsAdapter ingredientsAdapter;
     private ArticlesAdapter availableArticlesAdapter;
     private MuesliMix muesliMix;
@@ -134,14 +131,14 @@ public class MainActivity extends AppCompatActivity
         }
 
         double lowestValue = getter.apply(list.get(0));
-        for (int i = 1; i < list.size(); i++)
+        for (var i = 1; i < list.size(); i++)
         {
             lowestValue = Math.min(lowestValue, getter.apply(list.get(i)));
         }
         return lowestValue;
     }
 
-    private static <T> void removeNonIntersectingElements(final List<T> targetList, final List<T> checkList)
+    private static <T> void removeNonIntersectingElements(final Collection<T> targetList, final Collection<T> checkList)
     {
         targetList.removeIf(t -> !checkList.contains(t));
     }
@@ -164,8 +161,8 @@ public class MainActivity extends AppCompatActivity
 
     private List<ArticleEntity> getAvailableArticles()
     {
-        List<ArticleEntity> availableArticles = new LinkedList<>();
-        for (ArticleEntity article: allArticles)
+        final List<ArticleEntity> availableArticles = new LinkedList<>();
+        for (var article: allArticles)
         {
             if (article.isAvailable())
             {
@@ -179,19 +176,40 @@ public class MainActivity extends AppCompatActivity
     {
         if (sourceStateList == usedRegularArticles || sourceStateList == usedToppingArticles || sourceStateList == usedFillerArticles)
         {
-            sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(article.getMultiplier()));
+            sourceStateList.forEach((var article) -> article.setSelectionsLeft(article.getMultiplier()));
         }
         if (targetStateList == usedRegularArticles || targetStateList == usedToppingArticles || targetStateList == usedFillerArticles)
         {
-            sourceStateList.forEach((ArticleEntity article) -> article.setSelectionsLeft(0));
+            sourceStateList.forEach((var article) -> article.setSelectionsLeft(0));
         }
         targetStateList.addAll(sourceStateList);
         sourceStateList.clear();
     }
 
+    private void moveSimilarArticleToStateList(final ArticleEntity similarArticle ,final List<ArticleEntity> sourceStateList, final List<ArticleEntity> targetStateList)
+    {
+        for (var article : sourceStateList)
+        {
+            if (isNameTheSame(article, similarArticle))
+            {
+                if (sourceStateList == usedRegularArticles || sourceStateList == usedToppingArticles || sourceStateList == usedFillerArticles)
+                {
+                    article.setSelectionsLeft(article.getMultiplier());
+                }
+                if (targetStateList == usedRegularArticles || targetStateList == usedToppingArticles || targetStateList == usedFillerArticles)
+                {
+                    article.setSelectionsLeft(0);
+                }
+                targetStateList.add(article);
+                sourceStateList.remove(article);
+                return;
+            }
+        }
+    }
+
     private void addArticlesToFittingStateList(final List<ArticleEntity> articles)
     {
-        for (ArticleEntity article: articles)
+        for (var article: articles)
         {
             if (!article.isAvailable())
             {
@@ -229,7 +247,7 @@ public class MainActivity extends AppCompatActivity
 
     private void refreshStateLists()
     {
-        final List<ArticleEntity> availableArticles = getAvailableArticles();
+        final var availableArticles = getAvailableArticles();
         // Clear state lists that could be outdated:
         usedFillerArticles.clear();
         selectableFillerArticles.clear();
@@ -250,23 +268,23 @@ public class MainActivity extends AppCompatActivity
     private void refreshCountInfo()
     {
         // Regulars:
-        int count = 0;
-        for (ArticleEntity article: selectableRegularArticles) { count += article.getSelectionsLeft(); }
-        for (ArticleEntity article: chosenRegularArticles) { count += article.getSelectionsLeft(); }
+        var count = 0;
+        for (var article: selectableRegularArticles) { count += article.getSelectionsLeft(); }
+        for (var article: chosenRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableRegularAmount(count);
         binding.setUsedRegularAmount(usedRegularArticles.size());
         count = 0;
-        for (ArticleEntity article: priorityRegularArticles) { count += article.getSelectionsLeft(); }
+        for (var article: priorityRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setPriorityRegularAmount(count);
         // Toppings:
         count = 0;
-        for (ArticleEntity article: selectableToppingArticles) { count += article.getSelectionsLeft(); }
-        for (ArticleEntity article: chosenToppingArticles) { count += article.getSelectionsLeft(); }
+        for (var article: selectableToppingArticles) { count += article.getSelectionsLeft(); }
+        for (var article: chosenToppingArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableToppingAmount(count);
         binding.setUsedToppingAmount(usedToppingArticles.size());
         // Fillers:
         count = 0;
-        for (ArticleEntity article: selectableFillerArticles) { count += article.getSelectionsLeft(); }
+        for (var article: selectableFillerArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableFillerAmount(count);
         binding.setUsedFillerAmount(usedFillerArticles.size());
     }
@@ -276,8 +294,8 @@ public class MainActivity extends AppCompatActivity
         try
         {
             byte[] bytes;
-            ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
-            for (ArticleEntity article: articles)
+            var dataOutputStream = new ByteArrayOutputStream();
+            for (var article: articles)
             {
                 bytes = article.toByteArray();
                 dataOutputStream.write(bytes.length);
@@ -304,12 +322,12 @@ public class MainActivity extends AppCompatActivity
     {
         try
         {
-            final Context context = getApplicationContext();
+            final var context = getApplicationContext();
             final List<String> fileNames = new ArrayList<>(Arrays.asList(context.fileList()));
             if (fileNames.contains(ARTICLES_FILENAME))
             {
                 byte[] bytes;
-                FileInputStream fileInputStream = context.openFileInput(ARTICLES_FILENAME);
+                var fileInputStream = context.openFileInput(ARTICLES_FILENAME);
                 int length;
                 while ((length = fileInputStream.read()) != -1)
                 {
@@ -332,8 +350,8 @@ public class MainActivity extends AppCompatActivity
 
     private void storePreferences()
     {
-        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
+        final var sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+        final var editor = sharedPrefs.edit();
         editor.putInt("sizeValue", sizeValue);
         editor.putInt("sugarValue", sugarValue);
         editor.putInt("articlesValue", articlesValue);
@@ -343,7 +361,7 @@ public class MainActivity extends AppCompatActivity
 
     private void loadPreferences()
     {
-        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+        final var sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
         sizeValue = sharedPrefs.getInt("sizeValue", binding.sizeSlider.getProgress());
         sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
         articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());
@@ -356,7 +374,7 @@ public class MainActivity extends AppCompatActivity
 
     private void hideKeyboard(final View view)
     {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        final var inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         Objects.requireNonNull(inputMethodManager).hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
@@ -373,8 +391,8 @@ public class MainActivity extends AppCompatActivity
     {
         try
         {
-            final JSONArray jsonArray = new JSONArray();
-            for (ArticleEntity article: allArticles)
+            final var jsonArray = new JSONArray();
+            for (var article: allArticles)
             {
                 jsonArray.put(article.writeToJson());
             }
@@ -392,12 +410,12 @@ public class MainActivity extends AppCompatActivity
     {
         try
         {
-            final JSONArray jsonArray = new JSONArray(itemsJsonString);
-            boolean hasNewItems = false;
-            for (int i = 0; i < jsonArray.length(); i++)
+            final var jsonArray = new JSONArray(itemsJsonString);
+            var hasNewItems = false;
+            for (var i = 0; i < jsonArray.length(); i++)
             {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                ArticleEntity newArticle = new ArticleEntity(jsonObject);
+                var jsonObject = jsonArray.getJSONObject(i);
+                var newArticle = new ArticleEntity(jsonObject);
                 // Add json entry as new article if an entry with the same name doesn't exist already:
                 if (allArticles.stream().noneMatch(article -> isNameTheSame(article, newArticle)))
                 {
@@ -422,10 +440,10 @@ public class MainActivity extends AppCompatActivity
 
     private String readTextFile(final Uri targetUri) throws IOException
     {
-        final InputStream inputStream = getContentResolver().openInputStream(targetUri);
-        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
-        final StringBuilder stringBuilder = new StringBuilder();
-        String line = bufferedReader.readLine();
+        final var inputStream = getContentResolver().openInputStream(targetUri);
+        final var bufferedReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
+        final var stringBuilder = new StringBuilder();
+        var line = bufferedReader.readLine();
         while (line != null)
         {
             stringBuilder.append(line);
@@ -438,8 +456,8 @@ public class MainActivity extends AppCompatActivity
 
     private void writeTextFile(final Uri targetUri, final String text) throws IOException
     {
-        final OutputStream outputStream = getContentResolver().openOutputStream(targetUri, "w");
-        final BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(outputStream)));
+        final var outputStream = getContentResolver().openOutputStream(targetUri, "w");
+        final var bufferedWriter = new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(outputStream)));
         bufferedWriter.write(text);
         bufferedWriter.close();
         outputStream.close();
@@ -497,7 +515,7 @@ public class MainActivity extends AppCompatActivity
 
         public void changeRegularArticlesCount(int regularArticlesCount, Random random)
         {
-            final int countChange = regularArticlesCount - this.regularArticlesCount;
+            final var countChange = regularArticlesCount - this.regularArticlesCount;
             if (this.regularArticlesCount + countChange <= 0 || -countChange >= chosenRegularArticles.size() || countChange > selectableRegularArticles.size())
             {
                 muesliMix.updateDisplayInvalid(binding);
@@ -505,14 +523,14 @@ public class MainActivity extends AppCompatActivity
             }
             if (countChange > 0)
             {
-                for (int i = 0; i < countChange; i++)
+                for (var i = 0; i < countChange; i++)
                 {
                     chosenRegularArticles.add(selectableRegularArticles.remove(random.nextInt(selectableRegularArticles.size())));
                 }
             }
             else if (countChange < 0)
             {
-                for (int i = 0; i < -countChange; i++)
+                for (var i = 0; i < -countChange; i++)
                 {
                     selectableRegularArticles.add(chosenRegularArticles.remove(chosenRegularArticles.size() - 1));
                 }
@@ -559,13 +577,15 @@ public class MainActivity extends AppCompatActivity
         public void choseArticles(final Random random)
         {
             fillerArticle = selectableFillerArticles.get(random.nextInt(selectableFillerArticles.size()));
-            for (int i = 0; i < toppingsCount; i++)
+            while (chosenToppingArticles.size() < toppingsCount)
             {
                 chosenToppingArticles.add(selectableToppingArticles.remove(random.nextInt(selectableToppingArticles.size())));
             }
-            chosenRegularArticles.addAll(priorityRegularArticles);
-            selectableRegularArticles.removeAll(priorityRegularArticles);
-            for (int i = 0; i < regularArticlesCount - priorityRegularArticles.size(); i++)
+            if (!priorityRegularArticles.isEmpty())
+            {
+                chosenRegularArticles.add(selectableRegularArticles.remove(selectableRegularArticles.indexOf(priorityRegularArticles.stream().skip(random.nextInt(priorityRegularArticles.size())).findFirst().orElse(null))));
+            }
+            while (chosenRegularArticles.size() < regularArticlesCount)
             {
                 chosenRegularArticles.add(selectableRegularArticles.remove(random.nextInt(selectableRegularArticles.size())));
             }
@@ -584,7 +604,7 @@ public class MainActivity extends AppCompatActivity
             ArticleEntity article;
             int spoonCount;
             // Calculate and add spoons for topping articles based on topping percentage:
-            for (int i = 0; i < toppingsCount; i++)
+            for (var i = 0; i < toppingsCount; i++)
             {
                 article = chosenToppingArticles.get(i);
                 spoonCount = (int)Math.round(targetWeight * toppingPercentage / (article.getSpoonWeight() * toppingsCount));
@@ -598,7 +618,7 @@ public class MainActivity extends AppCompatActivity
             }
             toppingsWeight = totalWeight;
             // Calculate and add spoons for non-last regular articles based on number of ingredients:
-            for (int i = 0; i < regularArticlesCount - 1; i++)
+            for (var i = 0; i < regularArticlesCount - 1; i++)
             {
                 article = chosenRegularArticles.get(i);
                 spoonCount = (int)Math.round((targetWeight - toppingsWeight) / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
@@ -630,10 +650,6 @@ public class MainActivity extends AppCompatActivity
                 totalSugar += weight * fillerArticle.getSugarPercentage();
                 ingredients.add(new IngredientEntity(fillerArticle, spoonCount));
             }
-            else
-            {
-                fillerArticle = null;
-            }
             return true;
         }
 
@@ -662,7 +678,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onRadioButtonClicked(@NonNull View view)
     {
-        final int id = view.getId();
+        final var id = view.getId();
         if (id == R.id.mixMuesliButton)
         {
             userMode = UserMode.MIX_MUESLI;
@@ -686,7 +702,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        final Random random = new Random();
+        final var random = new Random();
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
         loadPreferences();
         muesliMix = null;
@@ -696,10 +712,10 @@ public class MainActivity extends AppCompatActivity
         {
             try
             {
-                final Intent resultData = result.getData();
+                final var resultData = result.getData();
                 if (result.getResultCode() == Activity.RESULT_OK && resultData != null)
                 {
-                    final Uri targetUri = resultData.getData();
+                    final var targetUri = resultData.getData();
                     assert targetUri != null;
                     updateItemsJsonString();
                     writeTextFile(targetUri, itemsJsonString);
@@ -716,10 +732,10 @@ public class MainActivity extends AppCompatActivity
         {
             try
             {
-                final Intent resultData = result.getData();
+                final var resultData = result.getData();
                 if (result.getResultCode() == Activity.RESULT_OK && resultData != null)
                 {
-                    final Uri targetUri = resultData.getData();
+                    final var targetUri = resultData.getData();
                     assert targetUri != null;
                     itemsJsonString = readTextFile(targetUri);
                     mergeItemsJsonString();
@@ -740,7 +756,7 @@ public class MainActivity extends AppCompatActivity
         availableArticlesAdapter = new ArticlesAdapter(this);
         binding.availableArticles.setAdapter(availableArticlesAdapter);
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
-        final ArrayAdapter<Type> typeSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, Type.values());
+        final var typeSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, Type.values());
         binding.typeSpinner.setAdapter(typeSpinnerAdapter);
 
         // Load all articles and add them to the fitting state lists:
@@ -750,7 +766,7 @@ public class MainActivity extends AppCompatActivity
         }
         try
         {
-            final Resources resources = this.getResources();
+            final var resources = this.getResources();
             itemsJsonString = readTextFile(new Uri.Builder().scheme(ContentResolver.SCHEME_ANDROID_RESOURCE).authority(resources.getResourcePackageName(DEFAULT_ARTICLES_RES_ID)).appendPath(resources.getResourceTypeName(DEFAULT_ARTICLES_RES_ID)).appendPath(resources.getResourceEntryName(DEFAULT_ARTICLES_RES_ID)).build());
             mergeItemsJsonString();
         }
@@ -793,6 +809,13 @@ public class MainActivity extends AppCompatActivity
                 {
                     muesliMix.changeTargetWeight(sizeValue2SizeWeight(sizeValue));
                 }
+                else
+                {
+                    ingredientsAdapter.setIngredients(new ArrayList<>(0));
+                    ingredientsAdapter.notifyDataSetChanged();
+                    binding.setIsIngredientsListEmpty(true);
+                    refreshCountInfo();
+                }
                 binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 storePreferences();
@@ -813,6 +836,13 @@ public class MainActivity extends AppCompatActivity
                 if (muesliMix != null)
                 {
                     muesliMix.changeTargetSugar(sugarValue2SugarPercentage(sugarValue) * muesliMix.targetWeight);
+                }
+                else
+                {
+                    ingredientsAdapter.setIngredients(new ArrayList<>(0));
+                    ingredientsAdapter.notifyDataSetChanged();
+                    binding.setIsIngredientsListEmpty(true);
+                    refreshCountInfo();
                 }
                 binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -836,6 +866,13 @@ public class MainActivity extends AppCompatActivity
                     muesliMix.changeRegularArticlesCount(articlesValue2ArticlesCount(articlesValue), random);
                     refreshCountInfo();
                 }
+                else
+                {
+                    ingredientsAdapter.setIngredients(new ArrayList<>(0));
+                    ingredientsAdapter.notifyDataSetChanged();
+                    binding.setIsIngredientsListEmpty(true);
+                    refreshCountInfo();
+                }
                 binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 storePreferences();
@@ -857,6 +894,13 @@ public class MainActivity extends AppCompatActivity
                 {
                     muesliMix.changeToppingPercentage(toppingValue2ToppingPercentage(toppingsValue));
                 }
+                else
+                {
+                    ingredientsAdapter.setIngredients(new ArrayList<>(0));
+                    ingredientsAdapter.notifyDataSetChanged();
+                    binding.setIsIngredientsListEmpty(true);
+                    refreshCountInfo();
+                }
                 binding.setToppingPercentage(String.format(Locale.getDefault(), "%.0f", toppingValue2ToppingPercentage(toppingsValue) * 100));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 storePreferences();
@@ -867,8 +911,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
             {
-                final Type selectedType = (Type)(adapterView.getItemAtPosition(position));
-                final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
+                final var selectedType = (Type)(adapterView.getItemAtPosition(position));
+                final var newArticle = (ArticleEntity)binding.getNewArticle();
                 newArticle.setType(selectedType);
                 binding.setNewArticle(newArticle);  // Required to update weight field hint
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -879,13 +923,13 @@ public class MainActivity extends AppCompatActivity
         });
         binding.addButton.setOnClickListener((View view) ->
         {
-            final ArticleEntity newArticle = (ArticleEntity)binding.getNewArticle();
+            final var newArticle = (ArticleEntity)binding.getNewArticle();
             // Check for name duplicate:
-            final boolean isDuplicate = allArticles.stream().anyMatch(article -> isNameTheSame(article, newArticle));
+            final var isDuplicate = allArticles.stream().anyMatch(article -> isNameTheSame(article, newArticle));
             // Check for empty name or brand:
-            final String newName = newArticle.getName();
-            final String newBrand = newArticle.getBrand();
-            final boolean hasEmptyField = (newName == null || Objects.equals(newName, "") || newBrand == null || Objects.equals(newBrand, ""));
+            final var newName = newArticle.getName();
+            final var newBrand = newArticle.getBrand();
+            final var hasEmptyField = (newName == null || Objects.equals(newName, "") || newBrand == null || Objects.equals(newBrand, ""));
             // Add and sort in new article, update adapter and scroll to its position:
             if (!isDuplicate && !hasEmptyField)
             {
@@ -910,15 +954,15 @@ public class MainActivity extends AppCompatActivity
         binding.percentageField.setOnFocusChangeListener(this::setEditTextFocus);
         binding.newButton.setOnClickListener((View view) ->
         {
-            final float targetWeight = sizeValue2SizeWeight(sizeValue);
-            final float targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
-            final int regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
-            final float toppingPercentage = toppingValue2ToppingPercentage(toppingsValue);
-            final int toppingArticlesCount = (toppingPercentage > 0 ? TOPPINGS_INGREDIENT_COUNT : 0);
+            final var targetWeight = sizeValue2SizeWeight(sizeValue);
+            final var targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
+            final var regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
+            final var toppingPercentage = toppingValue2ToppingPercentage(toppingsValue);
+            final var toppingArticlesCount = (toppingPercentage > 0 ? TOPPINGS_INGREDIENT_COUNT : 0);
             muesliMix = new MuesliMix(targetWeight, targetSugar, regularArticlesCount, toppingPercentage, toppingArticlesCount);
 
             // Return used articles back to the selectable pool if necessary:
-            if (selectableFillerArticles.size() <= 0)
+            if (selectableFillerArticles.isEmpty())
             {
                 moveArticlesToStateList(usedFillerArticles, selectableFillerArticles);
             }
@@ -934,7 +978,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Check general conditions for valid mix:
-            if (selectableFillerArticles.size() <= 0 || selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount || selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
+            if (selectableFillerArticles.isEmpty() || selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount || selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
             {
                 muesliMix.updateDisplayInvalid(binding);
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -944,26 +988,31 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Retry with randomized ingredients until a valid mix is found:
-            int fullResetTryCounter = 0;
+            var fullResetTryCounter = 0;
             while (fullResetTryCounter <= MAX_FULL_RESET_RANDOMIZE_TRIES)
             {
-                for (int tryCounter = 0; tryCounter < MAX_RANDOMIZE_TRIES; tryCounter++)
+                for (var tryCounter = 0; tryCounter < MAX_RANDOMIZE_TRIES; tryCounter++)
                 {
+                    // Randomly chose new mix of articles of current pool:
                     muesliMix.resetArticlesPool();
                     muesliMix.choseArticles(random);
+                    // Determine mix with chosen articles and retry loop if it's invalid:
                     if (!muesliMix.determineIngredients()) continue;
+                    // Valid mix could be determined, display result and exit search:
                     muesliMix.updateDisplayValid(binding);
+                    refreshCountInfo();
                     binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                     Log.i("onCreate", "tryCounter: " + tryCounter);
                     return;
                 }
-                // Return used and chosen articles back to the selectable pool and reset priority choosing:
+                // Return used and chosen articles back to the selectable pool and update priority choosing:
                 moveArticlesToStateList(usedFillerArticles, selectableFillerArticles);
                 moveArticlesToStateList(usedToppingArticles, selectableToppingArticles);
                 moveArticlesToStateList(chosenToppingArticles, selectableToppingArticles);
+                priorityRegularArticles.addAll(selectableRegularArticles);
+                priorityRegularArticles.addAll(chosenRegularArticles);
                 moveArticlesToStateList(usedRegularArticles, selectableRegularArticles);
                 moveArticlesToStateList(chosenRegularArticles, selectableRegularArticles);
-                priorityRegularArticles.clear();
                 Log.i("onCreate", "Cannot find valid mix with selectable articles, retrying with full reset");
                 fullResetTryCounter += 1;
             }
@@ -985,7 +1034,9 @@ public class MainActivity extends AppCompatActivity
             }
 
             // Decrement selections left, move articles to fitting pools and reset priority choosing:
-            if (muesliMix.fillerArticle != null)
+            var isFillerChosen = false;
+            for (var ingredient : muesliMix.ingredients) { isFillerChosen |= Objects.equals(ingredient.getName(), muesliMix.fillerArticle.getName()); }
+            if (isFillerChosen)
             {
                 selectableFillerArticles.remove(muesliMix.fillerArticle);
                 muesliMix.fillerArticle.decrementSelectionsLeft();
@@ -996,9 +1047,9 @@ public class MainActivity extends AppCompatActivity
             addArticlesToFittingStateList(chosenToppingArticles);
             chosenToppingArticles.clear();
             chosenRegularArticles.forEach(ArticleEntity::decrementSelectionsLeft);
+            priorityRegularArticles.removeIf(t -> (chosenRegularArticles.contains(t) && t.getSelectionsLeft() == 0));
             addArticlesToFittingStateList(chosenRegularArticles);
             chosenRegularArticles.clear();
-            priorityRegularArticles.clear();
 
             // Adjust mix buttons and ingredients list:
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
