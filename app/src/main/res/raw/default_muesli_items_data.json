@@ -56,6 +56,20 @@
         "sugarPercentage": 0.52
     },
     {
+        "name": "Cashew geröstet ungesalzen",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 7.75,
+        "sugarPercentage": 0.095
+    },
+    {
+        "name": "Edelnuss geröstet",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 8,
+        "sugarPercentage": 0.059
+    },
+    {
         "name": "Haselnuss geröstet",
         "brand": "Farmer's Snack",
         "type": 2,
@@ -63,11 +77,32 @@
         "sugarPercentage": 0.042
     },
     {
+        "name": "Mandel geröstet ungesalzen",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 7.5,
+        "sugarPercentage": 0.01
+    },
+    {
+        "name": "Macadamia geröstet",
+        "brand": "Farmer's Snacks",
+        "type": 2,
+        "spoonWeight": 8,
+        "sugarPercentage": 0.02
+    },
+    {
         "name": "Pekannuss naturbelassen",
         "brand": "Farmer's Snacks",
         "type": 2,
         "spoonWeight": 6.5,
         "sugarPercentage": 0.034
+    },
+    {
+        "name": "Schoko & Nuss",
+        "brand": "High Protein",
+        "type": 1,
+        "spoonWeight": 10,
+        "sugarPercentage": 0.13
     },
     {
         "name": "Crunchy Müsli Cacao & Hazelnut",
@@ -112,6 +147,13 @@
         "sugarPercentage": 0.35
     },
     {
+        "name": "Granola Dunkle Schokoraspeln",
+        "brand": "Kellogg",
+        "type": 1,
+        "spoonWeight": 10.75,
+        "sugarPercentage": 0.13
+    },
+    {
         "name": "Superfood Crunchy Müsli Cacao & Nuts",
         "brand": "Kellogg",
         "type": 1,
@@ -126,6 +168,13 @@
         "sugarPercentage": 0.17
     },
     {
+        "name": "Honig-Mandeln",
+        "brand": "Kluth",
+        "type": 2,
+        "spoonWeight": 7.25,
+        "sugarPercentage": 0.19
+    },
+    {
         "name": "1820 Beere & Schoko",
         "brand": "Kölln",
         "type": 1,
@@ -138,6 +187,20 @@
         "type": 0,
         "spoonWeight": 9,
         "sugarPercentage": 0.012
+    },
+    {
+        "name": "Crunchy Choc-Choc-Choc",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 9.5,
+        "sugarPercentage": 0.23
+    },
+    {
+        "name": "Crunchy Peanut Choc",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 10.5,
+        "sugarPercentage": 0.2
     },
     {
         "name": "Dinkel Flocken Zart",
@@ -294,6 +357,13 @@
         "sugarPercentage": 0.021
     },
     {
+        "name": "Multikorn Flocken Zart",
+        "brand": "Kölln",
+        "type": 0,
+        "spoonWeight": 8,
+        "sugarPercentage": 0.021
+    },
+    {
         "name": "Mühlenklassiker Schokolade",
         "brand": "Kölln",
         "type": 1,
@@ -336,6 +406,13 @@
         "sugarPercentage": 0.17
     },
     {
+        "name": "Zartes Bircher Nussig",
+        "brand": "Kölln",
+        "type": 1,
+        "spoonWeight": 10.25,
+        "sugarPercentage": 0.037
+    },
+    {
         "name": "Zauberfleks Schoko",
         "brand": "Kölln",
         "type": 1,
@@ -343,11 +420,81 @@
         "sugarPercentage": 0.14
     },
     {
+        "name": "Apfel Zimt",
+        "brand": "Lycka",
+        "type": 1,
+        "spoonWeight": 10.25,
+        "sugarPercentage": 0.15
+    },
+    {
         "name": "Knusper Müsli",
         "brand": "Manner",
         "type": 1,
         "spoonWeight": 10.5,
         "sugarPercentage": 0.14
+    },
+    {
+        "name": "Erdnisskerne mit Sesam ummantelt",
+        "brand": "Meray",
+        "type": 2,
+        "spoonWeight": 5,
+        "sugarPercentage": 0.289
+    },
+    {
+        "name": "Nussmus Crunchy Haselnuss",
+        "brand": "Minottly",
+        "type": 1,
+        "spoonWeight": 11.5,
+        "sugarPercentage": 0.176
+    },
+    {
+        "name": "Nussmus Crunchy Mandel",
+        "brand": "Minottly",
+        "type": 1,
+        "spoonWeight": 11.5,
+        "sugarPercentage": 0.179
+    },
+    {
+        "name": "Choco Brownie",
+        "brand": "MyMuesli",
+        "type": 1,
+        "spoonWeight": 10.75,
+        "sugarPercentage": 0.151
+    },
+    {
+        "name": "Choco Strawberry Coco",
+        "brand": "MyMuesli",
+        "type": 1,
+        "spoonWeight": 9.5,
+        "sugarPercentage": 0.178
+    },
+    {
+        "name": "Dahoammuesli",
+        "brand": "MyMuesli",
+        "type": 1,
+        "spoonWeight": 9.75,
+        "sugarPercentage": 0.136
+    },
+    {
+        "name": "Raspberry Darkchoc",
+        "brand": "MyMuesli",
+        "type": 1,
+        "spoonWeight": 10.25,
+        "sugarPercentage": 0.142
+    },
+    {
+        "name": "Strawberry Cheesecake",
+        "brand": "MyMuesli",
+        "type": 1,
+        "spoonWeight": 11,
+        "sugarPercentage": 0.14
+    },
+    {
+        "name": "Tigernut Cassis",
+        "brand": "MyMuesli",
+        "type": 1,
+        "spoonWeight": 10.75,
+        "sugarPercentage": 0.069
     },
     {
         "name": "Allnatural Porridge Apfel",
@@ -376,6 +523,20 @@
         "type": 1,
         "spoonWeight": 8,
         "sugarPercentage": 0.285
+    },
+    {
+        "name": "Erdbeer Minis",
+        "brand": "Nestle",
+        "type": 1,
+        "spoonWeight": 5.5,
+        "sugarPercentage": 0.236
+    },
+    {
+        "name": "Lion Triple Crunchy",
+        "brand": "Nestle",
+        "type": 1,
+        "spoonWeight": 6.5,
+        "sugarPercentage": 0.248
     },
     {
         "name": "Nesquik Knusper-Müsli",
@@ -420,11 +581,53 @@
         "sugarPercentage": 0.062
     },
     {
+        "name": "Cashewkerne geröstet & gesalzen",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 6.75,
+        "sugarPercentage": 0.06
+    },
+    {
+        "name": "Crunchy Fava-Snack gesalzen",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 5,
+        "sugarPercentage": 0.025
+    },
+    {
+        "name": "Edel-Nuss-Mix geröstet & gesalzen",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 6.5,
+        "sugarPercentage": 0.048
+    },
+    {
         "name": "Gebrannte Erdnusskerne",
         "brand": "Seeberger",
         "type": 2,
         "spoonWeight": 7.5,
         "sugarPercentage": 0.36
+    },
+    {
+        "name": "Gebrannte Haselnusskerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 9.25,
+        "sugarPercentage": 0.34
+    },
+    {
+        "name": "Gebrannte Kürbiskerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 7.25,
+        "sugarPercentage": 0.33
+    },
+    {
+        "name": "Geröstete Mandeln ohne Salz",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 7.75,
+        "sugarPercentage": 0.038
     },
     {
         "name": "Ingwerstücke kandiert",
@@ -434,6 +637,13 @@
         "sugarPercentage": 0.74
     },
     {
+        "name": "Kürbiskerne geröstet, gesalzen",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 4.5,
+        "sugarPercentage": 0.013
+    },
+    {
         "name": "Macadamias geröstet & gesalzen",
         "brand": "Seeberger",
         "type": 2,
@@ -441,11 +651,25 @@
         "sugarPercentage": 0.045
     },
     {
+        "name": "Mandel-Cranberry-Mix",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 7.5,
+        "sugarPercentage": 0.34
+    },
+    {
         "name": "Mandeln Honig & Salz",
         "brand": "Seeberger",
         "type": 2,
         "spoonWeight": 5,
         "sugarPercentage": 0.13
+    },
+    {
+        "name": "Nusskernmischung",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 9,
+        "sugarPercentage": 0.053
     },
     {
         "name": "Salzmandeln",
@@ -480,6 +704,20 @@
         "brand": "Treets",
         "type": 1,
         "spoonWeight": 9.75,
+        "sugarPercentage": 0.21
+    },
+    {
+        "name": "Crunchy Beeren",
+        "brand": "Verival",
+        "type": 1,
+        "spoonWeight": 9.75,
+        "sugarPercentage": 0.17
+    },
+    {
+        "name": "Crunchy Orange-Acerola",
+        "brand": "Verival",
+        "type": 1,
+        "spoonWeight": 12.5,
         "sugarPercentage": 0.21
     },
     {
@@ -532,6 +770,13 @@
         "sugarPercentage": 0.28
     },
     {
+        "name": "Knuspermüsli Nougat-Schoko",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 10.75,
+        "sugarPercentage": 0.23
+    },
+    {
         "name": "Knuspermüsli Nuss-Nougat",
         "brand": "Vitalis",
         "type": 1,
@@ -560,11 +805,25 @@
         "sugarPercentage": 0.2
     },
     {
+        "name": "Knuspermüsli Schoko",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 10,
+        "sugarPercentage": 0.22
+    },
+    {
         "name": "Knuspermüsli Schoko + Keks",
         "brand": "Vitalis",
         "type": 1,
         "spoonWeight": 11.5,
         "sugarPercentage": 0.26
+    },
+    {
+        "name": "Knuspermüsli Schoko Feinherb",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 9.5,
+        "sugarPercentage": 0.2
     },
     {
         "name": "Multikornmüsli Nüsse & Kerne",
@@ -595,11 +854,60 @@
         "sugarPercentage": 0.15
     },
     {
+        "name": "Schokomüsli Klassisch",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 11,
+        "sugarPercentage": 0.21
+    },
+    {
+        "name": "Krunchy Apfel-Zimt",
+        "brand": "barnhouse",
+        "type": 1,
+        "spoonWeight": 9.75,
+        "sugarPercentage": 0.16
+    },
+    {
+        "name": "Krunchy Dinkel",
+        "brand": "barnhouse",
+        "type": 1,
+        "spoonWeight": 10.25,
+        "sugarPercentage": 0.14
+    },
+    {
+        "name": "Crunchy Müsli Ahorn Mandel",
+        "brand": "bio Zentrale",
+        "type": 1,
+        "spoonWeight": 9.5,
+        "sugarPercentage": 0.17
+    },
+    {
+        "name": "Crunchy Müsli Zartbitter",
+        "brand": "bio Zentrale",
+        "type": 1,
+        "spoonWeight": 11,
+        "sugarPercentage": 0.13
+    },
+    {
         "name": "Müsli Zartbitter",
         "brand": "bio Zentrale",
         "type": 1,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.066
+    },
+    {
+        "name": "Cashews & Erdnüsse Honig und Salz",
+        "brand": "Ültje",
+        "type": 2,
+        "spoonWeight": 8.5,
+        "sugarPercentage": 0.35
+    },
+    {
+        "name": "Cashews geröstet",
+        "brand": "Ültje",
+        "type": 2,
+        "spoonWeight": 7.5,
+        "sugarPercentage": 0.059
     },
     {
         "name": "Cashews ungesalzen",
@@ -623,11 +931,25 @@
         "sugarPercentage": 0.052
     },
     {
+        "name": "Erdnüsse geröstet & ungesalzen",
+        "brand": "Ültje",
+        "type": 2,
+        "spoonWeight": 8.5,
+        "sugarPercentage": 0.053
+    },
+    {
         "name": "GeNuss Mix geröstet & gesalzen",
         "brand": "Ültje",
         "type": 2,
         "spoonWeight": 8.5,
         "sugarPercentage": 0.054
+    },
+    {
+        "name": "Mandeln & Erdnüsse Honig und Salz",
+        "brand": "Ültje",
+        "type": 2,
+        "spoonWeight": 7,
+        "sugarPercentage": 0.34
     },
     {
         "name": "Studenten Futter mit Cranberries",
