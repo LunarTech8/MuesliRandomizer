@@ -48,6 +48,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static com.romanbrunner.apps.mueslirandomizer.ArticleEntity.*;
 
@@ -207,6 +208,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void priorityAddAll(Set<ArticleEntity> prioritySet, final List<ArticleEntity> articles)
+    {
+        articles.forEach((var article) -> article.setHasPriority(true));
+        prioritySet.addAll(articles);
+    }
+
+    private void priorityRemoveIf(Set<ArticleEntity> prioritySet, Predicate<? super ArticleEntity> filter)
+    {
+        prioritySet.stream().filter(filter).forEach((var article) -> article.setHasPriority(false));
+        prioritySet.removeIf(filter);
+    }
+
     private void addArticlesToFittingStateList(final List<ArticleEntity> articles)
     {
         for (var article: articles)
@@ -217,19 +230,23 @@ public class MainActivity extends AppCompatActivity
             }
             List<ArticleEntity> usedList;
             List<ArticleEntity> selectableList;
+            Set<ArticleEntity> prioritySet;
             switch (article.getType())
             {
                 case FILLER:
                     usedList = usedFillerArticles;
                     selectableList = selectableFillerArticles;
+                    prioritySet = null;
                     break;
                 case TOPPING:
                     usedList = usedToppingArticles;
                     selectableList = selectableToppingArticles;
+                    prioritySet = null;
                     break;
                 case REGULAR:
                     usedList = usedRegularArticles;
                     selectableList = selectableRegularArticles;
+                    prioritySet = priorityRegularArticles;
                     break;
                 default:
                     continue;
@@ -241,6 +258,11 @@ public class MainActivity extends AppCompatActivity
             else
             {
                 selectableList.add(article);
+            }
+            if (article.getHasPriority())
+            {
+                assert prioritySet != null;
+                prioritySet.add(article);
             }
         }
     }
@@ -972,8 +994,8 @@ public class MainActivity extends AppCompatActivity
             }
             if (selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount)
             {
-                priorityRegularArticles.addAll(selectableRegularArticles);
-                priorityRegularArticles.addAll(chosenRegularArticles);
+                priorityAddAll(priorityRegularArticles, selectableRegularArticles);
+                priorityAddAll(priorityRegularArticles, chosenRegularArticles);
                 moveArticlesToStateList(usedRegularArticles, selectableRegularArticles);
             }
 
@@ -1009,8 +1031,8 @@ public class MainActivity extends AppCompatActivity
                 moveArticlesToStateList(usedFillerArticles, selectableFillerArticles);
                 moveArticlesToStateList(usedToppingArticles, selectableToppingArticles);
                 moveArticlesToStateList(chosenToppingArticles, selectableToppingArticles);
-                priorityRegularArticles.addAll(selectableRegularArticles);
-                priorityRegularArticles.addAll(chosenRegularArticles);
+                priorityAddAll(priorityRegularArticles, selectableRegularArticles);
+                priorityAddAll(priorityRegularArticles, chosenRegularArticles);
                 moveArticlesToStateList(usedRegularArticles, selectableRegularArticles);
                 moveArticlesToStateList(chosenRegularArticles, selectableRegularArticles);
                 Log.i("onCreate", "Cannot find valid mix with selectable articles, retrying with full reset");
@@ -1047,7 +1069,7 @@ public class MainActivity extends AppCompatActivity
             addArticlesToFittingStateList(chosenToppingArticles);
             chosenToppingArticles.clear();
             chosenRegularArticles.forEach(ArticleEntity::decrementSelectionsLeft);
-            priorityRegularArticles.removeIf(t -> (chosenRegularArticles.contains(t) && t.getSelectionsLeft() == 0));
+            priorityRemoveIf(priorityRegularArticles, t -> (chosenRegularArticles.contains(t) && t.getSelectionsLeft() == 0));
             addArticlesToFittingStateList(chosenRegularArticles);
             chosenRegularArticles.clear();
 

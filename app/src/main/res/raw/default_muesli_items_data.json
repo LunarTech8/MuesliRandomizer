@@ -49,6 +49,13 @@
         "sugarPercentage": 0.22
     },
     {
+        "name": "Black & White Knusper Müsli",
+        "brand": "Edeka",
+        "type": 1,
+        "spoonWeight": 9,
+        "sugarPercentage": 0.227
+    },
+    {
         "name": " Kirsche naturbelassen",
         "brand": "Farmer's Snack",
         "type": 2,
@@ -532,6 +539,13 @@
         "sugarPercentage": 0.236
     },
     {
+        "name": "KitKat Cereal",
+        "brand": "Nestle",
+        "type": 1,
+        "spoonWeight": 5,
+        "sugarPercentage": 0.247
+    },
+    {
         "name": "Lion Triple Crunchy",
         "brand": "Nestle",
         "type": 1,
@@ -628,6 +642,13 @@
         "type": 2,
         "spoonWeight": 7.75,
         "sugarPercentage": 0.038
+    },
+    {
+        "name": "Geröstete Nuss-Vielfalt ohne Salz",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 7,
+        "sugarPercentage": 0.046
     },
     {
         "name": "Ingwerstücke kandiert",
@@ -747,6 +768,13 @@
         "type": 1,
         "spoonWeight": 7.5,
         "sugarPercentage": 0.2
+    },
+    {
+        "name": "Knusper Salted Caramel",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 10.75,
+        "sugarPercentage": 0.22
     },
     {
         "name": "Knusper Schoko 30% weniger Zucker",
@@ -893,7 +921,14 @@
         "brand": "bio Zentrale",
         "type": 1,
         "spoonWeight": 9.5,
-        "sugarPercentage": 0.066
+        "sugarPercentage": 0.078
+    },
+    {
+        "name": "Protein Müsli Pur",
+        "brand": "bio Zentrale",
+        "type": 0,
+        "spoonWeight": 9,
+        "sugarPercentage": 0.04
     },
     {
         "name": "Cashews & Erdnüsse Honig und Salz",

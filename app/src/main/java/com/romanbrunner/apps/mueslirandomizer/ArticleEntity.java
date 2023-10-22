@@ -109,6 +109,7 @@ public class ArticleEntity implements Article
     private double sugarPercentage;
     private int multiplier;  // Quantifier for how often the article has to be chosen before it is used, 0 means unavailable
     private int selectionsLeft;  // Counter for how often the article can still be chosen, 0 means it is used
+    private boolean hasPriority;
 
     @Override
     public String getName()
@@ -189,6 +190,12 @@ public class ArticleEntity implements Article
     }
 
     @Override
+    public boolean getHasPriority()
+    {
+        return hasPriority;
+    }
+
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -231,6 +238,12 @@ public class ArticleEntity implements Article
     }
 
     @Override
+    public void setHasPriority(boolean hasPriority)
+    {
+        this.hasPriority = hasPriority;
+    }
+
+    @Override
     public boolean isAvailable()
     {
         return multiplier > 0;
@@ -269,12 +282,14 @@ public class ArticleEntity implements Article
         this.sugarPercentage = sugarPercentage;
         this.multiplier = 1;
         this.selectionsLeft = 1;
+        this.hasPriority = false;
     }
     ArticleEntity(JSONObject jsonObject) throws JSONException
     {
         readFromJson(jsonObject);
         this.multiplier = 0;
         this.selectionsLeft = 0;
+        this.hasPriority = false;
     }
     ArticleEntity(byte[] dataBytes) throws IOException
     {
@@ -285,7 +300,9 @@ public class ArticleEntity implements Article
         spoonWeight = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_DOUBLE)).getDouble();
         sugarPercentage = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_DOUBLE)).getDouble();
         multiplier = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_INT)).getInt();
-        selectionsLeft = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_INT)).getInt();
+        final var selectionsLeftAndHasPriority = ByteBuffer.wrap(readEntry(inputStream, BYTE_BUFFER_LENGTH_INT)).getInt();
+        selectionsLeft = Math.abs(selectionsLeftAndHasPriority);
+        hasPriority = selectionsLeftAndHasPriority < 0;
     }
 
     private static byte[] readEntry(final ByteArrayInputStream inputStream, final int entryBytesLength) throws IOException
@@ -319,7 +336,8 @@ public class ArticleEntity implements Article
             && Double.compare(articleA.getSpoonWeight(), articleB.getSpoonWeight()) == 0
             && Double.compare(articleA.getSugarPercentage(), articleB.getSugarPercentage()) == 0
             && articleA.getSelectionsLeft() == articleB.getSelectionsLeft()
-            && articleA.getMultiplier() == articleB.getMultiplier();
+            && articleA.getMultiplier() == articleB.getMultiplier()
+            && articleA.getHasPriority() == articleB.getHasPriority();
     }
 
     byte[] toByteArray() throws IOException
@@ -331,7 +349,7 @@ public class ArticleEntity implements Article
         writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_DOUBLE).putDouble(spoonWeight).array(), false);
         writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_DOUBLE).putDouble(sugarPercentage).array(), false);
         writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_INT).putInt(multiplier).array(), false);
-        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_INT).putInt(selectionsLeft).array(), false);
+        writeEntry(outputStream, ByteBuffer.allocate(BYTE_BUFFER_LENGTH_INT).putInt(selectionsLeft * (hasPriority ? -1 : 1)).array(), false);
         return outputStream.toByteArray();
     }
 

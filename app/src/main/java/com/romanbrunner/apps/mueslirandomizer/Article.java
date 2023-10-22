@@ -18,6 +18,7 @@ public interface Article
     String getSugarPercentageString();
     int getMultiplier();
     int getSelectionsLeft();
+    boolean getHasPriority();
 
     void setName(String name);
     void setBrand(String brand);
@@ -26,6 +27,7 @@ public interface Article
     void setSugarPercentage(double sugarPercentage);
     void setMultiplier(int multiplier);
     void setSelectionsLeft(int selectionsLeft);
+    void setHasPriority(boolean hasPriority);
 
     boolean isAvailable();
     void incrementMultiplier();
