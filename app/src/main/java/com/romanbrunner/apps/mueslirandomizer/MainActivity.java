@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -124,12 +125,22 @@ public class MainActivity extends AppCompatActivity
     private ActivityResultLauncher<Intent> createFileActivityLauncher;
     private ActivityResultLauncher<Intent> openFileActivityLauncher;
 
-    private static <T> double getLowestValue(final List<T> list, final Function<T, Double> getter)
+    private static void createErrorAlertDialog(final Context context, final String title, final String message)
     {
-        if (list.isEmpty())
-        {
-            Log.e("getLowestValue", "Cannot get value for an empty list");
-        }
+        Log.e(title, message);
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder
+                .setTitle(title + " Error")
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Continue", (dialog, id) -> dialog.cancel());
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    private static <T> double getLowestValue(final Context context, final List<T> list, final Function<T, Double> getter)
+    {
+        if (list.isEmpty()) createErrorAlertDialog(context, "getLowestValue", "Cannot get value for an empty list");
 
         double lowestValue = getter.apply(list.get(0));
         for (var i = 1; i < list.size(); i++)
@@ -323,10 +334,7 @@ public class MainActivity extends AppCompatActivity
                 dataOutputStream.write(bytes.length);
                 dataOutputStream.write(bytes);
 
-                if (bytes.length > 255)
-                {
-                    Log.e("onPause", "Data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
-                }
+                if (bytes.length > 255) createErrorAlertDialog(this, "storeArticles", "Data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
             }
             dataOutputStream.close();
             FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ARTICLES_FILENAME, Context.MODE_PRIVATE);
@@ -335,7 +343,7 @@ public class MainActivity extends AppCompatActivity
         }
         catch (IOException e)
         {
-            Log.e("storeArticles", "Storing articles to " + ARTICLES_FILENAME + " failed");
+            createErrorAlertDialog(this, "storeArticles", "Storing articles to " + ARTICLES_FILENAME + " failed");
             e.printStackTrace();
         }
     }
@@ -364,7 +372,7 @@ public class MainActivity extends AppCompatActivity
         }
         catch (IOException e)
         {
-            Log.e("loadArticles", "Loading articles from " + ARTICLES_FILENAME + " failed");
+            createErrorAlertDialog(this, "loadArticles", "Loading articles from " + ARTICLES_FILENAME + " failed");
             e.printStackTrace();
         }
         return false;
@@ -422,7 +430,7 @@ public class MainActivity extends AppCompatActivity
         }
         catch (JSONException e)
         {
-            Log.e("updateItemsJsonString", "Update of itemsJsonString to values of allArticles failed, setting it to an empty string");
+            createErrorAlertDialog(this, "updateItemsJsonString", "Update of itemsJsonString to values of allArticles failed, setting it to an empty string");
             itemsJsonString = "";
             e.printStackTrace();
         }
@@ -454,7 +462,7 @@ public class MainActivity extends AppCompatActivity
         }
         catch (JSONException e)
         {
-            Log.e("mergeItemsJsonString", "itemsJsonString is corrupted, resetting it to the values of allArticles");
+            createErrorAlertDialog(this, "mergeItemsJsonString", "itemsJsonString is corrupted, resetting it to the values of allArticles");
             updateItemsJsonString();
             e.printStackTrace();
         }
@@ -745,7 +753,7 @@ public class MainActivity extends AppCompatActivity
             }
             catch (IOException e)
             {
-                Log.e("createFileActivityCallback", "Export request failed");
+                createErrorAlertDialog(this, "createFileActivityCallback", "Export request failed");
                 e.printStackTrace();
             }
         };
@@ -765,7 +773,7 @@ public class MainActivity extends AppCompatActivity
             }
             catch (IOException e)
             {
-                Log.e("createFileActivityCallback", "Import request failed");
+                createErrorAlertDialog(this, "createFileActivityCallback", "Import request failed");
                 e.printStackTrace();
             }
         };
@@ -794,11 +802,11 @@ public class MainActivity extends AppCompatActivity
         }
         catch (IOException e)
         {
-            Log.e("onCreate", "Default muesli item data import failed");
+            createErrorAlertDialog(this, "onCreate", "Default muesli item data import failed");
             e.printStackTrace();
         }
         addArticlesToFittingStateList(allArticles);
-        if (!selectableRegularArticles.isEmpty() && !selectableFillerArticles.isEmpty() && getLowestValue(selectableRegularArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(selectableFillerArticles, ArticleEntity::getSugarPercentage)) throw new AssertionError("Sugar percentage of all filler articles has to be lower than that of regular articles");
+        if (!selectableRegularArticles.isEmpty() && !selectableFillerArticles.isEmpty() && getLowestValue(this, selectableRegularArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(this, selectableFillerArticles, ArticleEntity::getSugarPercentage)) createErrorAlertDialog(this, "Assertion", "Sugar percentage of all filler articles has to be lower than that of regular articles to get valid mixes.");
 
         // Init layout variables:
         binding.setUserMode(userMode);
@@ -1046,14 +1054,8 @@ public class MainActivity extends AppCompatActivity
         });
         binding.useButton.setOnClickListener((View view) ->
         {
-            if (chosenToppingArticles.isEmpty())
-            {
-                Log.e("onCreate", "chosenToppingArticles is empty");
-            }
-            if (chosenRegularArticles.isEmpty())
-            {
-                Log.e("onCreate", "chosenRegularArticles is empty");
-            }
+            if (chosenToppingArticles.isEmpty()) createErrorAlertDialog(this, "onCreate", "chosenToppingArticles is empty");
+            if (chosenRegularArticles.isEmpty()) createErrorAlertDialog(this, "onCreate", "chosenRegularArticles is empty");
 
             // Decrement selections left, move articles to fitting pools and reset priority choosing:
             var isFillerChosen = false;
