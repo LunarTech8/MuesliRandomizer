@@ -3,6 +3,7 @@ package com.romanbrunner.apps.mueslirandomizer;
 import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +31,7 @@ public class ArticleEntity implements Article
 
     public enum Type
     {
-        FILLER, REGULAR, TOPPING;
+        FILLER, CRUNCHY, TOPPING, TENDER, PUFFY, FLAKY;
 
         private static final Type[] values = Type.values();
 
@@ -44,30 +45,19 @@ public class ArticleEntity implements Article
             return values[intValue];
         }
 
+        public boolean isRegular()
+        {
+            return (this == CRUNCHY || this == TENDER || this == PUFFY || this == FLAKY);
+        }
+
         public @NotNull String toString()
         {
-            if (this == FILLER)
-            {
-                return "Filler";
-            }
-            else if (this == REGULAR)
-            {
-                return "Regular";
-            }
-            else if (this == TOPPING)
-            {
-                return "Topping";
-            }
-            else
-            {
-                Log.e("Type", "Unrecognized type (" + this + ")");
-                return "UNRECOGNIZED";
-            }
+            return WordUtils.capitalizeFully(super.toString());
         }
 
         public @NotNull String toSpoonName(boolean isShort)
         {
-            if (this == FILLER || this == REGULAR)
+            if (this == FILLER || isRegular())
             {
                 if (isShort)
                 {

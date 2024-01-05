@@ -28,6 +28,7 @@ import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity
     private final static String PREFS_NAME = "GlobalPreferences";
     private final static String EXPORT_ITEMS_FILENAME = "MuesliItemsData";
     private final static int DEFAULT_ARTICLES_RES_ID = R.raw.default_muesli_items_data;
+    private final static int LATEST_ITEMS_VERSION = 1;
 
     private static float sizeValue2SizeWeight(int sizeValue)
     {
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity
     private int articlesValue;
     private int toppingsValue;
     private String itemsJsonString;
+    private int loadedItemsVersion = 0;
     private ActivityResultLauncher<Intent> createFileActivityLauncher;
     private ActivityResultLauncher<Intent> openFileActivityLauncher;
 
@@ -242,25 +245,28 @@ public class MainActivity extends AppCompatActivity
             List<ArticleEntity> usedList;
             List<ArticleEntity> selectableList;
             Set<ArticleEntity> prioritySet;
-            switch (article.getType())
+            final var type = article.getType();
+            if (type.isRegular())
             {
-                case FILLER:
-                    usedList = usedFillerArticles;
-                    selectableList = selectableFillerArticles;
-                    prioritySet = null;
-                    break;
-                case TOPPING:
-                    usedList = usedToppingArticles;
-                    selectableList = selectableToppingArticles;
-                    prioritySet = null;
-                    break;
-                case REGULAR:
-                    usedList = usedRegularArticles;
-                    selectableList = selectableRegularArticles;
-                    prioritySet = priorityRegularArticles;
-                    break;
-                default:
-                    continue;
+                usedList = usedRegularArticles;
+                selectableList = selectableRegularArticles;
+                prioritySet = priorityRegularArticles;
+            }
+            else if (type == Type.FILLER)
+            {
+                usedList = usedFillerArticles;
+                selectableList = selectableFillerArticles;
+                prioritySet = null;
+            }
+            else if (type == Type.TOPPING)
+            {
+                usedList = usedToppingArticles;
+                selectableList = selectableToppingArticles;
+                prioritySet = null;
+            }
+            else
+            {
+                continue;
             }
             if (article.getSelectionsLeft() == 0)
             {
@@ -324,10 +330,15 @@ public class MainActivity extends AppCompatActivity
 
     private void storeArticles(final List<ArticleEntity> articles)
     {
+        final var ITEMS_VERSION_LENGTH = 1;
         try
         {
             byte[] bytes;
             var dataOutputStream = new ByteArrayOutputStream();
+            // Write items version into first two bytes (length and number) of output stream:
+            dataOutputStream.write(ITEMS_VERSION_LENGTH);
+            dataOutputStream.write(LATEST_ITEMS_VERSION);
+            // Write data packages (first byte defines the length, rest is the data) from given articles into output stream:
             for (var article: articles)
             {
                 bytes = article.toByteArray();
@@ -337,6 +348,7 @@ public class MainActivity extends AppCompatActivity
                 if (bytes.length > 255) createErrorAlertDialog(this, "storeArticles", "Data size of an Article is too big, consider limiting allowed string sizes or use two bytes for data size");
             }
             dataOutputStream.close();
+            // Transform output stream into array of bytes and store them in the file:
             FileOutputStream fileOutputStream = getApplicationContext().openFileOutput(ARTICLES_FILENAME, Context.MODE_PRIVATE);
             fileOutputStream.write(dataOutputStream.toByteArray());
             fileOutputStream.close();
@@ -350,6 +362,7 @@ public class MainActivity extends AppCompatActivity
 
     private boolean loadArticles(final List<ArticleEntity> articles)
     {
+        final var ITEMS_VERSION_LENGTH = 1;
         try
         {
             final var context = getApplicationContext();
@@ -359,6 +372,24 @@ public class MainActivity extends AppCompatActivity
                 byte[] bytes;
                 var fileInputStream = context.openFileInput(ARTICLES_FILENAME);
                 int length;
+                // Read items version from first two bytes if available and check against loaded version:
+                var newItemsVersion = 0;
+                if ((length = fileInputStream.read()) != -1 && length == ITEMS_VERSION_LENGTH)
+                {
+                    newItemsVersion = fileInputStream.read();
+                }
+                else
+                {
+                    //noinspection ResultOfMethodCallIgnored
+                    fileInputStream.skip(-1);
+                }
+                if (newItemsVersion < loadedItemsVersion)
+                {
+                    fileInputStream.close();
+                    return false;
+                }
+                loadedItemsVersion = newItemsVersion;
+                // Read data packages (first byte defines the length, rest is the data) into an array of bytes and transform them into an article entity:
                 while ((length = fileInputStream.read()) != -1)
                 {
                     bytes = new byte[length];
@@ -422,6 +453,9 @@ public class MainActivity extends AppCompatActivity
         try
         {
             final var jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("version", LATEST_ITEMS_VERSION);
+            jsonArray.put(jsonObject);
             for (var article: allArticles)
             {
                 jsonArray.put(article.writeToJson());
@@ -436,11 +470,29 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private int extractItemsJsonVersion(JSONArray jsonArray) throws JSONException
+    {
+        var jsonVersion = 0;
+        if (jsonArray.length() > 0)
+        {
+            var firstJsonObject = jsonArray.getJSONObject(0);
+            if (firstJsonObject.has("version"))
+            {
+                jsonVersion = firstJsonObject.getInt("version");
+                jsonArray.remove(0);
+            }
+        }
+        return jsonVersion;
+    }
+
     private void mergeItemsJsonString()
     {
         try
         {
-            final var jsonArray = new JSONArray(itemsJsonString);
+            var jsonArray = new JSONArray(itemsJsonString);
+            final var newItemsJsonVersion = extractItemsJsonVersion(jsonArray);
+            final var overwriteCurrent = newItemsJsonVersion > loadedItemsVersion;
+            loadedItemsVersion = Math.max(newItemsJsonVersion, loadedItemsVersion);
             var hasNewItems = false;
             for (var i = 0; i < jsonArray.length(); i++)
             {
@@ -452,6 +504,11 @@ public class MainActivity extends AppCompatActivity
                     allArticles.add(newArticle);
                     addArticlesToFittingStateList(Collections.singletonList(newArticle));
                     hasNewItems = true;
+                }
+                // Else if overwrite is allowed replace the values of current article with the new one:
+                else if (overwriteCurrent)
+                {
+                    Objects.requireNonNull(allArticles.stream().filter(article -> isNameTheSame(article, newArticle)).findFirst().orElse(null)).readFromJson(jsonObject);
                 }
             }
             if (hasNewItems)
@@ -806,11 +863,11 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         addArticlesToFittingStateList(allArticles);
-        if (!selectableRegularArticles.isEmpty() && !selectableFillerArticles.isEmpty() && getLowestValue(this, selectableRegularArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(this, selectableFillerArticles, ArticleEntity::getSugarPercentage)) createErrorAlertDialog(this, "Assertion", "Sugar percentage of all filler articles has to be lower than that of regular articles to get valid mixes.");
+        if (!selectableRegularArticles.isEmpty() && !selectableFillerArticles.isEmpty() && getLowestValue(this, selectableRegularArticles, ArticleEntity::getSugarPercentage) <= getLowestValue(this, selectableFillerArticles, ArticleEntity::getSugarPercentage)) createErrorAlertDialog(this, "onCreate", "Sugar percentage of all filler articles has to be lower than that of regular articles to get valid mixes.");
 
         // Init layout variables:
         binding.setUserMode(userMode);
-        binding.typeSpinner.setSelection(typeSpinnerAdapter.getPosition(Type.REGULAR));
+        binding.typeSpinner.setSelection(typeSpinnerAdapter.getPosition(Type.CRUNCHY));
         binding.setNewArticle(new ArticleEntity("", "", (Type)binding.typeSpinner.getSelectedItem(), 0F, 0F));
         refreshCountInfo();
         binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));

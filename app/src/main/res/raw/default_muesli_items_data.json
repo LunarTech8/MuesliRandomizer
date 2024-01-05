@@ -1,29 +1,32 @@
 [
     {
+        "version": 1
+    },
+    {
         "name": "Porridge Dreierlei Beere",
         "brand": "3 Bears",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 12.5,
         "sugarPercentage": 0.22
     },
     {
         "name": "Porridge Feinster Kakao",
         "brand": "3 Bears",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 11,
         "sugarPercentage": 0.19
     },
     {
         "name": "Porridge Winterzauber",
         "brand": "3 Bears",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 13,
         "sugarPercentage": 0.21
     },
     {
         "name": "Porridge Zimtiger Apfel",
         "brand": "3 Bears",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 11,
         "sugarPercentage": 0.2
     },
@@ -107,7 +110,7 @@
     {
         "name": "Schoko & Nuss",
         "brand": "High Protein",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10,
         "sugarPercentage": 0.13
     },
@@ -149,7 +152,7 @@
     {
         "name": "Crunchy Nut",
         "brand": "Kellogg",
-        "type": 1,
+        "type": 5,
         "spoonWeight": 5.5,
         "sugarPercentage": 0.35
     },
@@ -170,7 +173,7 @@
     {
         "name": "Toppas Classic",
         "brand": "Kellogg",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 8,
         "sugarPercentage": 0.17
     },
@@ -184,7 +187,7 @@
     {
         "name": "1820 Beere & Schoko",
         "brand": "Kölln",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10.25,
         "sugarPercentage": 0.091
     },
@@ -238,9 +241,16 @@
         "sugarPercentage": 0.012
     },
     {
+        "name": "Hafer-Porridge Apfel-Zimt",
+        "brand": "Kölln",
+        "type": 3,
+        "spoonWeight": 7.75,
+        "sugarPercentage": 0.14
+    },
+    {
         "name": "Haferkleie Fleks",
         "brand": "Kölln",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 7.5,
         "sugarPercentage": 0.11
     },
@@ -345,14 +355,14 @@
     {
         "name": "Knusprige Haferfleks Schoko",
         "brand": "Kölln",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 6.5,
         "sugarPercentage": 0.27
     },
     {
         "name": "Knusprige Haferkissen Zimt",
         "brand": "Kölln",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 4.5,
         "sugarPercentage": 0.2
     },
@@ -373,56 +383,56 @@
     {
         "name": "Mühlenklassiker Schokolade",
         "brand": "Kölln",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9,
         "sugarPercentage": 0.16
     },
     {
         "name": "Nuss & Krokant",
         "brand": "Kölln",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.077
     },
     {
         "name": "Schoko",
         "brand": "Kölln",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10,
         "sugarPercentage": 0.22
     },
     {
         "name": "Schoko 30% weniger Zucker",
         "brand": "Kölln",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10,
         "sugarPercentage": 0.13
     },
     {
         "name": "Schoko-Kirsch",
         "brand": "Kölln",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.16
     },
     {
         "name": "Zartes Bircher",
         "brand": "Kölln",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 11.5,
         "sugarPercentage": 0.17
     },
     {
         "name": "Zartes Bircher Nussig",
         "brand": "Kölln",
-        "type": 1,
+        "type": 0,
         "spoonWeight": 10.25,
         "sugarPercentage": 0.037
     },
     {
         "name": "Zauberfleks Schoko",
         "brand": "Kölln",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 4.25,
         "sugarPercentage": 0.14
     },
@@ -464,93 +474,100 @@
     {
         "name": "Choco Brownie",
         "brand": "MyMuesli",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10.75,
         "sugarPercentage": 0.151
     },
     {
         "name": "Choco Strawberry Coco",
         "brand": "MyMuesli",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.178
     },
     {
         "name": "Dahoammuesli",
         "brand": "MyMuesli",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9.75,
         "sugarPercentage": 0.136
     },
     {
         "name": "Raspberry Darkchoc",
         "brand": "MyMuesli",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10.25,
         "sugarPercentage": 0.142
     },
     {
         "name": "Strawberry Cheesecake",
         "brand": "MyMuesli",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 11,
         "sugarPercentage": 0.14
     },
     {
         "name": "Tigernut Cassis",
         "brand": "MyMuesli",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10.75,
         "sugarPercentage": 0.069
     },
     {
-        "name": "Allnatural Porridge Apfel",
-        "brand": "Nesquik",
-        "type": 1,
-        "spoonWeight": 12.5,
-        "sugarPercentage": 0.123
-    },
-    {
-        "name": "Intense Choco Waves",
-        "brand": "Nesquik",
-        "type": 1,
-        "spoonWeight": 5.25,
-        "sugarPercentage": 0.249
-    },
-    {
         "name": "Cini Minis Applecrush",
         "brand": "Nestle",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.247
     },
     {
         "name": "Clusters Chocolate",
         "brand": "Nestle",
-        "type": 1,
+        "type": 5,
         "spoonWeight": 8,
         "sugarPercentage": 0.285
     },
     {
         "name": "Erdbeer Minis",
         "brand": "Nestle",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 5.5,
         "sugarPercentage": 0.236
     },
     {
         "name": "KitKat Cereal",
         "brand": "Nestle",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 5,
         "sugarPercentage": 0.247
     },
     {
         "name": "Lion Triple Crunchy",
         "brand": "Nestle",
-        "type": 1,
+        "type": 4,
         "spoonWeight": 6.5,
         "sugarPercentage": 0.248
+    },
+    {
+        "name": "Nesquik Allnatural Porridge Apfel",
+        "brand": "Nestle",
+        "type": 3,
+        "spoonWeight": 12.5,
+        "sugarPercentage": 0.123
+    },
+    {
+        "name": "Nesquik Crunchy Brownie",
+        "brand": "Nestle",
+        "type": 4,
+        "spoonWeight": 4.5,
+        "sugarPercentage": 0.245
+    },
+    {
+        "name": "Nesquik Intense Choco Waves",
+        "brand": "Nestle",
+        "type": 4,
+        "spoonWeight": 5.25,
+        "sugarPercentage": 0.249
     },
     {
         "name": "Nesquik Knusper-Müsli",
@@ -744,14 +761,14 @@
     {
         "name": "Früchte Müsli",
         "brand": "Vitalis",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10.5,
         "sugarPercentage": 0.28
     },
     {
         "name": "Joghurtmüsli mit Erdbeer-Stücken",
         "brand": "Vitalis",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9,
         "sugarPercentage": 0.13
     },
@@ -782,6 +799,13 @@
         "type": 1,
         "spoonWeight": 10,
         "sugarPercentage": 0.14
+    },
+    {
+        "name": "Knusper Schoko ohne Zucker",
+        "brand": "Vitalis",
+        "type": 0,
+        "spoonWeight": 10.3,
+        "sugarPercentage": 0.013
     },
     {
         "name": "Knuspermüsli Flakes + Mandeln",
@@ -856,35 +880,35 @@
     {
         "name": "Multikornmüsli Nüsse & Kerne",
         "brand": "Vitalis",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10,
         "sugarPercentage": 0.059
     },
     {
         "name": "Roasted Müsli Schokolade Nuss",
         "brand": "Vitalis",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 11.25,
         "sugarPercentage": 0.16
     },
     {
         "name": "Schokomüsli 30% weniger Zucker",
         "brand": "Vitalis",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 10.5,
         "sugarPercentage": 0.14
     },
     {
         "name": "Schokomüsli Feinherb",
         "brand": "Vitalis",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.15
     },
     {
         "name": "Schokomüsli Klassisch",
         "brand": "Vitalis",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 11,
         "sugarPercentage": 0.21
     },
@@ -919,7 +943,7 @@
     {
         "name": "Müsli Zartbitter",
         "brand": "bio Zentrale",
-        "type": 1,
+        "type": 3,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.078
     },
