@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.romanbrunner.apps.mueslirandomizer.ArticleEntity.*;
 
@@ -670,11 +671,18 @@ public class MainActivity extends AppCompatActivity
             }
             if (!priorityRegularArticles.isEmpty())
             {
+                // A stream with skip has to be used because priorityRegularArticles is a set and not a list
                 chosenRegularArticles.add(selectableRegularArticles.remove(selectableRegularArticles.indexOf(priorityRegularArticles.stream().skip(random.nextInt(priorityRegularArticles.size())).findFirst().orElse(null))));
             }
             while (chosenRegularArticles.size() < regularArticlesCount)
             {
-                chosenRegularArticles.add(selectableRegularArticles.remove(random.nextInt(selectableRegularArticles.size())));
+                final var randomArticle = selectableRegularArticles
+                    .stream()
+                    .filter(article -> chosenRegularArticles.stream().noneMatch(chosen -> chosen.getType() == article.getType()))
+                    .collect(Collectors.collectingAndThen(Collectors.toList(),
+                        list -> list.isEmpty() ? selectableRegularArticles.get(random.nextInt(selectableRegularArticles.size())) : list.get(random.nextInt(list.size()))));
+                selectableRegularArticles.remove(randomArticle);
+                chosenRegularArticles.add(randomArticle);
             }
         }
 
