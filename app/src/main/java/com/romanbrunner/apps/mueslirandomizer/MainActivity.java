@@ -15,6 +15,7 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -157,6 +158,11 @@ public class MainActivity extends AppCompatActivity
     private static <T> void removeNonIntersectingElements(final Collection<T> targetList, final Collection<T> checkList)
     {
         targetList.removeIf(t -> !checkList.contains(t));
+    }
+
+    public boolean isDarkModeEnabled()
+    {
+        return (this.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -412,7 +418,7 @@ public class MainActivity extends AppCompatActivity
 
     private void storePreferences()
     {
-        final var sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+        final var sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         final var editor = sharedPrefs.edit();
         editor.putInt("sizeValue", sizeValue);
         editor.putInt("sugarValue", sugarValue);
@@ -423,7 +429,7 @@ public class MainActivity extends AppCompatActivity
 
     private void loadPreferences()
     {
-        final var sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+        final var sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         sizeValue = sharedPrefs.getInt("sizeValue", binding.sizeSlider.getProgress());
         sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
         articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());

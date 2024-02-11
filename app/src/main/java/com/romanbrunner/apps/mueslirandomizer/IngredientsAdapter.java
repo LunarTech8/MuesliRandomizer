@@ -125,8 +125,9 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
         // Adjust changeable values of the view fields by the current entries list:
         exerciseViewHolder.binding.setIngredient(ingredients.get(position));
         exerciseViewHolder.binding.setIsChosenMuesliUsed(mainActivity.isChosenMuesliUsed);
-        exerciseViewHolder.binding.name.setTextColor(Color.BLACK);
-        exerciseViewHolder.binding.data.setTextColor(Color.BLACK);
+        var colour = mainActivity.isDarkModeEnabled() ? Color.WHITE : Color.BLACK;
+        exerciseViewHolder.binding.name.setTextColor(colour);
+        exerciseViewHolder.binding.data.setTextColor(colour);
         if (!mainActivity.isChosenMuesliUsed)
         {
             setButtonFocusability(exerciseViewHolder.binding.emptyButton, true);

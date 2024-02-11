@@ -31,6 +31,13 @@
         "sugarPercentage": 0.2
     },
     {
+        "name": "Kernige Haferflocken",
+        "brand": "Bayernglück",
+        "type": 0,
+        "spoonWeight": 8.75,
+        "sugarPercentage": 0.008
+    },
+    {
         "name": "Cranberry Nuss Zimt",
         "brand": "Brüsli",
         "type": 1,
@@ -190,6 +197,13 @@
         "type": 3,
         "spoonWeight": 10.25,
         "sugarPercentage": 0.091
+    },
+    {
+        "name": "Beere & Apfel ohne Zucker",
+        "brand": "Kölln",
+        "type": 3,
+        "spoonWeight": 8.5,
+        "sugarPercentage": 0.14
     },
     {
         "name": "Blütenzarte Kölln Flocken",
@@ -472,6 +486,13 @@
         "sugarPercentage": 0.179
     },
     {
+        "name": "Apple Crumble",
+        "brand": "MyMuesli",
+        "type": 1,
+        "spoonWeight": 9.25,
+        "sugarPercentage": 0.159
+    },
+    {
         "name": "Choco Brownie",
         "brand": "MyMuesli",
         "type": 3,
@@ -617,6 +638,13 @@
         "type": 2,
         "spoonWeight": 6.75,
         "sugarPercentage": 0.06
+    },
+    {
+        "name": "Choco-Cranberry-Mix",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 6.5,
+        "sugarPercentage": 0.29
     },
     {
         "name": "Crunchy Fava-Snack gesalzen",
@@ -787,6 +815,13 @@
         "sugarPercentage": 0.2
     },
     {
+        "name": "Knusper Nüsse & Kerne ohne Zucker",
+        "brand": "Vitalis",
+        "type": 0,
+        "spoonWeight": 9.75,
+        "sugarPercentage": 0.02
+    },
+    {
         "name": "Knusper Salted Caramel",
         "brand": "Vitalis",
         "type": 1,
@@ -927,11 +962,25 @@
         "sugarPercentage": 0.14
     },
     {
+        "name": "Krunchy Schoko",
+        "brand": "barnhouse",
+        "type": 1,
+        "spoonWeight": 10,
+        "sugarPercentage": 0.18
+    },
+    {
         "name": "Crunchy Müsli Ahorn Mandel",
         "brand": "bio Zentrale",
         "type": 1,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.17
+    },
+    {
+        "name": "Crunchy Müsli Erdbeere",
+        "brand": "bio Zentrale",
+        "type": 1,
+        "spoonWeight": 10.5,
+        "sugarPercentage": 0.18
     },
     {
         "name": "Crunchy Müsli Zartbitter",

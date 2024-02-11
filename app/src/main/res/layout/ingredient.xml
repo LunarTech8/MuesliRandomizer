@@ -63,6 +63,7 @@
                 android:layout_height="@dimen/empty_button_height"
                 android:text="@string/t_emptyButton"
                 android:textAllCaps="false"
+                android:textColor="@color/colorButtonDarkText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:isVisible="@{isChosenMuesliUsed}"
