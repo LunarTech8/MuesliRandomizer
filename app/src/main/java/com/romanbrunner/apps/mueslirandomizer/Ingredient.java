@@ -10,5 +10,6 @@ public interface Ingredient
     String getWeightString();
     String getSugarPercentageString();
 
-    void markAsEmpty();
+    boolean switchMarkAsEmpty();
+    void onRemoval();
 }

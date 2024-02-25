@@ -1187,7 +1187,8 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPause();
 
-        // Store updated articles and preferences in memory:
+        // Clear mix and store updated articles and preferences in memory:
+        binding.clearButton.performClick();
         storeArticles(allArticles);
         storePreferences();
     }

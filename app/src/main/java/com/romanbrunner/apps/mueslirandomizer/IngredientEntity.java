@@ -12,6 +12,7 @@ public class IngredientEntity implements Ingredient
 
     private final Article article;
     private final int spoonCount;
+    private boolean isMarkedAsEmpty;
 
     @Override
     public String getName()
@@ -57,15 +58,25 @@ public class IngredientEntity implements Ingredient
     }
 
     @Override
-    public void markAsEmpty()
+    public boolean switchMarkAsEmpty()
     {
-        this.article.setMultiplier(0);
+        return this.isMarkedAsEmpty = !this.isMarkedAsEmpty;
+    }
+
+    @Override
+    public void onRemoval()
+    {
+        if (this.isMarkedAsEmpty)
+        {
+            this.article.setMultiplier(0);
+        }
     }
 
     IngredientEntity(Article article, int spoonCount)
     {
         this.article = article;
         this.spoonCount = spoonCount;
+        this.isMarkedAsEmpty = false;
     }
 
     static boolean isContentTheSame(Ingredient ingredientA, Ingredient ingredientB)

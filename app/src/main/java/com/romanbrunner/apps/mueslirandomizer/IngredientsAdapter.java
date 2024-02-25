@@ -1,18 +1,20 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
 import android.graphics.Color;
-import android.util.Log;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.romanbrunner.apps.mueslirandomizer.databinding.IngredientBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,10 +38,8 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
             binding.setIsChosenMuesliUsed(ingredientsAdapter.mainActivity.isChosenMuesliUsed);
             binding.emptyButton.setOnClickListener((View view) ->
             {
-                final int position = getBindingAdapterPosition();
-                ingredientsAdapter.ingredients.get(position).markAsEmpty();
+                setMarkAsEmpty(binding, ingredientsAdapter.mainActivity, ingredientsAdapter.ingredients.get(getBindingAdapterPosition()).switchMarkAsEmpty());
                 ingredientsAdapter.mainActivity.refreshData(false);
-                setButtonFocusability(binding.emptyButton, false);
             });
         }
     }
@@ -47,18 +47,28 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
     IngredientsAdapter(MainActivity mainActivity)
     {
         this.mainActivity = mainActivity;
-        ingredients = null;
+        ingredients = new ArrayList<>(0);
     }
 
-    static void setButtonFocusability(final android.widget.Button button, boolean enable)
+    static void setMarkAsEmpty(final IngredientBinding binding, final MainActivity mainActivity, final boolean enabled)
     {
-        button.setFocusable(enable);
-        button.setEnabled(enable);
+        if (enabled)
+        {
+            binding.name.setPaintFlags(binding.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            binding.data.setPaintFlags(binding.data.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            binding.emptyButton.setTextColor(ResourcesCompat.getColor(mainActivity.getResources(), R.color.colorAccent, null));
+        }
+        else
+        {
+            binding.name.setPaintFlags(binding.name.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            binding.data.setPaintFlags(binding.data.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            binding.emptyButton.setTextColor(ResourcesCompat.getColor(mainActivity.getResources(), R.color.colorButtonDarkText, null));
+        }
     }
 
     void setIngredients(@NonNull final List<? extends Ingredient> ingredients)
     {
-        if (this.ingredients == null)
+        if (this.ingredients.isEmpty())
         {
             // Add all entries:
             this.ingredients = ingredients;
@@ -93,6 +103,13 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
                     return IngredientEntity.isContentTheSame(ingredients.get(newItemPosition), IngredientsAdapter.this.ingredients.get(oldItemPosition));
                 }
             });
+            for (var oldIngredient : this.ingredients)
+            {
+                if (!ingredients.contains(oldIngredient))
+                {
+                    oldIngredient.onRemoval();
+                }
+            }
             this.ingredients = ingredients;
             result.dispatchUpdatesTo(this);
         }
@@ -101,7 +118,7 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
     @Override
     public int getItemCount()
     {
-        return ingredients == null ? 0 : ingredients.size();
+        return ingredients.size();
     }
 
     @Override
@@ -130,7 +147,7 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
         exerciseViewHolder.binding.data.setTextColor(colour);
         if (!mainActivity.isChosenMuesliUsed)
         {
-            setButtonFocusability(exerciseViewHolder.binding.emptyButton, true);
+            setMarkAsEmpty(exerciseViewHolder.binding, mainActivity, false);
         }
         exerciseViewHolder.binding.executePendingBindings();
     }
