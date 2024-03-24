@@ -8,13 +8,25 @@
     <data>
         <import type="com.romanbrunner.apps.mueslirandomizer.MainActivity.UserMode"/>
         <variable name="newArticle" type="com.romanbrunner.apps.mueslirandomizer.Article" />
+        <variable name="selectableToppingAmount" type="Integer" />
+        <variable name="usedToppingAmount" type="Integer" />
         <variable name="selectableRegularAmount" type="Integer" />
         <variable name="usedRegularAmount" type="Integer" />
         <variable name="priorityRegularAmount" type="Integer" />
-        <variable name="selectableToppingAmount" type="Integer" />
-        <variable name="usedToppingAmount" type="Integer" />
         <variable name="selectableFillerAmount" type="Integer" />
         <variable name="usedFillerAmount" type="Integer" />
+        <variable name="availableToppingAmount" type="Integer" />
+        <variable name="registeredToppingAmount" type="Integer" />
+        <variable name="availableCrunchyAmount" type="Integer" />
+        <variable name="registeredCrunchyAmount" type="Integer" />
+        <variable name="availableTenderAmount" type="Integer" />
+        <variable name="registeredTenderAmount" type="Integer" />
+        <variable name="availablePuffyAmount" type="Integer" />
+        <variable name="registeredPuffyAmount" type="Integer" />
+        <variable name="availableFlakyAmount" type="Integer" />
+        <variable name="registeredFlakyAmount" type="Integer" />
+        <variable name="availableFillerAmount" type="Integer" />
+        <variable name="registeredFillerAmount" type="Integer" />
         <variable name="userMode" type="UserMode" />
         <variable name="sizeWeight" type="String" />
         <variable name="sugarPercentage" type="String" />
@@ -85,12 +97,64 @@
                 android:id="@+id/countInfoARow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/count_info_row_height"
-                app:isVisible="@{userMode!=UserMode.EDIT_ITEMS}"
+                app:isVisible="@{userMode==UserMode.MIX_MUESLI}"
+                >
+
+                <TextView
+                    android:id="@+id/toppingsCountInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_toppingsCountInfoLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/toppingsSelectableCountView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_selectableAmountText(selectableToppingAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toppingsCountInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/toppingsSeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toppingsSelectableCountView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/toppingsUsedCountView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_usedAmountText(usedToppingAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toppingsSeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/countInfoBRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode==UserMode.MIX_MUESLI}"
                 >
 
                 <TextView
                     android:id="@+id/regularsCountInfoLabel"
-                    android:layout_width="@dimen/label_width_medium"
+                    android:layout_width="@dimen/label_width_large"
                     android:layout_height="wrap_content"
                     android:text="@string/t_regularsCountInfoLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -156,67 +220,15 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/countInfoBRow"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/count_info_row_height"
-                app:isVisible="@{userMode!=UserMode.EDIT_ITEMS}"
-                >
-
-                <TextView
-                    android:id="@+id/toppingsCountInfoLabel"
-                    android:layout_width="@dimen/label_width_medium"
-                    android:layout_height="wrap_content"
-                    android:text="@string/t_toppingsCountInfoLabel"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-
-                <TextView
-                    android:id="@+id/toppingsSelectableCountView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/item_margin_small"
-                    android:text="@{@string/t_selectableAmountText(selectableToppingAmount)}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/toppingsCountInfoLabel"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-
-                <TextView
-                    android:id="@+id/toppingsSeparatorALabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/item_margin_small"
-                    android:text="@string/t_separatorLabel"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/toppingsSelectableCountView"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-
-                <TextView
-                    android:id="@+id/toppingsUsedCountView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/item_margin_small"
-                    android:text="@{@string/t_usedAmountText(usedToppingAmount)}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/toppingsSeparatorALabel"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/countInfoCRow"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/count_info_row_height"
-                app:isVisible="@{userMode!=UserMode.EDIT_ITEMS}"
+                app:isVisible="@{userMode==UserMode.MIX_MUESLI}"
                 >
 
                 <TextView
                     android:id="@+id/fillersCountInfoLabel"
-                    android:layout_width="@dimen/label_width_medium"
+                    android:layout_width="@dimen/label_width_large"
                     android:layout_height="wrap_content"
                     android:text="@string/t_fillersCountInfoLabel"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -257,6 +269,317 @@
                     app:layout_constraintTop_toTopOf="parent"
                     />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/inventoryInfoARow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode==UserMode.AVAILABILITY}"
+                >
+
+                <TextView
+                    android:id="@+id/toppingInventoryInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_toppingInventoryLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/toppingAvailableInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_availableAmountText(availableToppingAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toppingInventoryInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/toppingInventorySeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toppingAvailableInventoryView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/toppingRegisteredInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_registeredAmountText(registeredToppingAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/toppingInventorySeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/inventoryInfoBRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode==UserMode.AVAILABILITY}"
+                >
+
+                <TextView
+                    android:id="@+id/crunchyInventoryInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_crunchyInventoryLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/crunchyAvailableInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_availableAmountText(availableCrunchyAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/crunchyInventoryInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/crunchyInventorySeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/crunchyAvailableInventoryView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/crunchyRegisteredInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_registeredAmountText(registeredCrunchyAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/crunchyInventorySeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/inventoryInfoCRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode==UserMode.AVAILABILITY}"
+                >
+
+                <TextView
+                    android:id="@+id/tenderInventoryInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_tenderInventoryLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/tenderAvailableInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_availableAmountText(availableTenderAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tenderInventoryInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/tenderInventorySeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tenderAvailableInventoryView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/tenderRegisteredInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_registeredAmountText(registeredTenderAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tenderInventorySeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/inventoryInfoDRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode==UserMode.AVAILABILITY}"
+                >
+
+                <TextView
+                    android:id="@+id/puffyInventoryInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_puffyInventoryLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/puffyAvailableInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_availableAmountText(availablePuffyAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/puffyInventoryInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/puffyInventorySeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/puffyAvailableInventoryView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/puffyRegisteredInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_registeredAmountText(registeredPuffyAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/puffyInventorySeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/inventoryInfoERow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode==UserMode.AVAILABILITY}"
+                >
+
+                <TextView
+                    android:id="@+id/flakyInventoryInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_flakyInventoryLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/flakyAvailableInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_availableAmountText(availableFlakyAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/flakyInventoryInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/flakyInventorySeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/flakyAvailableInventoryView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/flakyRegisteredInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_registeredAmountText(registeredFlakyAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/flakyInventorySeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/inventoryInfoFRow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/count_info_row_height"
+                app:isVisible="@{userMode==UserMode.AVAILABILITY}"
+                >
+
+                <TextView
+                    android:id="@+id/fillerInventoryInfoLabel"
+                    android:layout_width="@dimen/label_width_large"
+                    android:layout_height="wrap_content"
+                    android:text="@string/t_fillerInventoryLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/fillerAvailableInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_availableAmountText(availableFillerAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/fillerInventoryInfoLabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/fillerInventorySeparatorALabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@string/t_separatorLabel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/fillerAvailableInventoryView"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/fillerRegisteredInventoryView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/item_margin_small"
+                    android:text="@{@string/t_registeredAmountText(registeredFillerAmount)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/fillerInventorySeparatorALabel"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

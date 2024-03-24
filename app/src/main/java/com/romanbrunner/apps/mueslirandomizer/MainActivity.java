@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity
     {
         refreshStateLists();
         refreshCountInfo();
+        refreshInventoryInfo();
         if (reloadArticleAdapter)
         {
             availableArticlesAdapter.notifyDataSetChanged();
@@ -183,15 +184,7 @@ public class MainActivity extends AppCompatActivity
 
     private List<ArticleEntity> getAvailableArticles()
     {
-        final List<ArticleEntity> availableArticles = new LinkedList<>();
-        for (var article: allArticles)
-        {
-            if (article.isAvailable())
-            {
-                availableArticles.add(article);
-            }
-        }
-        return availableArticles;
+        return allArticles.stream().filter(ArticleEntity::isAvailable).collect(Collectors.toCollection(LinkedList::new));
     }
 
     private void moveArticlesToStateList(final List<ArticleEntity> sourceStateList, final List<ArticleEntity> targetStateList)
@@ -313,8 +306,14 @@ public class MainActivity extends AppCompatActivity
 
     private void refreshCountInfo()
     {
-        // Regulars:
+        // Toppings:
         var count = 0;
+        for (var article: selectableToppingArticles) { count += article.getSelectionsLeft(); }
+        for (var article: chosenToppingArticles) { count += article.getSelectionsLeft(); }
+        binding.setSelectableToppingAmount(count);
+        binding.setUsedToppingAmount(usedToppingArticles.size());
+        // Regulars:
+        count = 0;
         for (var article: selectableRegularArticles) { count += article.getSelectionsLeft(); }
         for (var article: chosenRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableRegularAmount(count);
@@ -322,17 +321,34 @@ public class MainActivity extends AppCompatActivity
         count = 0;
         for (var article: priorityRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setPriorityRegularAmount(count);
-        // Toppings:
-        count = 0;
-        for (var article: selectableToppingArticles) { count += article.getSelectionsLeft(); }
-        for (var article: chosenToppingArticles) { count += article.getSelectionsLeft(); }
-        binding.setSelectableToppingAmount(count);
-        binding.setUsedToppingAmount(usedToppingArticles.size());
         // Fillers:
         count = 0;
         for (var article: selectableFillerArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableFillerAmount(count);
         binding.setUsedFillerAmount(usedFillerArticles.size());
+    }
+
+    private void refreshInventoryInfo()
+    {
+        final var availableArticles = getAvailableArticles();
+        // Toppings:
+        binding.setAvailableToppingAmount(Math.toIntExact(availableArticles.stream().filter(article -> article.getType() == Type.TOPPING).count()));
+        binding.setRegisteredToppingAmount(Math.toIntExact(allArticles.stream().filter(article -> article.getType() == Type.TOPPING).count()));
+        // Crunchy:
+        binding.setAvailableCrunchyAmount(Math.toIntExact(availableArticles.stream().filter(article -> article.getType() == Type.CRUNCHY).count()));
+        binding.setRegisteredCrunchyAmount(Math.toIntExact(allArticles.stream().filter(article -> article.getType() == Type.CRUNCHY).count()));
+        // Tender:
+        binding.setAvailableTenderAmount(Math.toIntExact(availableArticles.stream().filter(article -> article.getType() == Type.TENDER).count()));
+        binding.setRegisteredTenderAmount(Math.toIntExact(allArticles.stream().filter(article -> article.getType() == Type.TENDER).count()));
+        // Puffy:
+        binding.setAvailablePuffyAmount(Math.toIntExact(availableArticles.stream().filter(article -> article.getType() == Type.PUFFY).count()));
+        binding.setRegisteredPuffyAmount(Math.toIntExact(allArticles.stream().filter(article -> article.getType() == Type.PUFFY).count()));
+        // Flaky:
+        binding.setAvailableFlakyAmount(Math.toIntExact(availableArticles.stream().filter(article -> article.getType() == Type.FLAKY).count()));
+        binding.setRegisteredFlakyAmount(Math.toIntExact(allArticles.stream().filter(article -> article.getType() == Type.FLAKY).count()));
+        // Fillers:
+        binding.setAvailableFillerAmount(Math.toIntExact(availableArticles.stream().filter(article -> article.getType() == Type.FILLER).count()));
+        binding.setRegisteredFillerAmount(Math.toIntExact(allArticles.stream().filter(article -> article.getType() == Type.FILLER).count()));
     }
 
     private void storeArticles(final List<ArticleEntity> articles)
@@ -915,7 +931,6 @@ public class MainActivity extends AppCompatActivity
                     ingredientsAdapter.setIngredients(new ArrayList<>(0));
                     ingredientsAdapter.notifyDataSetChanged();
                     binding.setIsIngredientsListEmpty(true);
-                    refreshCountInfo();
                 }
                 binding.setSizeWeight(String.format(Locale.getDefault(), "%.0f", sizeValue2SizeWeight(sizeValue)));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -943,7 +958,6 @@ public class MainActivity extends AppCompatActivity
                     ingredientsAdapter.setIngredients(new ArrayList<>(0));
                     ingredientsAdapter.notifyDataSetChanged();
                     binding.setIsIngredientsListEmpty(true);
-                    refreshCountInfo();
                 }
                 binding.setSugarPercentage(String.format(Locale.getDefault(), "%.1f", sugarValue2SugarPercentage(sugarValue) * 100));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -965,14 +979,12 @@ public class MainActivity extends AppCompatActivity
                 if (muesliMix != null)
                 {
                     muesliMix.changeRegularArticlesCount(articlesValue2ArticlesCount(articlesValue), random);
-                    refreshCountInfo();
                 }
                 else
                 {
                     ingredientsAdapter.setIngredients(new ArrayList<>(0));
                     ingredientsAdapter.notifyDataSetChanged();
                     binding.setIsIngredientsListEmpty(true);
-                    refreshCountInfo();
                 }
                 binding.setArticlesCount(articlesValue2ArticlesCount(articlesValue));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -1000,7 +1012,6 @@ public class MainActivity extends AppCompatActivity
                     ingredientsAdapter.setIngredients(new ArrayList<>(0));
                     ingredientsAdapter.notifyDataSetChanged();
                     binding.setIsIngredientsListEmpty(true);
-                    refreshCountInfo();
                 }
                 binding.setToppingPercentage(String.format(Locale.getDefault(), "%.0f", toppingValue2ToppingPercentage(toppingsValue) * 100));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync

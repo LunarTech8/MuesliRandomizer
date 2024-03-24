@@ -7,6 +7,12 @@
     <string name="t_toppingsCountInfoLabel">Toppings:</string>
     <string name="t_fillersCountInfoLabel">Fillers:</string>
     <string name="t_separatorLabel">|</string>
+    <string name="t_toppingInventoryLabel">Toppings:</string>
+    <string name="t_crunchyInventoryLabel">Crunchies:</string>
+    <string name="t_tenderInventoryLabel">Tenders:</string>
+    <string name="t_puffyInventoryLabel">Puffies:</string>
+    <string name="t_flakyInventoryLabel">Flakies:</string>
+    <string name="t_fillerInventoryLabel">Fillers:</string>
     <string name="t_sizeLabel">Size:</string>
     <string name="t_sugarLabel">Sugar:</string>
     <string name="t_articlesLabel">Muesli:</string>
@@ -17,6 +23,8 @@
     <string name="t_selectableAmountText">%1$s Selectable</string>
     <string name="t_usedAmountText">%1$s Used</string>
     <string name="t_fixedAmountText">%1$s Fixed</string>
+    <string name="t_availableAmountText">%1$s Available</string>
+    <string name="t_registeredAmountText">%1$s Registered</string>
     <string name="t_weightText">%1$s g</string>
     <string name="t_percentageText">%1$s \%%</string>
     <string name="t_countPlusOneText">%1$s (+1)</string>

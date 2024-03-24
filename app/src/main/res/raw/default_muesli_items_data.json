@@ -101,6 +101,13 @@
         "sugarPercentage": 0.01
     },
     {
+        "name": "Pekannusskerne geröstet",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 6,
+        "sugarPercentage": 0.034
+    },
+    {
         "name": "Macadamia geröstet",
         "brand": "Farmer's Snacks",
         "type": 2,
@@ -211,6 +218,13 @@
         "type": 0,
         "spoonWeight": 9,
         "sugarPercentage": 0.012
+    },
+    {
+        "name": "Cereals Nibbs",
+        "brand": "Kölln",
+        "type": 4,
+        "spoonWeight": 3.75,
+        "sugarPercentage": 0.3
     },
     {
         "name": "Crunchy Choc-Choc-Choc",
