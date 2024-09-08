@@ -219,6 +219,10 @@ public class ArticleEntity implements Article
     public void setMultiplier(int multiplier)
     {
         this.multiplier = multiplier;
+        if (this.multiplier == 0)
+        {
+            this.selectionsLeft = 0;
+        }
     }
 
     @Override

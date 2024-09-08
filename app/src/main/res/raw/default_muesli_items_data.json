@@ -521,6 +521,13 @@
         "sugarPercentage": 0.178
     },
     {
+        "name": "Chocolate",
+        "brand": "MyMuesli",
+        "type": 3,
+        "spoonWeight": 11.25,
+        "sugarPercentage": 0.115
+    },
+    {
         "name": "Dahoammuesli",
         "brand": "MyMuesli",
         "type": 3,
@@ -533,6 +540,13 @@
         "type": 3,
         "spoonWeight": 10.25,
         "sugarPercentage": 0.142
+    },
+    {
+        "name": "Strawberry Acai Granola",
+        "brand": "MyMuesli",
+        "type": 3,
+        "spoonWeight": 10.75,
+        "sugarPercentage": 0.119
     },
     {
         "name": "Strawberry Cheesecake",
@@ -554,6 +568,13 @@
         "type": 4,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.247
+    },
+    {
+        "name": "Cini Minis Zimt",
+        "brand": "Nestle",
+        "type": 4,
+        "spoonWeight": 5.75,
+        "sugarPercentage": 0.249
     },
     {
         "name": "Clusters Chocolate",
@@ -696,6 +717,13 @@
         "sugarPercentage": 0.33
     },
     {
+        "name": "Geröstete Cashews ohne Salz",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 6.5,
+        "sugarPercentage": 0.069
+    },
+    {
         "name": "Geröstete Mandeln ohne Salz",
         "brand": "Seeberger",
         "type": 2,
@@ -815,6 +843,13 @@
         "sugarPercentage": 0.13
     },
     {
+        "name": "Knusper Früchte 30% weniger Zucker",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 10.5,
+        "sugarPercentage": 0.16
+    },
+    {
         "name": "Knusper Himbeere 30% weniger Zucker",
         "brand": "Vitalis",
         "type": 1,
@@ -855,6 +890,13 @@
         "type": 0,
         "spoonWeight": 10.3,
         "sugarPercentage": 0.013
+    },
+    {
+        "name": "Knuspermüsli Brownie Style",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 10.5,
+        "sugarPercentage": 0.21
     },
     {
         "name": "Knuspermüsli Flakes + Mandeln",
@@ -934,6 +976,13 @@
         "sugarPercentage": 0.059
     },
     {
+        "name": "Roasted Müsli Cranberry Kürbiskern",
+        "brand": "Vitalis",
+        "type": 3,
+        "spoonWeight": 9.5,
+        "sugarPercentage": 0.17
+    },
+    {
         "name": "Roasted Müsli Schokolade Nuss",
         "brand": "Vitalis",
         "type": 3,
@@ -962,6 +1011,13 @@
         "sugarPercentage": 0.21
     },
     {
+        "name": "Cinna Rollies",
+        "brand": "Wholey",
+        "type": 4,
+        "spoonWeight": 6.5,
+        "sugarPercentage": 0.15
+    },
+    {
         "name": "Krunchy Apfel-Zimt",
         "brand": "barnhouse",
         "type": 1,
@@ -983,6 +1039,13 @@
         "sugarPercentage": 0.18
     },
     {
+        "name": "Amaranth Poffies",
+        "brand": "bio Zentrale",
+        "type": 2,
+        "spoonWeight": 1,
+        "sugarPercentage": 0.015
+    },
+    {
         "name": "Crunchy Müsli Ahorn Mandel",
         "brand": "bio Zentrale",
         "type": 1,
@@ -994,6 +1057,13 @@
         "brand": "bio Zentrale",
         "type": 1,
         "spoonWeight": 10.5,
+        "sugarPercentage": 0.18
+    },
+    {
+        "name": "Crunchy Müsli Waldbeere",
+        "brand": "bio Zentrale",
+        "type": 1,
+        "spoonWeight": 12,
         "sugarPercentage": 0.18
     },
     {
@@ -1016,6 +1086,13 @@
         "type": 0,
         "spoonWeight": 9,
         "sugarPercentage": 0.04
+    },
+    {
+        "name": "Sesam Ganzes Korn",
+        "brand": "bio Zentrale",
+        "type": 2,
+        "spoonWeight": 5,
+        "sugarPercentage": 0.002
     },
     {
         "name": "Cashews & Erdnüsse Honig und Salz",

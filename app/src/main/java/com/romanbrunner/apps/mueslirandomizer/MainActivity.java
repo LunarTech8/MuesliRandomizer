@@ -242,6 +242,7 @@ public class MainActivity extends AppCompatActivity
             {
                 continue;
             }
+            // Get article type dependant lists:
             List<ArticleEntity> usedList;
             List<ArticleEntity> selectableList;
             Set<ArticleEntity> prioritySet;
@@ -268,6 +269,7 @@ public class MainActivity extends AppCompatActivity
             {
                 continue;
             }
+            // Add article to fitting lists:
             if (article.getSelectionsLeft() == 0)
             {
                 usedList.add(article);
@@ -311,13 +313,17 @@ public class MainActivity extends AppCompatActivity
         for (var article: selectableToppingArticles) { count += article.getSelectionsLeft(); }
         for (var article: chosenToppingArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableToppingAmount(count);
-        binding.setUsedToppingAmount(usedToppingArticles.size());
+        count = 0;
+        for (var article: usedToppingArticles) { count += (article.isAvailable() ? 1 : 0); }
+        binding.setUsedToppingAmount(count);
         // Regulars:
         count = 0;
         for (var article: selectableRegularArticles) { count += article.getSelectionsLeft(); }
         for (var article: chosenRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableRegularAmount(count);
-        binding.setUsedRegularAmount(usedRegularArticles.size());
+        count = 0;
+        for (var article: usedRegularArticles) { count += (article.isAvailable() ? 1 : 0); }
+        binding.setUsedRegularAmount(count);
         count = 0;
         for (var article: priorityRegularArticles) { count += article.getSelectionsLeft(); }
         binding.setPriorityRegularAmount(count);
@@ -325,7 +331,9 @@ public class MainActivity extends AppCompatActivity
         count = 0;
         for (var article: selectableFillerArticles) { count += article.getSelectionsLeft(); }
         binding.setSelectableFillerAmount(count);
-        binding.setUsedFillerAmount(usedFillerArticles.size());
+        count = 0;
+        for (var article: usedFillerArticles) { count += (article.isAvailable() ? 1 : 0); }
+        binding.setUsedFillerAmount(count);
     }
 
     private void refreshInventoryInfo()
@@ -1199,6 +1207,7 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
 
         // Clear mix and store updated articles and preferences in memory:
+        // TODO: do not clear on pause but instead store last mix and reload on startup
         binding.clearButton.performClick();
         storeArticles(allArticles);
         storePreferences();
