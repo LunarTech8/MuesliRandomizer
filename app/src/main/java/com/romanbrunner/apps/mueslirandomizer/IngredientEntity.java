@@ -1,5 +1,7 @@
 package com.romanbrunner.apps.mueslirandomizer;
 
+import android.util.Log;
+
 import java.util.Locale;
 import java.util.Objects;
 
@@ -10,7 +12,7 @@ public class IngredientEntity implements Ingredient
     // Functional code
     // --------------------
 
-    private final Article article;
+    private final ArticleEntity article;
     private final int spoonCount;
     private boolean isMarkedAsEmpty;
 
@@ -66,13 +68,14 @@ public class IngredientEntity implements Ingredient
     @Override
     public void onRemoval()
     {
+        Log.d("onRemoval", this.article.getName());  // DEBUG:
         if (this.isMarkedAsEmpty)
         {
             this.article.setMultiplier(0);
         }
     }
 
-    IngredientEntity(Article article, int spoonCount)
+    IngredientEntity(ArticleEntity article, int spoonCount)
     {
         this.article = article;
         this.spoonCount = spoonCount;

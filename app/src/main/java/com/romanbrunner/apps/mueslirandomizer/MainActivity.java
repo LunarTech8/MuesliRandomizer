@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 
+import com.google.gson.Gson;
 import com.romanbrunner.apps.mueslirandomizer.databinding.MainScreenBinding;
 
 import org.json.JSONArray;
@@ -448,6 +449,10 @@ public class MainActivity extends AppCompatActivity
         editor.putInt("sugarValue", sugarValue);
         editor.putInt("articlesValue", articlesValue);
         editor.putInt("toppingsValue", toppingsValue);
+        if (muesliMix != null)
+        {
+            editor.putString("muesliMix", new Gson().toJson(muesliMix));
+        }
         editor.apply();
     }
 
@@ -455,13 +460,14 @@ public class MainActivity extends AppCompatActivity
     {
         final var sharedPrefs = getApplicationContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         sizeValue = sharedPrefs.getInt("sizeValue", binding.sizeSlider.getProgress());
-        sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
-        articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());
-        toppingsValue = sharedPrefs.getInt("toppingsValue", binding.articlesSlider.getProgress());
         binding.sizeSlider.setProgress(sizeValue);
+        sugarValue = sharedPrefs.getInt("sugarValue", binding.sugarSlider.getProgress());
         binding.sugarSlider.setProgress(sugarValue);
+        articlesValue = sharedPrefs.getInt("articlesValue", binding.articlesSlider.getProgress());
         binding.articlesSlider.setProgress(articlesValue);
+        toppingsValue = sharedPrefs.getInt("toppingsValue", binding.articlesSlider.getProgress());
         binding.toppingSlider.setProgress(toppingsValue);
+        muesliMix = new Gson().fromJson(sharedPrefs.getString("muesliMix", null), MuesliMix.class);
     }
 
     private void hideKeyboard(final View view)
@@ -605,29 +611,44 @@ public class MainActivity extends AppCompatActivity
             ingredients = new ArrayList<>(regularArticlesCount + 1);
         }
 
+        public boolean isFillerChosen()
+        {
+            if (this.fillerArticle != null)
+            {
+                for (var ingredient : this.ingredients)
+                {
+                    if (Objects.equals(ingredient.getName(), this.fillerArticle.getName()))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public void changeTargetWeight(float targetWeight)
         {
             this.targetWeight = targetWeight;
-            if (muesliMix.determineIngredients())
+            if (this.determineIngredients())
             {
-                muesliMix.updateDisplayValid(binding);
+                this.updateDisplayValid(binding);
             }
             else
             {
-                muesliMix.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid(binding);
             }
         }
 
         public void changeTargetSugar(float targetSugar)
         {
             this.targetSugar = targetSugar;
-            if (muesliMix.determineIngredients())
+            if (this.determineIngredients())
             {
-                muesliMix.updateDisplayValid(binding);
+                this.updateDisplayValid(binding);
             }
             else
             {
-                muesliMix.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid(binding);
             }
         }
 
@@ -636,7 +657,7 @@ public class MainActivity extends AppCompatActivity
             final var countChange = regularArticlesCount - this.regularArticlesCount;
             if (this.regularArticlesCount + countChange <= 0 || -countChange >= chosenRegularArticles.size() || countChange > selectableRegularArticles.size())
             {
-                muesliMix.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid(binding);
                 return;
             }
             if (countChange > 0)
@@ -654,13 +675,13 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             this.regularArticlesCount = regularArticlesCount;
-            if (muesliMix.determineIngredients())
+            if (this.determineIngredients())
             {
-                muesliMix.updateDisplayValid(binding);
+                this.updateDisplayValid(binding);
             }
             else
             {
-                muesliMix.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid(binding);
             }
         }
 
@@ -668,13 +689,13 @@ public class MainActivity extends AppCompatActivity
         {
             this.toppingPercentage = toppingPercentage;
             toppingsCount = (toppingPercentage > 0 ? TOPPINGS_INGREDIENT_COUNT : 0);
-            if (muesliMix.determineIngredients())
+            if (this.determineIngredients())
             {
-                muesliMix.updateDisplayValid(binding);
+                this.updateDisplayValid(binding);
             }
             else
             {
-                muesliMix.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid(binding);
             }
         }
 
@@ -782,10 +803,10 @@ public class MainActivity extends AppCompatActivity
         @SuppressLint("NotifyDataSetChanged")
         public void updateDisplayValid(final MainScreenBinding binding)
         {
-            binding.setTotalSpoonCount(String.format(Locale.getDefault(), "%d spoons", muesliMix.totalSpoons));
-            binding.setTotalWeight(String.format(Locale.getDefault(), "%.1f", muesliMix.totalWeight));
-            binding.setTotalSugarPercentage(String.format(Locale.getDefault(), "%.1f", 100 * muesliMix.totalSugar / muesliMix.totalWeight));
-            ingredientsAdapter.setIngredients(muesliMix.ingredients);
+            binding.setTotalSpoonCount(String.format(Locale.getDefault(), "%d spoons", this.totalSpoons));
+            binding.setTotalWeight(String.format(Locale.getDefault(), "%.1f", this.totalWeight));
+            binding.setTotalSugarPercentage(String.format(Locale.getDefault(), "%.1f", 100 * this.totalSugar / this.totalWeight));
+            ingredientsAdapter.setIngredients(this.ingredients);
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = false);
             binding.setIsIngredientsListEmpty(false);
             binding.setIsInvalidSettings(false);
@@ -830,7 +851,7 @@ public class MainActivity extends AppCompatActivity
         final var random = new Random();
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
         loadPreferences();
-        muesliMix = null;
+        muesliMix = null;  // TODO: if muesliMix is not null display it (do what newMix does without remixing) and remove this line
 
         // Setup activity result launcher for document handling:
         ActivityResultCallback<ActivityResult> createFileActivityCallback = result ->
@@ -1148,9 +1169,7 @@ public class MainActivity extends AppCompatActivity
             if (chosenRegularArticles.isEmpty()) createErrorAlertDialog(this, "onCreate", "chosenRegularArticles is empty");
 
             // Decrement selections left, move articles to fitting pools and reset priority choosing:
-            var isFillerChosen = false;
-            for (var ingredient : muesliMix.ingredients) { isFillerChosen |= Objects.equals(ingredient.getName(), muesliMix.fillerArticle.getName()); }
-            if (isFillerChosen)
+            if (muesliMix.isFillerChosen())
             {
                 selectableFillerArticles.remove(muesliMix.fillerArticle);
                 muesliMix.fillerArticle.decrementSelectionsLeft();
@@ -1171,6 +1190,7 @@ public class MainActivity extends AppCompatActivity
             ingredientsAdapter.notifyDataSetChanged();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
             muesliMix = null;
+            // TODO: instead of clearing muesliMix mark it as used (add new property) so that it can be reloaded onCreate/onResume
 
             // Store updated articles in memory:
             storeArticles(allArticles);
@@ -1206,10 +1226,21 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPause();
 
+        Log.d("onPause", "onPause");  // DEBUG:
         // Clear mix and store updated articles and preferences in memory:
-        // TODO: do not clear on pause but instead store last mix and reload on startup
-        binding.clearButton.performClick();
+        // TODO: do not clear but instead store last mix (muesliMix)
+//        binding.clearButton.performClick();
         storeArticles(allArticles);
         storePreferences();
     }
+
+//    @Override
+//    protected void onResume()
+//    {
+//        super.onResume();
+//
+//        Log.d("onResume", "onResume");  // DEBUG:
+//        loadPreferences();
+//        // TODO: if muesliMix is not null display it (do what newMix does without remixing)
+//    }
 }
