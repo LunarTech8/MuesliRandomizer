@@ -449,10 +449,7 @@ public class MainActivity extends AppCompatActivity
         editor.putInt("sugarValue", sugarValue);
         editor.putInt("articlesValue", articlesValue);
         editor.putInt("toppingsValue", toppingsValue);
-        if (muesliMix != null)
-        {
-            editor.putString("muesliMix", new Gson().toJson(muesliMix));
-        }
+        editor.putString("muesliMix", muesliMix != null ? new Gson().toJson(muesliMix) : null);
         editor.apply();
     }
 
@@ -631,11 +628,11 @@ public class MainActivity extends AppCompatActivity
             this.targetWeight = targetWeight;
             if (this.determineIngredients())
             {
-                this.updateDisplayValid(binding);
+                this.updateDisplayValid();
             }
             else
             {
-                this.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid();
             }
         }
 
@@ -644,11 +641,11 @@ public class MainActivity extends AppCompatActivity
             this.targetSugar = targetSugar;
             if (this.determineIngredients())
             {
-                this.updateDisplayValid(binding);
+                this.updateDisplayValid();
             }
             else
             {
-                this.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid();
             }
         }
 
@@ -657,7 +654,7 @@ public class MainActivity extends AppCompatActivity
             final var countChange = regularArticlesCount - this.regularArticlesCount;
             if (this.regularArticlesCount + countChange <= 0 || -countChange >= chosenRegularArticles.size() || countChange > selectableRegularArticles.size())
             {
-                this.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid();
                 return;
             }
             if (countChange > 0)
@@ -677,11 +674,11 @@ public class MainActivity extends AppCompatActivity
             this.regularArticlesCount = regularArticlesCount;
             if (this.determineIngredients())
             {
-                this.updateDisplayValid(binding);
+                this.updateDisplayValid();
             }
             else
             {
-                this.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid();
             }
         }
 
@@ -691,11 +688,11 @@ public class MainActivity extends AppCompatActivity
             toppingsCount = (toppingPercentage > 0 ? TOPPINGS_INGREDIENT_COUNT : 0);
             if (this.determineIngredients())
             {
-                this.updateDisplayValid(binding);
+                this.updateDisplayValid();
             }
             else
             {
-                this.updateDisplayInvalid(binding);
+                this.updateDisplayInvalid();
             }
         }
 
@@ -801,7 +798,7 @@ public class MainActivity extends AppCompatActivity
 
         /** Adjust mix buttons and ingredients list for valid settings. */
         @SuppressLint("NotifyDataSetChanged")
-        public void updateDisplayValid(final MainScreenBinding binding)
+        public void updateDisplayValid()
         {
             binding.setTotalSpoonCount(String.format(Locale.getDefault(), "%d spoons", this.totalSpoons));
             binding.setTotalWeight(String.format(Locale.getDefault(), "%.1f", this.totalWeight));
@@ -812,9 +809,21 @@ public class MainActivity extends AppCompatActivity
             binding.setIsInvalidSettings(false);
             ingredientsAdapter.notifyDataSetChanged();
         }
+        @SuppressLint("NotifyDataSetChanged")
+        public void updateDisplayValid(final @NonNull IngredientsAdapter ingredientsAdapter, final @NonNull MainScreenBinding binding)
+        {
+            binding.setTotalSpoonCount(String.format(Locale.getDefault(), "%d spoons", this.totalSpoons));
+            binding.setTotalWeight(String.format(Locale.getDefault(), "%.1f", this.totalWeight));
+            binding.setTotalSugarPercentage(String.format(Locale.getDefault(), "%.1f", 100 * this.totalSugar / this.totalWeight));
+            ingredientsAdapter.setIngredients(this.ingredients);
+            binding.setIsChosenMuesliUsed(false);
+            binding.setIsIngredientsListEmpty(false);
+            binding.setIsInvalidSettings(false);
+            ingredientsAdapter.notifyDataSetChanged();
+        }
 
         /** Adjust mix buttons and ingredients list for invalid settings. */
-        public void updateDisplayInvalid(final MainScreenBinding binding)
+        public void updateDisplayInvalid()
         {
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
             binding.setIsIngredientsListEmpty(true);
@@ -851,7 +860,6 @@ public class MainActivity extends AppCompatActivity
         final var random = new Random();
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
         loadPreferences();
-        muesliMix = null;  // TODO: if muesliMix is not null display it (do what newMix does without remixing) and remove this line
 
         // Setup activity result launcher for document handling:
         ActivityResultCallback<ActivityResult> createFileActivityCallback = result ->
@@ -937,6 +945,46 @@ public class MainActivity extends AppCompatActivity
         binding.setIsIngredientsListEmpty(true);
         binding.setIsInvalidSettings(false);
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+        if (muesliMix != null)
+        {
+            isChosenMuesliUsed = false;
+            muesliMix.updateDisplayValid(ingredientsAdapter, binding);
+            // Move stored ingredients from selectable to chosen article lists:
+            for (var ingredient : muesliMix.ingredients)
+            {
+                if (selectableToppingArticles.stream()
+                        .filter(ingredient::isSimilarArticle)
+                        .findFirst()
+                        .map(article ->
+                        {
+                            selectableToppingArticles.remove(article);
+                            chosenToppingArticles.add(article);
+                            Log.d("onCreate", "added " + article.getName() + " to chosen toppings");  // DEBUG:
+                            return true;
+                        }).orElse(false))
+                {
+                    // FIXME: find out why topping is not in selectable list
+                    continue;
+                }
+                if (selectableRegularArticles.stream()
+                        .filter(ingredient::isSimilarArticle)
+                        .findFirst()
+                        .map(article ->
+                        {
+                            selectableRegularArticles.remove(article);
+                            chosenRegularArticles.add(article);
+                            Log.d("onCreate", "added " + article.getName() + " to chosen regulars");  // DEBUG:
+                            return true;
+                        }).orElse(false))
+                {
+                    continue;
+                }
+                if (!ingredient.isSimilarArticle(muesliMix.fillerArticle))
+                {
+                    createErrorAlertDialog(this, "onCreate", "Could not find stored ingredient '" + ingredient.getName() + "' in selectable articles");
+                }
+            }
+        }
 
         // Create slider and button listeners:
         binding.sizeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
@@ -1121,7 +1169,7 @@ public class MainActivity extends AppCompatActivity
             // Check general conditions for valid mix:
             if (selectableFillerArticles.isEmpty() || selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount || selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
             {
-                muesliMix.updateDisplayInvalid(binding);
+                muesliMix.updateDisplayInvalid();
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                 muesliMix = null;
                 Log.i("onCreate", "Not enough available articles for a valid mix");
@@ -1140,7 +1188,7 @@ public class MainActivity extends AppCompatActivity
                     // Determine mix with chosen articles and retry loop if it's invalid:
                     if (!muesliMix.determineIngredients()) continue;
                     // Valid mix could be determined, display result and exit search:
-                    muesliMix.updateDisplayValid(binding);
+                    muesliMix.updateDisplayValid();
                     refreshCountInfo();
                     binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
                     Log.i("onCreate", "tryCounter: " + tryCounter);
@@ -1158,7 +1206,7 @@ public class MainActivity extends AppCompatActivity
                 fullResetTryCounter += 1;
             }
             // No valid mix could be found:
-            muesliMix.updateDisplayInvalid(binding);
+            muesliMix.updateDisplayInvalid();
             refreshCountInfo();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
             muesliMix = null;

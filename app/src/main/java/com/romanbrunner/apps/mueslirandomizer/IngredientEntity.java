@@ -16,6 +16,11 @@ public class IngredientEntity implements Ingredient
     private final int spoonCount;
     private boolean isMarkedAsEmpty;
 
+    public boolean isSimilarArticle(final ArticleEntity similarArticle)
+    {
+        return ArticleEntity.isNameTheSame(article, similarArticle);
+    }
+
     @Override
     public String getName()
     {
