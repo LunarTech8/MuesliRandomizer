@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity
     // Data code
     // --------------------
 
-    private final static float FILLER_INGREDIENT_RATIO = 0.5F;  // Ratio compared to first regular article, 1 being equal ratio
+    private final static double FILLER_INGREDIENT_RATIO = 0.5;  // Ratio compared to first regular article, 1 being equal ratio
     private final static int TOPPINGS_INGREDIENT_COUNT = 1;  // Currently fixed, might be transformed back into a dynamic slider value
     private final static int MAX_FULL_RESET_RANDOMIZE_TRIES = 3;
     private final static int MAX_RANDOMIZE_TRIES = 1024;
@@ -75,14 +75,14 @@ public class MainActivity extends AppCompatActivity
     private final static int DEFAULT_ARTICLES_RES_ID = R.raw.default_muesli_items_data;
     private final static int LATEST_ITEMS_VERSION = 1;
 
-    private static float sizeValue2SizeWeight(int sizeValue)
+    private static double sizeValue2SizeWeight(int sizeValue)
     {
-        return 35F + 15F * sizeValue;
+        return 35. + 15. * sizeValue;
     }
 
-    private static float sugarValue2SugarPercentage(int sugarValue)
+    private static double sugarValue2SugarPercentage(int sugarValue)
     {
-        return 0.1F + 0.025F * sugarValue;
+        return 0.1 + 0.025 * sugarValue;
     }
 
     private static int articlesValue2ArticlesCount(int articlesValue)
@@ -90,9 +90,9 @@ public class MainActivity extends AppCompatActivity
         return articlesValue + 1;
     }
 
-    private static float toppingValue2ToppingPercentage(int toppingValue)
+    private static double toppingValue2ToppingPercentage(int toppingValue)
     {
-        return (toppingValue > 0 ? 0.05F : 0F) + 0.05F * toppingValue;
+        return 0.05 * toppingValue;
     }
 
 
@@ -586,18 +586,18 @@ public class MainActivity extends AppCompatActivity
 
     private class MuesliMix
     {
-        private float targetWeight;
-        private float targetSugar;
+        private double targetWeight;
+        private double targetSugar;
         private int regularArticlesCount;
-        private float toppingPercentage;
+        private double toppingPercentage;
         private int toppingsCount;
         private int totalSpoons;
-        private float totalWeight;
-        private float totalSugar;
+        private double totalWeight;
+        private double totalSugar;
         private final List<IngredientEntity> ingredients;
         private ArticleEntity fillerArticle;
 
-        public MuesliMix(final float targetWeight, final float targetSugar, final int regularArticlesCount, final float toppingPercentage, final int toppingsCount)
+        public MuesliMix(final double targetWeight, final double targetSugar, final int regularArticlesCount, final double toppingPercentage, final int toppingsCount)
         {
             this.targetWeight = targetWeight;
             this.targetSugar = targetSugar;
@@ -623,7 +623,7 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
 
-        public void changeTargetWeight(float targetWeight)
+        public void changeTargetWeight(double targetWeight)
         {
             this.targetWeight = targetWeight;
             if (this.determineIngredients())
@@ -636,7 +636,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        public void changeTargetSugar(float targetSugar)
+        public void changeTargetSugar(double targetSugar)
         {
             this.targetSugar = targetSugar;
             if (this.determineIngredients())
@@ -682,10 +682,9 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        public void changeToppingPercentage(float toppingPercentage)
+        public void changeToppingPercentage(double toppingPercentage)
         {
             this.toppingPercentage = toppingPercentage;
-            toppingsCount = (toppingPercentage > 0 ? TOPPINGS_INGREDIENT_COUNT : 0);
             if (this.determineIngredients())
             {
                 this.updateDisplayValid();
@@ -737,22 +736,27 @@ public class MainActivity extends AppCompatActivity
         /** Determine ingredients based on chosen articles and target values. */
         public boolean determineIngredients()
         {
+            selectableToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable topping: " + articleEntity.getName()));  // DEBUG:
+            usedToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "used topping: " + articleEntity.getName()));  // DEBUG:
+            chosenToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen topping: " + articleEntity.getName()));  // DEBUG:
+            // FIXME: crashes with null object exception on article lists when changing any mix slider on freshly loaded mixes
+            // FIXME: -> should never be null and is not null during loading of stored mix -> maybe debugable on change to null
             totalSpoons = 0;
-            totalWeight = 0F;
-            totalSugar = 0F;
-            float weight;
-            float sugarPartialSum = 0F;
-            float toppingsWeight;
+            totalWeight = 0.;
+            totalSugar = 0.;
+            double weight;
+            double sugarPartialSum = 0.;
+            double toppingsWeight;
             ingredients.clear();
             ArticleEntity article;
             int spoonCount;
             // Calculate and add spoons for topping articles based on topping percentage:
-            for (var i = 0; i < toppingsCount; i++)
+            for (var i = 0; i < toppingsCount && toppingPercentage > 0; i++)
             {
                 article = chosenToppingArticles.get(i);
                 spoonCount = (int)Math.round(targetWeight * toppingPercentage / (article.getSpoonWeight() * toppingsCount));
                 spoonCount = Math.max(spoonCount, 1);
-                weight = spoonCount * (float)article.getSpoonWeight();
+                weight = spoonCount * article.getSpoonWeight();
                 totalSpoons += spoonCount;
                 totalWeight += weight;
                 totalSugar += weight * article.getSugarPercentage();
@@ -766,7 +770,7 @@ public class MainActivity extends AppCompatActivity
                 article = chosenRegularArticles.get(i);
                 spoonCount = (int)Math.round((targetWeight - toppingsWeight) / (article.getSpoonWeight() * (regularArticlesCount + FILLER_INGREDIENT_RATIO)));
                 spoonCount = Math.max(spoonCount, 1);
-                weight = spoonCount * (float)article.getSpoonWeight();
+                weight = spoonCount * article.getSpoonWeight();
                 totalSpoons += spoonCount;
                 totalWeight += weight;
                 totalSugar += weight * article.getSugarPercentage();
@@ -777,7 +781,7 @@ public class MainActivity extends AppCompatActivity
             article = chosenRegularArticles.get(regularArticlesCount - 1);
             spoonCount = (int)Math.round((targetSugar - targetWeight * fillerArticle.getSugarPercentage() - sugarPartialSum) / (article.getSpoonWeight() * (article.getSugarPercentage() - fillerArticle.getSugarPercentage())));
             if (spoonCount <= 0) return false;
-            weight = spoonCount * (float)article.getSpoonWeight();
+            weight = spoonCount * article.getSpoonWeight();
             totalSpoons += spoonCount;
             totalWeight += weight;
             totalSugar += weight * article.getSugarPercentage();
@@ -787,7 +791,7 @@ public class MainActivity extends AppCompatActivity
             if (spoonCount < 0) return false;
             if (spoonCount > 0)
             {
-                weight = spoonCount * (float)fillerArticle.getSpoonWeight();
+                weight = spoonCount * fillerArticle.getSpoonWeight();
                 totalSpoons += spoonCount;
                 totalWeight += weight;
                 totalSugar += weight * fillerArticle.getSugarPercentage();
@@ -945,13 +949,21 @@ public class MainActivity extends AppCompatActivity
         binding.setIsIngredientsListEmpty(true);
         binding.setIsInvalidSettings(false);
         binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
+        // Load in stored mix if available:
         if (muesliMix != null)
         {
             isChosenMuesliUsed = false;
             muesliMix.updateDisplayValid(ingredientsAdapter, binding);
+            selectableToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable topping: " + articleEntity.getName()));  // DEBUG:
+            usedToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "used topping: " + articleEntity.getName()));  // DEBUG:
+            chosenToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen topping: " + articleEntity.getName()));  // DEBUG:
+            selectableRegularArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable regular: " + articleEntity.getName()));  // DEBUG:
+            usedRegularArticles.forEach(articleEntity -> Log.d("onCreate",  "used regular: " + articleEntity.getName()));  // DEBUG:
+            chosenRegularArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen regular: " + articleEntity.getName()));  // DEBUG:
             // Move stored ingredients from selectable to chosen article lists:
             for (var ingredient : muesliMix.ingredients)
             {
+                // Move fitting topping article:
                 if (selectableToppingArticles.stream()
                         .filter(ingredient::isSimilarArticle)
                         .findFirst()
@@ -963,9 +975,12 @@ public class MainActivity extends AppCompatActivity
                             return true;
                         }).orElse(false))
                 {
-                    // FIXME: find out why topping is not in selectable list
+                    // FIXME: find out why topping is not in selectable list -> it is in used list, why?
+                    // FIXME: problem if topping has a multiplier >1 and is used at least once -> will be the same for regulars
+                    // TODO: check how it's done elsewhere with multiplier >1 and test
                     continue;
                 }
+                // Move fitting regular article:
                 if (selectableRegularArticles.stream()
                         .filter(ingredient::isSimilarArticle)
                         .findFirst()
@@ -979,11 +994,15 @@ public class MainActivity extends AppCompatActivity
                 {
                     continue;
                 }
+                // Ignore filler article:
                 if (!ingredient.isSimilarArticle(muesliMix.fillerArticle))
                 {
                     createErrorAlertDialog(this, "onCreate", "Could not find stored ingredient '" + ingredient.getName() + "' in selectable articles");
                 }
             }
+            selectableToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable topping: " + articleEntity.getName()));  // DEBUG:
+            usedToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "used topping: " + articleEntity.getName()));  // DEBUG:
+            chosenToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen topping: " + articleEntity.getName()));  // DEBUG:
         }
 
         // Create slider and button listeners:
@@ -1147,7 +1166,7 @@ public class MainActivity extends AppCompatActivity
             final var targetSugar = sugarValue2SugarPercentage(sugarValue) * targetWeight;
             final var regularArticlesCount = articlesValue2ArticlesCount(articlesValue);
             final var toppingPercentage = toppingValue2ToppingPercentage(toppingsValue);
-            final var toppingArticlesCount = (toppingPercentage > 0 ? TOPPINGS_INGREDIENT_COUNT : 0);
+            final var toppingArticlesCount = TOPPINGS_INGREDIENT_COUNT;
             muesliMix = new MuesliMix(targetWeight, targetSugar, regularArticlesCount, toppingPercentage, toppingArticlesCount);
 
             // Return used articles back to the selectable pool if necessary:
@@ -1224,7 +1243,10 @@ public class MainActivity extends AppCompatActivity
                 addArticlesToFittingStateList(Collections.singletonList(muesliMix.fillerArticle));
                 muesliMix.fillerArticle = null;
             }
-            chosenToppingArticles.forEach(ArticleEntity::decrementSelectionsLeft);
+            if (muesliMix.toppingPercentage > 0)
+            {
+                chosenToppingArticles.forEach(ArticleEntity::decrementSelectionsLeft);
+            }
             addArticlesToFittingStateList(chosenToppingArticles);
             chosenToppingArticles.clear();
             chosenRegularArticles.forEach(ArticleEntity::decrementSelectionsLeft);
