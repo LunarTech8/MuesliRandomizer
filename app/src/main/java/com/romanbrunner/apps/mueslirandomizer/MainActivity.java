@@ -590,7 +590,7 @@ public class MainActivity extends AppCompatActivity
         private double targetSugar;
         private int regularArticlesCount;
         private double toppingPercentage;
-        private int toppingsCount;
+        private final int toppingsCount;
         private int totalSpoons;
         private double totalWeight;
         private double totalSugar;
@@ -606,6 +606,20 @@ public class MainActivity extends AppCompatActivity
             this.toppingsCount = toppingsCount;
             fillerArticle = null;
             ingredients = new ArrayList<>(regularArticlesCount + 1);
+        }
+        public MuesliMix(final MuesliMix muesliMix)
+        {
+            targetWeight = muesliMix.targetWeight;
+            targetSugar = muesliMix.targetSugar;
+            regularArticlesCount = muesliMix.regularArticlesCount;
+            toppingPercentage = muesliMix.toppingPercentage;
+            toppingsCount = muesliMix.toppingsCount;
+            totalSpoons = muesliMix.totalSpoons;
+            totalWeight = muesliMix.totalWeight;
+            totalSugar = muesliMix.totalSugar;
+            ingredients = new ArrayList<>(muesliMix.ingredients.size());
+            ingredients.addAll(muesliMix.ingredients);
+            fillerArticle = muesliMix.fillerArticle;
         }
 
         public boolean isFillerChosen()
@@ -736,11 +750,6 @@ public class MainActivity extends AppCompatActivity
         /** Determine ingredients based on chosen articles and target values. */
         public boolean determineIngredients()
         {
-            selectableToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable topping: " + articleEntity.getName()));  // DEBUG:
-            usedToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "used topping: " + articleEntity.getName()));  // DEBUG:
-            chosenToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen topping: " + articleEntity.getName()));  // DEBUG:
-            // FIXME: crashes with null object exception on article lists when changing any mix slider on freshly loaded mixes
-            // FIXME: -> should never be null and is not null during loading of stored mix -> maybe debugable on change to null
             totalSpoons = 0;
             totalWeight = 0.;
             totalSugar = 0.;
@@ -809,18 +818,6 @@ public class MainActivity extends AppCompatActivity
             binding.setTotalSugarPercentage(String.format(Locale.getDefault(), "%.1f", 100 * this.totalSugar / this.totalWeight));
             ingredientsAdapter.setIngredients(this.ingredients);
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = false);
-            binding.setIsIngredientsListEmpty(false);
-            binding.setIsInvalidSettings(false);
-            ingredientsAdapter.notifyDataSetChanged();
-        }
-        @SuppressLint("NotifyDataSetChanged")
-        public void updateDisplayValid(final @NonNull IngredientsAdapter ingredientsAdapter, final @NonNull MainScreenBinding binding)
-        {
-            binding.setTotalSpoonCount(String.format(Locale.getDefault(), "%d spoons", this.totalSpoons));
-            binding.setTotalWeight(String.format(Locale.getDefault(), "%.1f", this.totalWeight));
-            binding.setTotalSugarPercentage(String.format(Locale.getDefault(), "%.1f", 100 * this.totalSugar / this.totalWeight));
-            ingredientsAdapter.setIngredients(this.ingredients);
-            binding.setIsChosenMuesliUsed(false);
             binding.setIsIngredientsListEmpty(false);
             binding.setIsInvalidSettings(false);
             ingredientsAdapter.notifyDataSetChanged();
@@ -952,14 +949,9 @@ public class MainActivity extends AppCompatActivity
         // Load in stored mix if available:
         if (muesliMix != null)
         {
+            muesliMix = new MuesliMix(muesliMix);  // Has to be cloned to have access to the MainActivity variables
             isChosenMuesliUsed = false;
-            muesliMix.updateDisplayValid(ingredientsAdapter, binding);
-            selectableToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable topping: " + articleEntity.getName()));  // DEBUG:
-            usedToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "used topping: " + articleEntity.getName()));  // DEBUG:
-            chosenToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen topping: " + articleEntity.getName()));  // DEBUG:
-            selectableRegularArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable regular: " + articleEntity.getName()));  // DEBUG:
-            usedRegularArticles.forEach(articleEntity -> Log.d("onCreate",  "used regular: " + articleEntity.getName()));  // DEBUG:
-            chosenRegularArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen regular: " + articleEntity.getName()));  // DEBUG:
+            muesliMix.updateDisplayValid();
             // Move stored ingredients from selectable to chosen article lists:
             for (var ingredient : muesliMix.ingredients)
             {
@@ -971,13 +963,9 @@ public class MainActivity extends AppCompatActivity
                         {
                             selectableToppingArticles.remove(article);
                             chosenToppingArticles.add(article);
-                            Log.d("onCreate", "added " + article.getName() + " to chosen toppings");  // DEBUG:
                             return true;
                         }).orElse(false))
                 {
-                    // FIXME: find out why topping is not in selectable list -> it is in used list, why?
-                    // FIXME: problem if topping has a multiplier >1 and is used at least once -> will be the same for regulars
-                    // TODO: check how it's done elsewhere with multiplier >1 and test
                     continue;
                 }
                 // Move fitting regular article:
@@ -988,7 +976,6 @@ public class MainActivity extends AppCompatActivity
                         {
                             selectableRegularArticles.remove(article);
                             chosenRegularArticles.add(article);
-                            Log.d("onCreate", "added " + article.getName() + " to chosen regulars");  // DEBUG:
                             return true;
                         }).orElse(false))
                 {
@@ -1000,9 +987,6 @@ public class MainActivity extends AppCompatActivity
                     createErrorAlertDialog(this, "onCreate", "Could not find stored ingredient '" + ingredient.getName() + "' in selectable articles");
                 }
             }
-            selectableToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "selectable topping: " + articleEntity.getName()));  // DEBUG:
-            usedToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "used topping: " + articleEntity.getName()));  // DEBUG:
-            chosenToppingArticles.forEach(articleEntity -> Log.d("onCreate",  "chosen topping: " + articleEntity.getName()));  // DEBUG:
         }
 
         // Create slider and button listeners:
@@ -1260,7 +1244,6 @@ public class MainActivity extends AppCompatActivity
             ingredientsAdapter.notifyDataSetChanged();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
             muesliMix = null;
-            // TODO: instead of clearing muesliMix mark it as used (add new property) so that it can be reloaded onCreate/onResume
 
             // Store updated articles in memory:
             storeArticles(allArticles);
@@ -1296,21 +1279,8 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPause();
 
-        Log.d("onPause", "onPause");  // DEBUG:
-        // Clear mix and store updated articles and preferences in memory:
-        // TODO: do not clear but instead store last mix (muesliMix)
-//        binding.clearButton.performClick();
+        // Store current mix, updated articles and preferences in memory:
         storeArticles(allArticles);
         storePreferences();
     }
-
-//    @Override
-//    protected void onResume()
-//    {
-//        super.onResume();
-//
-//        Log.d("onResume", "onResume");  // DEBUG:
-//        loadPreferences();
-//        // TODO: if muesliMix is not null display it (do what newMix does without remixing)
-//    }
 }
