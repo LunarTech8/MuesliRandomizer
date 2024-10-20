@@ -71,9 +71,8 @@ public class IngredientEntity implements Ingredient
     }
 
     @Override
-    public void onRemoval()
+    public void onRemoval()  // Is not automatically called but only inside setIngredients if an ingredient is no longer in the list
     {
-        Log.d("onRemoval", this.article.getName());  // DEBUG:
         if (this.isMarkedAsEmpty)
         {
             this.article.setMultiplier(0);

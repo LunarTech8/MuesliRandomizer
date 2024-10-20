@@ -36,11 +36,7 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
             super(binding.getRoot());
             this.binding = binding;
             binding.setIsChosenMuesliUsed(ingredientsAdapter.mainActivity.isChosenMuesliUsed);
-            binding.emptyButton.setOnClickListener((View view) ->
-            {
-                setMarkAsEmpty(binding, ingredientsAdapter.mainActivity, ingredientsAdapter.ingredients.get(getBindingAdapterPosition()).switchMarkAsEmpty());
-                ingredientsAdapter.mainActivity.refreshData(false);
-            });
+            binding.emptyButton.setOnClickListener((View view) -> setMarkAsEmpty(binding, ingredientsAdapter.mainActivity, ingredientsAdapter.ingredients.get(getBindingAdapterPosition()).switchMarkAsEmpty()));
         }
     }
 

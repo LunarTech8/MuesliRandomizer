@@ -780,6 +780,13 @@
         "sugarPercentage": 0.053
     },
     {
+        "name": "Pekannusskerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 7.5,
+        "sugarPercentage": 0.037
+    },
+    {
         "name": "Salzmandeln",
         "brand": "Seeberger",
         "type": 2,
@@ -1044,6 +1051,13 @@
         "type": 2,
         "spoonWeight": 1,
         "sugarPercentage": 0.015
+    },
+    {
+        "name": "Buchweizen Grütze",
+        "brand": "bio Zentrale",
+        "type": 2,
+        "spoonWeight": 5.5,
+        "sugarPercentage": 0.004
     },
     {
         "name": "Crunchy Müsli Ahorn Mandel",

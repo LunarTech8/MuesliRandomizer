@@ -709,7 +709,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        /** Return chosen articles back to the selectable pool if necessary. */
+        /** Return chosen articles back to the selectable pool. */
         public void resetArticlesPool()
         {
             if (!chosenToppingArticles.isEmpty())
@@ -1152,25 +1152,27 @@ public class MainActivity extends AppCompatActivity
             final var toppingPercentage = toppingValue2ToppingPercentage(toppingsValue);
             final var toppingArticlesCount = TOPPINGS_INGREDIENT_COUNT;
             muesliMix = new MuesliMix(targetWeight, targetSugar, regularArticlesCount, toppingPercentage, toppingArticlesCount);
+            muesliMix.resetArticlesPool();
+            ingredientsAdapter.setIngredients(new ArrayList<>(0));
+            refreshData(false);
 
             // Return used articles back to the selectable pool if necessary:
             if (selectableFillerArticles.isEmpty())
             {
                 moveArticlesToStateList(usedFillerArticles, selectableFillerArticles);
             }
-            if (selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
+            if (selectableToppingArticles.size() < toppingArticlesCount)
             {
                 moveArticlesToStateList(usedToppingArticles, selectableToppingArticles);
             }
-            if (selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount)
+            if (selectableRegularArticles.size() < regularArticlesCount)
             {
                 priorityAddAll(priorityRegularArticles, selectableRegularArticles);
-                priorityAddAll(priorityRegularArticles, chosenRegularArticles);
                 moveArticlesToStateList(usedRegularArticles, selectableRegularArticles);
             }
 
             // Check general conditions for valid mix:
-            if (selectableFillerArticles.isEmpty() || selectableRegularArticles.size() + chosenRegularArticles.size() < regularArticlesCount || selectableToppingArticles.size() + chosenToppingArticles.size() < toppingArticlesCount)
+            if (selectableFillerArticles.isEmpty() || selectableRegularArticles.size() < regularArticlesCount || selectableToppingArticles.size() < toppingArticlesCount)
             {
                 muesliMix.updateDisplayInvalid();
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync
@@ -1264,7 +1266,7 @@ public class MainActivity extends AppCompatActivity
             ingredientsAdapter.setIngredients(new ArrayList<>(0));
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
             binding.setIsIngredientsListEmpty(true);
-            refreshCountInfo();
+            refreshData(false);
             ingredientsAdapter.notifyDataSetChanged();
             binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes
             muesliMix = null;
@@ -1282,5 +1284,19 @@ public class MainActivity extends AppCompatActivity
         // Store current mix, updated articles and preferences in memory:
         storeArticles(allArticles);
         storePreferences();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        // Update and store articles in memory (required for emptied articles):
+        if (muesliMix == null)
+        {
+            ingredientsAdapter.setIngredients(new ArrayList<>(0));
+            refreshStateLists();
+            storeArticles(allArticles);
+        }
     }
 }
