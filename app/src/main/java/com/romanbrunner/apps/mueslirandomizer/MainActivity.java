@@ -1241,6 +1241,7 @@ public class MainActivity extends AppCompatActivity
             chosenRegularArticles.clear();
 
             // Adjust mix buttons and ingredients list:
+            ingredientsAdapter.actOnMarkedIngredients();
             binding.setIsChosenMuesliUsed(isChosenMuesliUsed = true);
             refreshCountInfo();
             ingredientsAdapter.notifyDataSetChanged();

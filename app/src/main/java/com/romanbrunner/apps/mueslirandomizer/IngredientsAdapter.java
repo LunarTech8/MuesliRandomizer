@@ -99,15 +99,16 @@ class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.EntryVi
                     return IngredientEntity.isContentTheSame(ingredients.get(newItemPosition), IngredientsAdapter.this.ingredients.get(oldItemPosition));
                 }
             });
-            for (var oldIngredient : this.ingredients)
-            {
-                if (!ingredients.contains(oldIngredient))
-                {
-                    oldIngredient.onRemoval();
-                }
-            }
             this.ingredients = ingredients;
             result.dispatchUpdatesTo(this);
+        }
+    }
+
+    void actOnMarkedIngredients()
+    {
+        for (var ingredient : this.ingredients)
+        {
+            ingredient.actOnMarked();
         }
     }
 

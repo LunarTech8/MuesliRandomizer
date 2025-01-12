@@ -71,7 +71,7 @@ public class IngredientEntity implements Ingredient
     }
 
     @Override
-    public void onRemoval()  // Is not automatically called but only inside setIngredients if an ingredient is no longer in the list
+    public void actOnMarked()
     {
         if (this.isMarkedAsEmpty)
         {

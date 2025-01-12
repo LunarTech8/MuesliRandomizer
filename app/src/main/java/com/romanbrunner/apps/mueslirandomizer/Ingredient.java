@@ -11,5 +11,5 @@ public interface Ingredient
     String getSugarPercentageString();
 
     boolean switchMarkAsEmpty();
-    void onRemoval();
+    void actOnMarked();
 }
