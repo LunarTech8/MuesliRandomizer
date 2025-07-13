@@ -45,6 +45,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="@dimen/comment_padding"
+        android:fitsSystemWindows="true"
         tools:context=".InputPanel"
         >
 

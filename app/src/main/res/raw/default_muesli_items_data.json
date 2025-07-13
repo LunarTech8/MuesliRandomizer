@@ -73,11 +73,25 @@
         "sugarPercentage": 0.52
     },
     {
+        "name": "Cashew Kaki Mix",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 8.5,
+        "sugarPercentage": 0.31
+    },
+    {
         "name": "Cashew geröstet ungesalzen",
         "brand": "Farmer's Snack",
         "type": 2,
         "spoonWeight": 7.75,
         "sugarPercentage": 0.095
+    },
+    {
+        "name": "Cashewkerne gröstet ungesalzen",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 7.5,
+        "sugarPercentage": 0.13
     },
     {
         "name": "Edelnuss geröstet",
@@ -94,6 +108,20 @@
         "sugarPercentage": 0.042
     },
     {
+        "name": "Haselnusskerne geröstet",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 7.25,
+        "sugarPercentage": 0.054
+    },
+    {
+        "name": "Mallorca Mandeln geröstet",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 6.5,
+        "sugarPercentage": 0.041
+    },
+    {
         "name": "Mandel geröstet ungesalzen",
         "brand": "Farmer's Snack",
         "type": 2,
@@ -106,6 +134,20 @@
         "type": 2,
         "spoonWeight": 6,
         "sugarPercentage": 0.034
+    },
+    {
+        "name": "Spanische Bruchmandeln geröstet",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 7,
+        "sugarPercentage": 0.047
+    },
+    {
+        "name": "Spanische Mandeln geröstet ungesalzen",
+        "brand": "Farmer's Snack",
+        "type": 2,
+        "spoonWeight": 7,
+        "sugarPercentage": 0.07
     },
     {
         "name": "Macadamia geröstet",
@@ -423,6 +465,13 @@
         "sugarPercentage": 0.077
     },
     {
+        "name": "Rainbow Love",
+        "brand": "Kölln",
+        "type": 3,
+        "spoonWeight": 9.25,
+        "sugarPercentage": 0.17
+    },
+    {
         "name": "Schoko",
         "brand": "Kölln",
         "type": 3,
@@ -528,6 +577,20 @@
         "sugarPercentage": 0.115
     },
     {
+        "name": "Christmas Choco Crunchy",
+        "brand": "MyMuesli",
+        "type": 3,
+        "spoonWeight": 11,
+        "sugarPercentage": 0.135
+    },
+    {
+        "name": "Cookies and Cream Granola",
+        "brand": "MyMuesli",
+        "type": 3,
+        "spoonWeight": 11.25,
+        "sugarPercentage": 0.148
+    },
+    {
         "name": "Dahoammuesli",
         "brand": "MyMuesli",
         "type": 3,
@@ -568,6 +631,13 @@
         "type": 4,
         "spoonWeight": 9.5,
         "sugarPercentage": 0.247
+    },
+    {
+        "name": "Cini Minis Churros",
+        "brand": "Nestle",
+        "type": 4,
+        "spoonWeight": 5.5,
+        "sugarPercentage": 0.25
     },
     {
         "name": "Cini Minis Zimt",
@@ -631,6 +701,20 @@
         "type": 1,
         "spoonWeight": 8,
         "sugarPercentage": 0.21
+    },
+    {
+        "name": "Frucht Snacks Rote Beeren",
+        "brand": "Nutripur",
+        "type": 2,
+        "spoonWeight": 1.5,
+        "sugarPercentage": 0.37
+    },
+    {
+        "name": "O's",
+        "brand": "Oreo",
+        "type": 4,
+        "spoonWeight": 4.5,
+        "sugarPercentage": 0.27
     },
     {
         "name": "Crunchy Müsli",
@@ -815,6 +899,13 @@
         "sugarPercentage": 0.026
     },
     {
+        "name": "Walnusskerne",
+        "brand": "Seeberger",
+        "type": 2,
+        "spoonWeight": 5.75,
+        "sugarPercentage": 0.026
+    },
+    {
         "name": "Choco Peanut Müsli",
         "brand": "Treets",
         "type": 1,
@@ -850,11 +941,25 @@
         "sugarPercentage": 0.13
     },
     {
+        "name": "Knusper Apfel & Mandeln ohne Zucker",
+        "brand": "Vitalis",
+        "type": 0,
+        "spoonWeight": 7.25,
+        "sugarPercentage": 0.066
+    },
+    {
         "name": "Knusper Früchte 30% weniger Zucker",
         "brand": "Vitalis",
         "type": 1,
         "spoonWeight": 10.5,
         "sugarPercentage": 0.16
+    },
+    {
+        "name": "Knusper Himbeer 30% weniger Zucker",
+        "brand": "Vitalis",
+        "type": 1,
+        "spoonWeight": 8.25,
+        "sugarPercentage": 0.13
     },
     {
         "name": "Knusper Himbeere 30% weniger Zucker",
@@ -958,8 +1063,8 @@
         "name": "Knuspermüsli Schoko",
         "brand": "Vitalis",
         "type": 1,
-        "spoonWeight": 10,
-        "sugarPercentage": 0.22
+        "spoonWeight": 11,
+        "sugarPercentage": 0.2
     },
     {
         "name": "Knuspermüsli Schoko + Keks",
