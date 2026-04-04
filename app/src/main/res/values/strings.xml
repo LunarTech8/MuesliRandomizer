@@ -45,6 +45,9 @@
     <string name="t_exportButton">Export items</string>
     <string name="t_removeButton">X</string>
     <string name="t_emptyButton">Empty</string>
+    <string name="t_showAllButton">Show all</string>
+    <string name="t_showAvailableButton">Show available</string>
+    <string name="t_brandFilterAll">All brands</string>
 
     <!-- Hints: -->
     <string name="h_name">Name</string>

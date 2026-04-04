@@ -130,6 +130,10 @@ public class MainActivity extends AppCompatActivity
     private int loadedItemsVersion = 0;
     private ActivityResultLauncher<Intent> createFileActivityLauncher;
     private ActivityResultLauncher<Intent> openFileActivityLauncher;
+    private ArrayAdapter<String> brandFilterAdapter;
+    private String selectedBrandFilter;
+    private boolean showOnlyAvailableArticles = false;
+    private boolean isUpdatingBrandFilter = false;
 
     private static void createErrorAlertDialog(final Context context, final String title, final String message)
     {
@@ -174,6 +178,7 @@ public class MainActivity extends AppCompatActivity
         refreshInventoryInfo();
         if (reloadArticleAdapter)
         {
+            applyArticleFilters();
             availableArticlesAdapter.notifyDataSetChanged();
         }
     }
@@ -358,6 +363,58 @@ public class MainActivity extends AppCompatActivity
         // Fillers:
         binding.setAvailableFillerAmount(Math.toIntExact(availableArticles.stream().filter(article -> article.getType() == Type.FILLER).count()));
         binding.setRegisteredFillerAmount(Math.toIntExact(allArticles.stream().filter(article -> article.getType() == Type.FILLER).count()));
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void applyArticleFilters()
+    {
+        List<ArticleEntity> filtered = new ArrayList<>(allArticles);
+        if (userMode == UserMode.AVAILABILITY)
+        {
+            if (showOnlyAvailableArticles)
+            {
+                filtered.removeIf(article -> !article.isAvailable());
+            }
+            if (!selectedBrandFilter.equals(getString(R.string.t_brandFilterAll)))
+            {
+                filtered.removeIf(article -> !selectedBrandFilter.equals(article.getBrand()));
+            }
+            updateBrandFilterSpinner();
+        }
+        availableArticlesAdapter.setArticles(filtered);
+    }
+
+    private void updateBrandFilterSpinner()
+    {
+        isUpdatingBrandFilter = true;
+        // Get brands of currently available articles:
+        List<ArticleEntity> articlesForBrands = new ArrayList<>(allArticles);
+        if (showOnlyAvailableArticles)
+        {
+            articlesForBrands.removeIf(article -> !article.isAvailable());
+        }
+        List<String> brands = articlesForBrands.stream()
+            .map(ArticleEntity::getBrand)
+            .distinct()
+            .sorted()
+            .collect(Collectors.toCollection(ArrayList::new));
+        brands.add(0, getString(R.string.t_brandFilterAll));
+        // Update spinner with available brands:
+        brandFilterAdapter.clear();
+        brandFilterAdapter.addAll(brands);
+        brandFilterAdapter.notifyDataSetChanged();
+        // Preserve current selection if still valid:
+        int position = brands.indexOf(selectedBrandFilter);
+        if (position >= 0)
+        {
+            binding.brandFilterSpinner.setSelection(position);
+        }
+        else
+        {
+            selectedBrandFilter = getString(R.string.t_brandFilterAll);
+            binding.brandFilterSpinner.setSelection(0);
+        }
+        isUpdatingBrandFilter = false;
     }
 
     private void storeArticles(final List<ArticleEntity> articles)
@@ -548,7 +605,7 @@ public class MainActivity extends AppCompatActivity
             if (hasNewItems)
             {
                 allArticles.sort(Comparator.comparing(article -> (article.getBrand() + article.getName())));
-                availableArticlesAdapter.setArticles(allArticles);
+                applyArticleFilters();
             }
         }
         catch (JSONException e)
@@ -860,6 +917,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         final var random = new Random();
         binding = DataBindingUtil.setContentView(this, R.layout.main_screen);
+        selectedBrandFilter = getString(R.string.t_brandFilterAll);
         loadPreferences();
 
         // Setup activity result launcher for document handling:
@@ -911,13 +969,15 @@ public class MainActivity extends AppCompatActivity
         availableArticlesAdapter = new ArticlesAdapter(this);
         binding.availableArticles.setAdapter(availableArticlesAdapter);
         binding.availableArticles.setLayoutManager(new LinearLayoutManager(this));
+        brandFilterAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>());
+        binding.brandFilterSpinner.setAdapter(brandFilterAdapter);
         final var typeSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, Type.values());
         binding.typeSpinner.setAdapter(typeSpinnerAdapter);
 
         // Load all articles and add them to the fitting state lists:
         if (loadArticles(allArticles))
         {
-            availableArticlesAdapter.setArticles(allArticles);
+            applyArticleFilters();
         }
         try
         {
@@ -1098,6 +1158,27 @@ public class MainActivity extends AppCompatActivity
                 storePreferences();
             }
         });
+        binding.availabilityFilterButton.setOnClickListener((View view) ->
+        {
+            showOnlyAvailableArticles = !showOnlyAvailableArticles;
+            binding.availabilityFilterButton.setText(showOnlyAvailableArticles ? R.string.t_showAvailableButton : R.string.t_showAllButton);
+            selectedBrandFilter = getString(R.string.t_brandFilterAll);
+            binding.brandFilterSpinner.setSelection(0);
+            applyArticleFilters();
+        });
+        binding.brandFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
+            {
+                if (isUpdatingBrandFilter) return;
+                selectedBrandFilter = (String)adapterView.getItemAtPosition(position);
+                applyArticleFilters();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
         binding.typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
@@ -1128,7 +1209,7 @@ public class MainActivity extends AppCompatActivity
                 allArticles.add(newArticle);
                 addArticlesToFittingStateList(Collections.singletonList(newArticle));
                 allArticles.sort(Comparator.comparing(article -> (article.getBrand() + article.getName())));
-                availableArticlesAdapter.setArticles(allArticles);
+                applyArticleFilters();
                 binding.availableArticles.smoothScrollToPosition(allArticles.indexOf(newArticle));
                 binding.setNewArticle(new ArticleEntity("", "", newArticle.getType(), 0F, 0F));
                 binding.executePendingBindings();  // Espresso does not know how to wait for data binding's loop so we execute changes sync

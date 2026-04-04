@@ -38,7 +38,7 @@ class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.EntryViewHold
             {
                 final int position = getBindingAdapterPosition();
                 articlesAdapter.articles.get(position).incrementMultiplier();
-                articlesAdapter.mainActivity.refreshData(false);
+                articlesAdapter.mainActivity.refreshData(true);
                 articlesAdapter.notifyItemChanged(position);
             });
             binding.removeButton.setOnClickListener((View view) ->
